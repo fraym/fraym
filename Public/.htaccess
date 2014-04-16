@@ -1,0 +1,23 @@
+<IfModule mod_rewrite.c>
+    # Follow symbolic links in this directory.
+    Options +FollowSymLinks
+    Options -Indexes
+
+    # Set the default handler.
+    DirectoryIndex index.php
+
+    RewriteEngine on
+    RewriteBase /
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*) index.php [L,QSA]
+</IfModule>
+
+
+<FilesMatch "\.(ico|pdf|flv|jpg|jpeg|png|gif|js|css|swf)$">
+Header set Cache-Control "max-age=290304000, public"
+Header set Vary	Accept-Encoding
+</FilesMatch>
+
+AddDefaultCharset utf-8

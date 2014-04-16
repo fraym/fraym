@@ -1,0 +1,25 @@
+body#install {
+    margin: 0 auto;
+    background-color: #E2E2E2;
+    background-image:linear-gradient( #abced4 81px, transparent 81px), linear-gradient(#eee .1em, transparent .1em);
+    background-size: 100% 1.2em;
+}
+
+#wrapper {
+    max-width: 430px;
+    width: 100%;
+    margin: 20px auto;
+    padding: 20px 20px 0;
+    border: 1px solid #cdcdcd;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 3px 4px 11px #CCC;
+}
+
+.text-center {
+    text-align: center;
+    margin: 10px 0;
+}
+.text-center img {
+    display: inline-block;
+}

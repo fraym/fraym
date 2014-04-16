@@ -1,0 +1,10 @@
+.DS_Store
+*.idea*
+Config.php
+Cache/Sessions/*
+Cache/Pages/*
+Cache/DoctrineProxies/*
+Cache/*
+Public/consolidated/*
+Public/images/deposit/*
+!.gitkeep
