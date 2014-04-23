@@ -715,7 +715,7 @@ var FileManager = {
 		}
 
 	}
-}
+};
 
 $(function () {
 	FileManager.initFilePathInput();

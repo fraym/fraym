@@ -348,7 +348,6 @@ class InstallController extends \Fraym\Core
     {
         if (is_file($this->_configFile) && filesize($this->_configFile) > 0) {
             $this->response->send('Fraym is already installed!')->sendHTTPStatusCode(404)->finish();
-            unlink($this->_configFile);
         }
 
         $this->view->assign('timezones', $this->getTimezones());
@@ -357,7 +356,10 @@ class InstallController extends \Fraym\Core
         $this->view->assign('post', $this->request->getGPAsObject());
 
         if ($this->request->isPost()) {
-            if ($result = $this->install()) {
+            $cmd = $this->request->post('cmd');
+            if ($cmd === 'checkDatabase') {
+                $this->checkDatabase();
+            } elseif ($result = $this->install()) {
                 $this->view->assign('done', true);
             }
         }
@@ -365,10 +367,45 @@ class InstallController extends \Fraym\Core
         $this->view->setTemplate('Install')->render();
     }
 
+    private function checkDatabase()
+    {
+        $post = $this->request->getGPAsObject();
+        define('FRAYM_INSTANCE', time());
+        define('DB_HOST', $post->database->host);
+        define('DB_USER', $post->database->user);
+        define('DB_PASS', $post->database->password);
+        define('DB_DRIVER', $post->database->type);
+        define('DB_CHARSET', 'UTF8');
+        define('DB_PORT', $post->database->port);
+        define('DB_NAME', $post->database->name);
+        define('DB_TABLE_PREFIX', $post->database->prefix);
+
+        $this->serviceLocator->set(
+            'db.options',
+            array(
+                'driver' => DB_DRIVER,
+                'user' => DB_USER,
+                'password' => DB_PASS,
+                'host' => DB_HOST,
+                'dbname' => DB_NAME,
+                'charset' => DB_CHARSET
+            )
+        );
+
+        try {
+            $this->db->connect()->getEntityManager()->getConnection()->connect();
+        } catch (\Exception $e) {
+            $this->response->sendAsJson(array('error' => $e->getMessage()));
+        }
+
+        $this->response->sendAsJson();
+    }
+
     /**
      * @return mixed
      */
-    public function getTimezones() {
+    public function getTimezones()
+    {
         return \DateTimeZone::listIdentifiers(\DateTimeZone::ALL);
     }
 
@@ -651,7 +688,7 @@ class InstallController extends \Fraym\Core
         define('DB_PASS', '{$post->database->password}');
         define('DB_DRIVER', '{$post->database->type}');
         define('DB_CHARSET', 'UTF8');
-        define('DB_PORT', '{$post->database->type}');
+        define('DB_PORT', '{$post->database->port}');
         define('DB_NAME', '{$post->database->name}');
         define('DB_TABLE_PREFIX', '{$post->database->prefix}');
         define('TIMEZONE', '{$post->timezone}');

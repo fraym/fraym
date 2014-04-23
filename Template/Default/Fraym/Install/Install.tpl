@@ -15,6 +15,7 @@
     {js('fraym/core/block.js')}
     {js('fraym/core/menu.js')}
     {js('fraym/core/admin.js')}
+    {js('fraym/core/install.js')}
     {js('fraym/selector_config.js')}
 
     <block type="css" sequence="outputFilter" consolidate="false"></block>
@@ -40,7 +41,7 @@
                       </div>
                       <strong>Fraym version:</strong> {\Fraym\Core::VERSION}<br/>
                       <strong>PHP version:</strong> {phpversion()}<br/>
-                      <strong>Mod ReWrite enabled:</strong> {if in_array('mod_rewrite', apache_get_modules())}Yes{else}'No{/if}
+                      <strong>Mod ReWrite enabled:</strong> {if function_exists('apache_get_modules')}{if in_array('mod_rewrite', apache_get_modules())}Yes{else}No{/if}{else}Can't detect{/if}<br/>
                       <strong>ZipArchive enabled:</strong> {if class_exists('ZipArchive')}Yes{else}'No{/if}
                   </div>
 

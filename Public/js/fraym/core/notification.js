@@ -16,4 +16,4 @@ Core.Notification = {
         $notification.fadeIn();
         setTimeout(function(){ $notification.fadeOut('fast', function(){$(this).remove()}); }, timeout);
     }
-}
+};
