@@ -249,6 +249,8 @@ use Fraym\Annotation\Registry;
  *      "Vendor/Detection/",
  *      "Vendor/DI/*",
  *      "Vendor/DI/",
+ *      "Vendor/Interop/*",
+ *      "Vendor/Interop/",
  *      "Vendor/Doctrine/*",
  *      "Vendor/Doctrine/",
  *      "Vendor/DoctrineExtensions/*",
@@ -412,6 +414,8 @@ class InstallController extends \Fraym\Core
     private function install()
     {
         if ($this->writeConfig($this->_configFile)) {
+            // Disable max script exec time, because creating database shema takes some time
+            set_time_limit(0);
             include_once($this->_configFile);
 
             $this->serviceLocator->set(
