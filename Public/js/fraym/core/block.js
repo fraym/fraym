@@ -66,7 +66,6 @@ Core.Block = {
 
 			if (Core.Block.CodeMirror) {
 				Core.Block.CodeMirror.setValue($("#templateContent").val());
-				$('.format-code').click();
 			}
 
 			$baseElement.find(Core.$.BLOCK_TEMPLATE_SELECTION).change();
@@ -274,25 +273,18 @@ Core.Block = {
 			Core.Block.CodeMirror = CodeMirror.fromTextArea($("#templateContent").get(0), {
 				lineNumbers: true,
 				lineWrapping: true,
+				autoCloseBrackets: true,
+				autoCloseTags: true,
 				mode: "text/html",
+				styleActiveLine: true,
 				tabMode: "indent",
+				matchTags: {bothTags: true},
+                extraKeys: {"Ctrl-J": "toMatchingTag"},
 				onChange: function (cm) {
 					$("#templateContent").val(cm.getValue());
-				},
-				onCursorActivity: function () {
-					Core.Block.CodeMirror.setLineClass(hlLine, null, null);
-					hlLine = Core.Block.CodeMirror.setLineClass(Core.Block.CodeMirror.getCursor().line, null, "activeline");
 				}
 			});
-			var hlLine = Core.Block.CodeMirror.setLineClass(0, "activeline");
 		}
-
-		$('.format-code').click(function (e) {
-			e.preventDefault();
-			CodeMirror.commands["selectAll"](Core.Block.CodeMirror);
-			var range = { from: Core.Block.CodeMirror.getCursor(true), to: Core.Block.CodeMirror.getCursor(false) };
-			Core.Block.CodeMirror.autoFormatRange(range.from, range.to);
-		});
 
 		$(Core.$.BLOCK_TEMPLATE_SELECTION).change(function () {
 			if ($(this).val() == 'custom') {

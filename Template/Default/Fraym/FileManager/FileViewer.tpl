@@ -66,33 +66,29 @@
     
             <div class="buttons">
                 <button type="submit" class="btn">{_('Save', 'FRAYM_SAVE')}</button>
-                <button type="button" class="btn format-code">{_('Format code', 'FRAYM_FORMAT_CODE')}</button>
             </div>
         </form>
 
         <script type="text/javascript">
-            var fileViewer = $("#fileViewer");
-            var fileViewerCodeMirror = CodeMirror.fromTextArea(fileViewer.get(0), {
+            var $fileViewer = $("#fileViewer");
+            var fileViewerCodeMirror = CodeMirror.fromTextArea($fileViewer.get(0), {
                 lineNumbers: true,
                 lineWrapping: true,
+                autoCloseBrackets: true,
+                autoCloseTags: true,
                 mode: "text/html",
+                styleActiveLine: true,
                 tabMode: "indent",
+                matchTags: { bothTags: true },
+                extraKeys: { "Ctrl-J" : "toMatchingTag" },
                 onChange: function(cm) {
-                    fileViewer.val(cm.getValue());
-                },
-                onCursorActivity: function() {
-                    fileViewerCodeMirror.setLineClass(hlLine, null, null);
-                    hlLine = fileViewerCodeMirror.setLineClass(fileViewerCodeMirror.getCursor().line, null, "activeline");
+                    $fileViewer.val(cm.getValue());
                 }
             });
-            var hlLine = fileViewerCodeMirror.setLineClass(0, "activeline");
-            fileViewerCodeMirror.setSize(799, 460);
-            $('.format-code').click(function(e){
-                e.preventDefault();
-                CodeMirror.commands["selectAll"](fileViewerCodeMirror);
-                var range = { from: fileViewerCodeMirror.getCursor(true), to: fileViewerCodeMirror.getCursor(false) };
-                fileViewerCodeMirror.autoFormatRange(range.from, range.to);
-            });
+
+            $(window).resize(function(){
+                fileViewerCodeMirror.setSize($('body').width(), $('body').height()-80);
+            }).resize();
 
         </script>
     {/if}

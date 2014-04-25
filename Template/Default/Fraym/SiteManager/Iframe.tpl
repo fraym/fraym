@@ -8,10 +8,10 @@
     {css('fraym/jquery-ui.css')}
     {css('fraym/main.css')}
     {css('fraym/chosen.css')}
-    {css('fraym/codemirror/codemirror.css')}
     {css('fraym/jquery.contextMenu.css')}
     {css('fraym/font-awesome.min.css')}
     {css('fraym/dynatree-skin-vista/ui.dynatree.css')}
+    {css('fraym/codemirror/codemirror.css')}
 
     {js('fraym/libs/jquery.min.js')}
     {js('fraym/libs/jquery.contextmenu.js')}
@@ -21,9 +21,19 @@
     {js('fraym/libs/bootstrap.min.js')}
 
     {js('fraym/libs/codemirror/codemirror.js')}
-    {js('fraym/libs/codemirror/util/formatting.js')}
+
+    {js('fraym/libs/codemirror/addon/edit/closebrackets.js')}
+    {js('fraym/libs/codemirror/addon/search/searchcursor.js')}
+    {js('fraym/libs/codemirror/addon/search/search.js')}
+    {js('fraym/libs/codemirror/addon/fold/xml-fold.js')}
+    {js('fraym/libs/codemirror/addon/edit/matchtags.js')}
+    {js('fraym/libs/codemirror/addon/edit/closetag.js')}
+    {js('fraym/libs/codemirror/addon/selection/active-line.js')}
+
     {js('fraym/libs/codemirror/mode/css/css.js')}
     {js('fraym/libs/codemirror/mode/xml/xml.js')}
+    {js('fraym/libs/codemirror/mode/php/php.js')}
+    {js('fraym/libs/codemirror/mode/sass/sass.js')}
     {js('fraym/libs/codemirror/mode/javascript/javascript.js')}
     {js('fraym/libs/codemirror/mode/htmlmixed/htmlmixed.js')}
 

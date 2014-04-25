@@ -597,6 +597,8 @@ label input[type="radio"], label input[type="checkbox"] {
     overflow: hidden;
     border-bottom-left-radius: 3px;
     border-bottom-right-radius: 3px;
+    width: 100% !important;
+    height: 93% !important;
 }
 
 .ui-widget-header,
@@ -622,6 +624,10 @@ table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 18px;
+}
+
+#fraym-iframe {
+    height: 100%;
 }
 
 #fraym-iframe > form {

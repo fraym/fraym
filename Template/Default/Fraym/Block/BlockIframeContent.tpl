@@ -75,7 +75,6 @@
                         </td>
                         <td colspan="4">
                             <textarea rows="15" name="templateContent" id="templateContent"></textarea>
-                            <a href="#" class="format-code">{_('Format code', 'FRAYM_FORMAT_CODE')}</a>
                         </td>
                     </tr>
                     <tr>
