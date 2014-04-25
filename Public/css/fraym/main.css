@@ -598,7 +598,6 @@ label input[type="radio"], label input[type="checkbox"] {
     border-bottom-left-radius: 3px;
     border-bottom-right-radius: 3px;
     width: 100% !important;
-    height: 93% !important;
 }
 
 .ui-widget-header,
