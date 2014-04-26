@@ -14,7 +14,7 @@ use Fraym\Annotation\Registry;
  * @package Fraym\Install
  * @Registry(
  * name="Fraym Core",
- * version="0.9.0",
+ * version="0.9.1",
  * author="Fraym.org",
  * website="http://www.fraym.org",
  * entity={
