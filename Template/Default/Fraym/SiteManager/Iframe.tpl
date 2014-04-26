@@ -7,6 +7,7 @@
 
     {css('fraym/jquery-ui.css')}
     {css('fraym/main.css')}
+    {css('fraym/main-theme.css')}
     {css('fraym/chosen.css')}
     {css('fraym/jquery.contextMenu.css')}
     {css('fraym/font-awesome.min.css')}

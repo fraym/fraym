@@ -15,7 +15,7 @@
         </div>
         <div id="block-tabs-1">
             <div>
-                <table class="table table-bordered">
+                <table class="table table-striped">
                     <tr>
                         <td class="title-col">{_('Block Id', 'FRAYM_BLOCKID')}</td>
                         <td><span id="currentBlockId">{_('No Id', 'FRAYM_NOID')}</span></td>

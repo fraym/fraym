@@ -26,7 +26,8 @@ use Fraym\Annotation\Registry;
  *           "class"="\Extension\BugReport\BugReportController",
  *           "method"="getContent",
  *           "active"="1",
- *           "description"="EXT_EXTENSION_BUGREPORT_DESC"
+ *           "description"="EXT_EXTENSION_BUGREPORT_DESC",
+ *           "iconCssClass"="fa fa-bug"
  *           },
  *      },
  * },

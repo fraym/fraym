@@ -509,16 +509,16 @@ ul.sortable {
 }
 
 #blockConfigMenu {
-    background: none repeat scroll 0 0 rgba(234, 234, 234, 0.8);
-    border-bottom: 1px solid #C5C5C5;
+    background: none repeat scroll 0 0 #ededed;
+    border-bottom: 1px solid #DFDFDF;
     height: 100%;
-    width: 187px;
-    border-left: 1px solid #C5C5C5;
-    border-right: 1px solid #C5C5C5;
+    width: 41px;
+    border-left: 1px solid #DFDFDF;
+    border-right: 1px solid #DFDFDF;
     position: fixed;
     top: 0;
     z-index: 50000;
-    left: -222px;
+    left: 0px;
     overflow: hidden;
 }
 

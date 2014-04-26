@@ -15,7 +15,7 @@ namespace Fraym;
  */
 class Core
 {
-    const VERSION = '0.9.0';
+    const VERSION = '0.9.1';
     const NAME = 'Fraym';
     const AUTHOR = 'Dominik Weber';
     const PUBLISHED = '2014';

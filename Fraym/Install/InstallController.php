@@ -24,28 +24,32 @@ use Fraym\Annotation\Registry;
  *           "class"="\Fraym\Menu\MenuController",
  *           "method"="getContent",
  *           "active"="1",
- *           "description"="EXT_EXTENSION_SITEMENUEDITOR_DESC"
+ *           "description"="EXT_EXTENSION_SITEMENUEDITOR_DESC",
+ *           "iconCssClass"="fa fa-sitemap"
  *           },
  *          {
  *           "name"="Data Manager",
  *           "class"="\Fraym\EntityManager\EntityManagerController",
  *           "method"="getContent",
  *           "active"="1",
- *           "description"="EXT_EXTENSION_ENTITYMANAGER_DESC"
+ *           "description"="EXT_EXTENSION_ENTITYMANAGER_DESC",
+ *           "iconCssClass"="fa fa-briefcase"
  *           },
  *          {
  *           "name"="File Manager",
  *           "class"="\Fraym\FileManager\FileManagerController",
  *           "method"="getContent",
  *           "active"="1",
- *           "description"="EXT_EXTENSION_FILEMANAGER_DESC"
+ *           "description"="EXT_EXTENSION_FILEMANAGER_DESC",
+ *           "iconCssClass"="fa fa-hdd-o"
  *           },
  *          {
  *           "name"="Package Manager",
  *           "class"="\Fraym\Registry\RegistryManagerController",
  *           "method"="getContent",
  *           "active"="1",
- *           "description"="EXT_EXTENSION_PACKAGEMANAGER_DESC"
+ *           "description"="EXT_EXTENSION_PACKAGEMANAGER_DESC",
+ *           "iconCssClass"="fa fa-archive"
  *           },
  *      },
  *      "\Fraym\Route\Entity\VirtualRoute"={

@@ -92,16 +92,19 @@ class SiteManagerController extends \Fraym\Core
             if (!isset($extensionSorted[$extension->id])) {
                 $extensionSorted[$extension->id] = array();
             }
-            $extensionSorted[$extension->id] = $this->translation->getTranslation(
-                $extension->name,
-                'SITE_EXT_' . strtoupper(str_ireplace(' ', '_', $extension->name))
+            $extensionSorted[$extension->id] = array(
+                'name' => $this->translation->getTranslation(
+                    $extension->name,
+                    'SITE_EXT_' . strtoupper(str_ireplace(' ', '_', $extension->name))
+                ),
+                'iconCssClass' => $extension->iconCssClass,
             );
         }
 
         uasort(
             $extensionSorted,
             function ($a, $b) {
-                return strcasecmp($a, $b);
+                return strcasecmp($a['name'], $b['name']);
             }
         );
 

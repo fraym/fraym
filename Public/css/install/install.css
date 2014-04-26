@@ -1,8 +1,8 @@
 body#install {
     margin: 0 auto;
-    background-color: #E2E2E2;
-    background-image:linear-gradient( #abced4 81px, transparent 81px), linear-gradient(#eee .1em, transparent .1em);
-    background-size: 100% 1.2em;
+    color: #A3A3A3;
+    background: url(/images/fraym/fraym-bg.jpg);
+    background-size: cover;
 }
 
 #wrapper {
@@ -10,16 +10,31 @@ body#install {
     width: 100%;
     margin: 20px auto;
     padding: 20px 20px 0;
-    border: 1px solid #cdcdcd;
-    border-radius: 5px;
-    background-color: #fff;
-    box-shadow: 3px 4px 11px #CCC;
+    background-color: rgba(0, 0, 0, 0.2);
 }
 
 .text-center {
     text-align: center;
     margin: 10px 0;
 }
+
 .text-center img {
     display: inline-block;
+}
+
+form input {
+    background-color: rgba(0, 0, 0, 0.08) !important;
+    border: 0 !important;
+    -webkit-border-radius: 4px 0 0 4px !important;
+    -moz-border-radius: 4px 0 0 4px !important;
+    -ms-border-radius: 4px 0 0 4px !important;
+    -o-border-radius: 4px 0 0 4px !important;
+    border-radius: 4px 0 0 4px !important;
+    color: #A3A3A3 !important;
+    -webkit-transition: all .1s linear;
+    transition: all .1s linear;
+}
+
+legend {
+    color: #fff;
 }

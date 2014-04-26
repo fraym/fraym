@@ -48,8 +48,10 @@ Core.Admin = {
 
         $('[data-url]').click(function (e) {
             e.preventDefault();
-            parent.window.Core.Block.showDialog({title: $(this).find('span').html()}, $(this).data('url'));
-
+            parent.window.Core.Block.showDialog({title: $(this).find('span.title').html()}, $(this).data('url'));
+	        if(!$("#navigation").hasClass('collapsed')) {
+		        $(".sidebar-collapse a").click();
+            }
         });
 
         $('[data-id="block-edit-mode"]').click(function (e) {
@@ -58,17 +60,20 @@ Core.Admin = {
 			Core.Admin.setEditMode(editMode);
         });
 
-        $(document).mousemove(function(e) {
-            if(e.shiftKey == false && e.clientX <= 100 && Core.Admin.isPanelOpen == false) {
-                Core.Admin.openPanel();
-            } else if(e.clientX > 222 && Core.Admin.isPanelOpen == true) {
-                Core.Admin.closePanel();
-            }
-        });
+
+	    $(".sidebar-collapse a").on("click", function () {
+    		$("#navigation").toggleClass("collapsed");
+    		$(".sidebar-collapse").toggleClass("active");
+		    if($("#navigation").hasClass('collapsed')) {
+			    Core.Admin.closePanel();
+		    } else {
+			    Core.Admin.openPanel();
+		    }
+    	 });
 
 	    var $adminPanelIframe = $(Core.$.BLOCK_CONFIG_MENU).find('iframe');
         if($adminPanelIframe.length) {
-	        $adminPanelIframe.slimScroll({width: '185px', height: $(window).height()});
+	        $adminPanelIframe.slimScroll({width: '250px', height: $(window).height()});
 	        $adminPanelIframe.load(function(){
 		        $adminPanelIframe.show();
 		        var height = $adminPanelIframe.contents().find('body').height();
@@ -80,12 +85,12 @@ Core.Admin = {
 
 	openPanel: function() {
 		Core.Admin.isPanelOpen = true;
-		$(Core.$.BLOCK_CONFIG_MENU).show().animate({left: '0'}, 100);
+		Core.getBaseWindow().$(Core.$.BLOCK_CONFIG_MENU).show().animate({width: '250'}, 100);
 	},
 
 	closePanel: function() {
 		Core.Admin.isPanelOpen = false;
-        $(Core.$.BLOCK_CONFIG_MENU).animate({left: '-222'}, 100);
+		Core.getBaseWindow().$(Core.$.BLOCK_CONFIG_MENU).animate({width: '41'}, 100);
 	},
 
 	setEditMode: function(active) {

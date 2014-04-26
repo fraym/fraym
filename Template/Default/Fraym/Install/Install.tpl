@@ -4,6 +4,7 @@
     <title>Fraym installation</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     {css('fraym/bootstrap.min.css')}
+    {css('fraym/main-theme.css')}
     {css('install/install.css')}
     {js('fraym/libs/jquery.min.js', 'default', 'jquery')}
     {js('fraym/libs/jquery-ui.min.js')}
@@ -33,11 +34,11 @@
         {else}
           <form action="" method="post" enctype="multipart/form-data" autocomplete="off">
               <fieldset>
-                  <legend>Setup</legend>
+                  <legend>Install</legend>
 
                   <div class="form-group">
                       <div class="text-center">
-                          <img src="/images/fraym/logo.png" class="img-responsive" />
+                          <img src="/images/fraym/logo-opacity.png" class="img-responsive" />
                       </div>
                       <strong>Fraym version:</strong> {\Fraym\Core::VERSION}<br/>
                       <strong>PHP version:</strong> {phpversion()}<br/>

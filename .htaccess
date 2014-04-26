@@ -1,7 +1,0 @@
-<IfModule mod_rewrite.c>
-    Options +FollowSymLinks
-    DirectoryIndex index.php
-    RewriteEngine on
-    RewriteBase /
-    RewriteRule ^(.*) Public/$1 [L,QSA]
-</IfModule>

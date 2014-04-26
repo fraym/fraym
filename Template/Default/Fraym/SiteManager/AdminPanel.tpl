@@ -23,6 +23,7 @@
     <iframe seamless allowtransparency="true" frameborder="0" src="//{i('Fraym\Route\Route')->getSiteBaseURI(false)}{i('Fraym\Route\Route')->getVirtualRoute('adminPanel')->route}?locale={i('Fraym\Registry\Config')->get('ADMIN_LOCALE_ID')->value}"></iframe>
 </div>
 
+
 <script type="text/javascript">
    Core.Translation = {
    	Global: {

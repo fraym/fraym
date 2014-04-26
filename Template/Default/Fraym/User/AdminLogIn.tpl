@@ -1,39 +1,44 @@
-<div class="container">
+<div id="wrap">
     <div class="row">
-        <div class="col-md-offset-4 col-md-4 logo">
-            <a href="/"><img alt="Fraym" src="/images/fraym/logo.png" class="img-responsive"></a>
-        </div>
-        <div class="col-md-offset-4 col-md-4">
-            {if count((array)$errorFields)}
-                <div class="alert alert-danger">{_('Wrong E-Mail or password', 'FRAYM_LOGIN_ERROR')}</div>{/if}
-            <form class="form" role="form" action="" method="post" autocomplete="off">
-                <div class="form-group">
-                    <label for="inputEmail">{_('E-Mail', 'FRAYM_EMAIL')}</label>
+        <div id="content" class="col-md-12 full-page login">
+            <div class="welcome">
+                <a href="/"><img alt="Fraym" src="/images/fraym/logo-opacity.png" class="img-responsive"></a>
 
-                    <input type="text" id="inputEmail" placeholder="{_('E-Mail', 'FRAYM_EMAIL')}" name="login_name"
-                           value="{$loginName}" class="form-control">
+                <form action="" id="form-signin" class="form-signin" method="post">
 
-                </div>
-                <div class="form-group">
-                    <label for="inputPassword1">{_('Password', 'FRAYM_PASSWORD')}</label>
+                    {if count((array)$errorFields)}
+                        <div class="alert alert-danger">{_('Wrong E-Mail or password', 'FRAYM_LOGIN_ERROR')}</div>
+                    {/if}
+                    <section>
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="login_name"
+                                   placeholder="{_('E-Mail', 'FRAYM_EMAIL')}">
 
-                    <input type="password" id="inputPassword" name="password"
-                           placeholder="{_('Password', 'FRAYM_PASSWORD')}" class="form-control">
+                            <div class="input-group-addon"><i class="fa fa-user"></i></div>
+                        </div>
+                        <div class="input-group">
+                            <input type="password" class="form-control" name="password"
+                                   placeholder="{_('Password', 'FRAYM_PASSWORD')}">
 
-                </div>
-                <div class="form-group">
-
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" name="stay_signed_in"
-                                   value="1"> {_('Stay signed in', 'FRAYM_STAY_SIGNED_IN')}
-                        </label>
-                    </div>
-
-                </div>
-                <button type="submit" id="submit" class="btn btn-default button-loading"
-                        data-loading-text="{_('Loading', 'FRAYM_LOADING')}...">{_('Sign in', 'FRAYM_SINGIN')}</button>
-            </form>
+                            <div class="input-group-addon"><i class="fa fa-key"></i></div>
+                        </div>
+                    </section>
+                    <section class="controls">
+                        <div class="checkbox check-transparent">
+                            <input type="checkbox" value="1" id="stay_signed_in" name="stay_signed_in">
+                            <label for="stay_signed_in">{_('Stay signed in', 'FRAYM_STAY_SIGNED_IN')}</label>
+                        </div>
+                    </section>
+                    <section class="new-acc">
+                        <button type="submit" class="btn btn-logingray">{_('Login', 'FRAYM_LOGIN')}</button>
+                    </section>
+                </form>
+            </div>
         </div>
     </div>
 </div>
+<script>
+    $(function(){
+       $('.welcome').addClass('animated bounceIn');
+     })
+</script>
