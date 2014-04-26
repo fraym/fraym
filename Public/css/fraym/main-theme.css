@@ -325,107 +325,42 @@ body #content fieldset[disabled] .form-contro:focus {
     border: 1px solid #e2e2e2;
 }
 
-body #content div.checkbox {
+body #content.login div.checkbox {
     margin: 5px 0;
 }
 
-body #content div.checkbox.check-cyan input[type=checkbox]:checked + label:before {
-    background-color: #22beef;
-    border: 1px solid #22beef;
-}
-
-body #content div.checkbox.check-cyan input[type=checkbox]:checked + label::after {
-    color: #fff;
-}
-
-body #content div.checkbox.check-cyan label.done {
-    color: #22beef;
-}
-
-body #content div.checkbox.check-green input[type=checkbox]:checked + label:before {
-    background-color: #a2d200;
-    border: 1px solid #a2d200;
-}
-
-body #content div.checkbox.check-green input[type=checkbox]:checked + label::after {
-    color: #fff;
-}
-
-body #content div.checkbox.check-green label.done {
-    color: #a2d200;
-}
-
-body #content div.checkbox.check-amethyst input[type=checkbox]:checked + label:before {
-    background-color: #cd97eb;
-    border: 1px solid #cd97eb;
-}
-
-body #content div.checkbox.check-amethyst input[type=checkbox]:checked + label::after {
-    color: #fff;
-}
-
-body #content div.checkbox.check-amethyst label.done {
-    color: #cd97eb;
-}
-
-body #content div.checkbox.check-orange input[type=checkbox]:checked + label:before {
-    background-color: #ffc100;
-    border: 1px solid #ffc100;
-}
-
-body #content div.checkbox.check-orange input[type=checkbox]:checked + label::after {
-    color: #fff;
-}
-
-body #content div.checkbox.check-orange label.done {
-    color: #ffc100;
-}
-
-body #content div.checkbox.check-red input[type=checkbox]:checked + label:before {
-    background-color: #ff4a43;
-    border: 1px solid #ff4a43;
-}
-
-body #content div.checkbox.check-red input[type=checkbox]:checked + label::after {
-    color: #fff;
-}
-
-body #content div.checkbox.check-red label.done {
-    color: #ff4a43;
-}
-
-body #content div.checkbox.check-transparent input[type=checkbox] + label:before {
+body #content.login div.checkbox.check-transparent input[type=checkbox] + label:before {
     background-color: rgba(0, 0, 0, 0.08);
     border: 0;
     -webkit-box-shadow: inset 0 0 10px 0 rgba(0, 0, 0, 0.05);
     box-shadow: inset 0 0 10px 0 rgba(0, 0, 0, 0.05);
 }
 
-body #content div.checkbox.check-transparent input[type=checkbox]:checked + label:before {
+body #content.login div.checkbox.check-transparent input[type=checkbox]:checked + label:before {
     background-color: rgba(0, 0, 0, 0.12);
     -webkit-box-shadow: inset 0 0 10px 0 rgba(0, 0, 0, 0.1);
     box-shadow: inset 0 0 10px 0 rgba(0, 0, 0, 0.1);
     border: 0;
 }
 
-body #content div.checkbox.check-transparent input[type=checkbox]:checked + label::after {
+body #content.login div.checkbox.check-transparent input[type=checkbox]:checked + label::after {
     color: rgba(0, 0, 0, 0.3);
 }
 
-body #content div.checkbox.check-transparent label {
+body #content.login div.checkbox.check-transparent label {
     color: rgba(0, 0, 0, 0.5);
 }
 
-body #content div.checkbox.check-transparent input[type=checkbox]:checked + label {
+body #content.login div.checkbox.check-transparent input[type=checkbox]:checked + label {
     color: rgba(0, 0, 0, 0.8);
 }
 
-body #content div.checkbox label {
+body #content.login div.checkbox label {
     margin: 0;
     line-height: 24px;
 }
 
-body #content div.checkbox label:before {
+body #content.login div.checkbox label:before {
     width: 20px;
     height: 20px;
     -webkit-border-radius: 2px;
@@ -435,7 +370,7 @@ body #content div.checkbox label:before {
     border-radius: 2px;
 }
 
-body #content div.checkbox label:after {
+body #content.login div.checkbox label:after {
     width: 20px;
     height: 20px;
     font-size: 14px;
@@ -446,7 +381,7 @@ body #content div.checkbox label:after {
     border-radius: 2px;
 }
 
-body #content div.checkbox label.done {
+body #content.login div.checkbox label.done {
     text-decoration: line-through;
 }
 
@@ -4021,209 +3956,9 @@ body .navbar .navbar-nav.side-nav .user-status .user .status ul > li .dropdown-m
     animation-name: rollOut
 }
 
-.bootstrap-checkbox {
-    display: inline-block;
-    position: relative;
-    width: 15px;
-    height: 15px;
-    border: 1px solid #c2c6cb;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    border-radius: 3px;
-    transition: border 0.2s linear 0s;
-}
 
-.check-circle .bootstrap-checkbox {
-    -webkit-border-radius: 99px;
-    -moz-border-radius: 99px;
-    border-radius: 99px;
-}
 
-.bootstrap-checkbox.checked {
-    border: 1px solid #999999;
-}
-
-.check-default, .check-success, .check-primary, .check-info, .check-warning, .check-danger {
-    display: inline-block;
-}
-
-.check-default label, .check-success label, .check-primary label, .check-info label, .check-warning label, .check-danger label {
-    display: inline-block;
-    position: relative;
-    top: -4px;
-    margin-left: 5px;
-    font-size: 12px;
-}
-
-.check-success .bootstrap-checkbox.checked {
-    background-color: #0090D9;
-    border: 1px solid #0090D9;
-}
-
-.check-primary .bootstrap-checkbox.checked {
-    background-color: #0AA699;
-    border: 1px solid #0AA699;
-}
-
-.check-info .bootstrap-checkbox.checked {
-    background-color: #1F3853;
-    border: 1px solid #1F3853;
-}
-
-.check-warning .bootstrap-checkbox.checked {
-    background-color: #FDD01C;
-    border: 1px solid #FDD01C;
-}
-
-.check-danger .bootstrap-checkbox.checked {
-    background-color: #F35958;
-    border: 1px solid #F35958;
-}
-
-.check-success .bootstrap-checkbox i, .check-primary .bootstrap-checkbox i, .check-info .bootstrap-checkbox i, .check-warning .bootstrap-checkbox i, .check-danger .bootstrap-checkbox i {
-    color: #fff;
-}
-
-.bootstrap-checkbox i {
-    position: absolute;
-    left: 2px;
-    top: 2px;
-    font-size: 11px
-}
-
-.radio label {
-    display: inline-block;
-    cursor: pointer;
-    position: relative;
-    padding-left: 25px;
-    margin-right: 15px;
-    font-size: 13px;
-    margin-bottom: 6px;
-    color: #777a80;
-}
-
-.radio input[type=radio] {
-    display: none;
-}
-
-.radio label:before {
-    content: "";
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    margin-right: 10px;
-    position: absolute;
-    left: 0;
-    bottom: 1px;
-    background-color: #fff;
-    border: 1px solid #c2c6cb;
-    border-radius: 99px;
-}
-
-.radio label:after {
-    font-size: 13px;
-    content: "";
-    text-align: center;
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    position: absolute;
-    -o-transform: scale(0);
-    -ms-transform: scale(0);
-    -moz-transform: scale(0);
-    -webkit-transform: scale(0);
-    transform: scale(0);
-    border-radius: 99px;
-    left: 0px;
-    top: 1px;
-    background-color: #6f7b8a;
-    border: 1px solid #6f7b8a;
-}
-
-.radio input[type=radio][disabled] + label {
-    opacity: 0.65;
-}
-
-.checkbox input[type=radio][disabled] + label:after {
-    background-color: #eceff3;
-}
-
-.radio.radio-success label:after {
-    background-color: #0090D9;
-    border: 1px solid #0090D9;
-}
-
-.radio.radio-primary label:after {
-    background-color: #0AA699;
-    border: 1px solid #0AA699;
-}
-
-.radio.radio-info label:after {
-    background-color: #1F3853;
-    border: 1px solid #1F3853;
-}
-
-.radio.radio-warning label:after {
-    background-color: #FDD01C;
-    border: 1px solid #FDD01C;
-}
-
-.radio.radio-danger label:after {
-    background-color: #F35958;
-    border: 1px solid #F35958;
-}
-
-.radio input[type=radio]:checked + label {
-    color: #4d5056;
-}
-
-.radio input[type=radio]:checked + label:after {
-    -o-transform: scale(0.63);
-    -ms-transform: scale(0.63);
-    -moz-transform: scale(0.63);
-    -webkit-transform: scale(0.63);
-    transform: scale(0.63);
-    line-height: 18px;
-    -o-transition: -o-transform .1s 0s cubic-bezier(0.455, 0.030, 0.215, 1.330);
-    -ms-transition: -ms-transform .1s 0s cubic-bezier(0.455, 0.030, 0.215, 1.330);
-    -moz-transition: -moz-transform .1s 0s cubic-bezier(0.455, 0.030, 0.215, 1.330);
-    -webkit-transition: -webkit-transform .1s 0s cubic-bezier(0.455, 0.030, 0.215, 1.330);
-    -o-transition: transform .1s 0s cubic-bezier(0.455, 0.030, 0.215, 1.330);
-    -ms-transition: transform .1s 0s cubic-bezier(0.455, 0.030, 0.215, 1.330);
-    -moz-transition: transform .1s 0s cubic-bezier(0.455, 0.030, 0.215, 1.330);
-    -webkit-transition: transform .1s 0s cubic-bezier(0.455, 0.030, 0.215, 1.330);
-    transition: transform .1s 0s cubic-bezier(0.455, 0.030, 0.215, 1.330);
-}
-
-.radio input[type=radio]:checked + label:before {
-    border: 1px solid #8e9095;
-}
-
-.radio.radio-success input[type=radio]:checked + label:before {
-    border: 1px solid #0090D9;
-}
-
-.radio.radio-primary input[type=radio]:checked + label:before {
-    border: 1px solid #0AA699;
-}
-
-.radio.radio-info label input[type=radio]:checked + :before {
-    border: 1px solid #1F3853;
-}
-
-.radio.radio-warning input[type=radio]:checked + label:before {
-    border: 1px solid #FDD01C;
-}
-
-.radio.radio-danger input[type=radio]:checked + label:before {
-    border: 1px solid #F35958;
-}
-
-.checkbox label {
+.login .checkbox label {
     display: inline-block;
     cursor: pointer;
     position: relative;
@@ -4235,48 +3970,8 @@ body .navbar .navbar-nav.side-nav .user-status .user .status ul > li .dropdown-m
     transition: border 0.2s linear 0s, color 0.2s linear 0s;
 }
 
-table td .checkbox label {
-    padding-left: 0px;
-}
 
-table th .checkbox label {
-    padding-left: 0px;
-}
-
-.star label {
-    display: inline-block;
-    cursor: pointer;
-    position: relative;
-    font-size: 18px;
-    transition: border 0.2s linear 0s, color 0.2s linear 0s;
-}
-
-.star label:before {
-    font-family: 'FontAwesome';
-    content: "\F005";
-    display: inline-block;
-    margin-right: 10px;
-    position: absolute;
-    left: 0px;
-    top: -4px;
-    font-size: 18px;
-    color: #97a3b3;
-    transition: border 0.2s linear 0s, color 0.2s linear 0s;
-}
-
-.star label {
-    margin-bottom: 10px;
-}
-
-.star input[type=checkbox] {
-    display: none;
-}
-
-.star input[type=checkbox]:checked + label:before {
-    color: #ffd200;
-}
-
-.checkbox label:before {
+.login .checkbox label:before {
     content: "";
     display: inline-block;
     width: 16px;
@@ -4291,7 +3986,7 @@ table th .checkbox label {
     transition: border 0.2s linear 0s, color 0.2s linear 0s;
 }
 
-.checkbox label::after {
+.login .checkbox label::after {
     display: inline-block;
     width: 16px;
     height: 16px;
@@ -4302,84 +3997,39 @@ table th .checkbox label {
     transition: border 0.2s linear 0s, color 0.2s linear 0s;
 }
 
-.checkbox input[type=checkbox] {
+.login .checkbox input[type=checkbox] {
     display: none;
 }
 
-.checkbox label {
+.login .checkbox label {
     margin-bottom: 10px;
 }
 
-.checkbox label:after {
+.login .checkbox label:after {
     border-radius: 3px;
 }
 
-.checkbox.checkbox-circle label:after {
+.login .checkbox.checkbox-circle label:after {
     border-radius: 99px;
 }
 
-.checkbox.checkbox-circle label:before {
+.login .checkbox.checkbox-circle label:before {
     border-radius: 99px;
 }
 
-.checkbox input[type=checkbox]:checked + label::after {
+.login .checkbox input[type=checkbox]:checked + label::after {
     font-family: 'FontAwesome';
     content: "\F00C";
 }
 
-.checkbox input[type=checkbox]:checked + label {
+.login .checkbox input[type=checkbox]:checked + label {
     color: #4d5056;
 }
 
-.checkbox input[type=checkbox][disabled] + label {
+.login .checkbox input[type=checkbox][disabled] + label {
     opacity: 0.65;
 }
 
-.checkbox input[type=checkbox][disabled] + label:before {
+.login .checkbox input[type=checkbox][disabled] + label:before {
     background-color: #eceff3;
-}
-
-.checkbox.check-success input[type=checkbox]:checked + label:before {
-    background-color: #0090D9;
-    border: 1px solid #0090D9;
-}
-
-.checkbox.check-success input[type=checkbox]:checked + label::after {
-    color: #fff;
-}
-
-.checkbox.check-primary input[type=checkbox]:checked + label:before {
-    background-color: #0AA699;
-    border: 1px solid #0AA699;
-}
-
-.checkbox.check-primary input[type=checkbox]:checked + label::after {
-    color: #fff;
-}
-
-.checkbox.check-info input[type=checkbox]:checked + label:before {
-    background-color: #1F3853;
-    border: 1px solid #1F3853;
-}
-
-.checkbox.check-info input[type=checkbox]:checked + label::after {
-    color: #fff;
-}
-
-.checkbox.check-warning input[type=checkbox]:checked + label:before {
-    background-color: #FDD01C;
-    border: 1px solid #FDD01C;
-}
-
-.checkbox.check-warning input[type=checkbox]:checked + label::after {
-    color: #fff;
-}
-
-.checkbox.check-danger input[type=checkbox]:checked + label:before {
-    background-color: #F35958;
-    border: 1px solid #F35958;
-}
-
-.checkbox.check-danger input[type=checkbox]:checked + label::after {
-    color: #fff;
 }
