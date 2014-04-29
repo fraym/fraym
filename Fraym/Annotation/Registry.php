@@ -22,6 +22,13 @@ final class Registry extends Annotation
     public $entity = array();
 
     /**
+     * DB Entries to be updated
+     *
+     * @var array
+     */
+    public $updateEntity = array();
+
+    /**
      * Registry config entries
      *
      * @var array
@@ -125,4 +132,9 @@ final class Registry extends Annotation
      * @var string
      */
     public $repositoryKey = null;
+
+    /**
+     * @var string
+     */
+    public $file = null;
 }

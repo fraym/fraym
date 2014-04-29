@@ -19,6 +19,14 @@ use Fraym\Annotation\Registry;
  * author="Fraym.org",
  * website="http://www.fraym.org",
  * repositoryKey="FRAYM_EXT_BUGREPORT",
+ * updateEntity={
+ *      "\Fraym\SiteManager\Entity\Extension"={
+ *          {
+ *           "name"="Bug Report",
+ *           "class"="\Extension\BugReport\BugReportController",
+ *           },
+ *      },
+ * },
  * entity={
  *      "\Fraym\SiteManager\Entity\Extension"={
  *          {

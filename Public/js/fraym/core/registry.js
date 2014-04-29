@@ -87,6 +87,12 @@ Core.Registry = {
 		e.preventDefault();
 		var repositoryKey = $(this).data('update');
 		Core.Registry.request(
+		{
+			cmd: 'downloadExtension',
+			repositoryKey: repositoryKey
+		},
+		function () {
+			Core.Registry.request(
 			{
 				cmd: 'updateExtension',
 				repositoryKey: repositoryKey
@@ -94,6 +100,7 @@ Core.Registry = {
 			function () {
 				window.location.reload();
 			});
+		});
 	},
 
 	request: function (options, successCallback, errorCallback) {

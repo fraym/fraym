@@ -111,6 +111,48 @@ class RegistryManager
     }
 
     /**
+     * @param $class
+     * @return null|object
+     */
+    private function getRegistryConfig($class)
+    {
+        $reflClass = new \ReflectionClass($class);
+        $classAnnotation = $this->getAnnotationReader()->getClassAnnotation(
+            $reflClass,
+            'Fraym\Annotation\Registry'
+        );
+
+        if (is_object($classAnnotation) && $classAnnotation->file !== null) {
+            $filePath = substr($classAnnotation->file, 0, 1) === '/' ?
+                $classAnnotation->file :
+                dirname($reflClass->getFileName()) . DIRECTORY_SEPARATOR . $classAnnotation->file;
+
+            if (is_file($filePath)) {
+                $config = require($filePath);
+                if (is_array($config)) {
+                    $config = array_merge($this->getRegistryProperties(), $config);
+                    return (object)$config;
+                }
+            }
+        }
+        return $classAnnotation;
+    }
+
+    /**
+     * @return array
+     */
+    private function getRegistryProperties()
+    {
+        $reflRegClass = new \ReflectionClass('Fraym\Annotation\Registry');
+        $properties = $reflRegClass->getProperties(\ReflectionProperty::IS_PUBLIC);
+        $result = array();
+        foreach ($properties as $property) {
+            $result[$property->getName()] = $property->getValue(new \Fraym\Annotation\Registry(array()));
+        }
+        return $result;
+    }
+
+    /**
      * Register all unregistred extensions
      */
     public function registerExtensions()
@@ -126,11 +168,8 @@ class RegistryManager
 
         foreach ($unregisteredExtensions as $class => $classAnnotation) {
             if (class_exists($class)) {
-                $reflClass = new \ReflectionClass($class);
-                $classAnnotation = $this->getAnnotationReader()->getClassAnnotation(
-                    $reflClass,
-                    'Fraym\Annotation\Registry'
-                );
+                $classAnnotation = $this->getRegistryConfig($class);
+
                 if ($classAnnotation) {
                     if ($classAnnotation->afterRegister) {
                         call_user_func_array(
@@ -168,11 +207,7 @@ class RegistryManager
                 require_once($file);
 
                 if (class_exists($class)) {
-                    $reflClass = new \ReflectionClass($class);
-                    $classAnnotation = $this->getAnnotationReader()->getClassAnnotation(
-                        $reflClass,
-                        'Fraym\Annotation\Registry'
-                    );
+                    $classAnnotation = $this->getRegistryConfig($class);
                     if ($classAnnotation) {
                         $registryEntry = $this->db->getRepository(
                             '\Fraym\Registry\Entity\Registry'
@@ -192,23 +227,19 @@ class RegistryManager
     /**
      * @param $repositoryKey
      */
-    public function updateExtension($repositoryKey) {
+    public function updateExtension($repositoryKey)
+    {
         $registry = $this->db->getRepository('\Fraym\Registry\Entity\Registry')->findOneByRepositoryKey($repositoryKey);
 
-        $this->downloadExtension($repositoryKey);
-
         $reflClass = new \ReflectionClass($registry->className);
-        $classAnnotation = $this->getAnnotationReader()->getClassAnnotation(
-            $reflClass,
-            'Fraym\Annotation\Registry'
-        );
+        $classAnnotation = $this->getRegistryConfig($registry->className);
 
-        $this->registerClass($registry->className, $reflClass->getFileName());
+        $this->registerClass($registry->className, $reflClass->getFileName(), $registry);
 
         if ($classAnnotation->onUpdate) {
             call_user_func_array(
                 array($this->serviceLocator->get($registry->className), $classAnnotation->onUpdate),
-                array($classAnnotation)
+                array($classAnnotation, $registry)
             );
         }
     }
@@ -217,12 +248,9 @@ class RegistryManager
      * @param Entity\Registry $registry
      * @return bool|string
      */
-    public function buildPackage(Entity\Registry $registry) {
-        $reflClass = new \ReflectionClass($registry->className);
-        $classAnnotation = $this->getAnnotationReader()->getClassAnnotation(
-            $reflClass,
-            'Fraym\Annotation\Registry'
-        );
+    public function buildPackage(Entity\Registry $registry)
+    {
+        $classAnnotation = $this->getRegistryConfig($registry->className);
 
         $files = array();
 
@@ -238,7 +266,7 @@ class RegistryManager
         }
 
         foreach ($files as $file) {
-            if(is_dir($file)) {
+            if (is_dir($file)) {
                 $zip->addEmptyDir($file);
             } else {
                 $zip->addFile($file);
@@ -252,7 +280,8 @@ class RegistryManager
      * @param $repositoryKey
      * @return bool
      */
-    public function downloadExtension($repositoryKey) {
+    public function downloadExtension($repositoryKey)
+    {
         $download = $this->repositoryRequest(
             'getDownloadLink',
             array('repositoryKey' => $repositoryKey)
@@ -279,24 +308,22 @@ class RegistryManager
     /**
      * @return int
      */
-    private function forceSchemaUpdate() {
+    private function forceSchemaUpdate()
+    {
         return file_put_contents(self::UPDATE_SCHEMA_TRIGGER_FILE, 0755);
     }
 
     /**
      * @param $class
      * @param $file
+     * @param null $oldRegistryEntry
      * @return bool
      */
-    public function registerClass($class, $file)
+    public function registerClass($class, $file, $oldRegistryEntry = null)
     {
         require_once($file);
 
-        $reflClass = new \ReflectionClass($class);
-        $classAnnotation = $this->getAnnotationReader()->getClassAnnotation(
-            $reflClass,
-            'Fraym\Annotation\Registry'
-        );
+        $classAnnotation = $this->getRegistryConfig($class);
 
         if ($classAnnotation) {
             $registryEntry = $this->db->getRepository('\Fraym\Registry\Entity\Registry')->findOneByClassName($class);
@@ -309,12 +336,12 @@ class RegistryManager
 
             $registryEntry = $this->updateRegistryEntry($registryEntry, $class, $classAnnotation);
 
-            $this->createEntities($registryEntry, $classAnnotation);
+            $this->createEntities($registryEntry, $classAnnotation, $oldRegistryEntry);
 
             if ($classAnnotation->onRegister) {
                 call_user_func_array(
                     array($this->serviceLocator->get($class), $classAnnotation->onRegister),
-                    array($classAnnotation)
+                    array($classAnnotation, $oldRegistryEntry)
                 );
             }
 
@@ -397,23 +424,50 @@ class RegistryManager
     }
 
     /**
+     * @param $updateData
+     * @param $orgData
+     * @return array
+     */
+    private function getEntityDataForUpdate($updateData, $orgData)
+    {
+        foreach ($orgData as $entityData) {
+            $diff = array_diff($entityData, $updateData);
+            if (count($entityData) - count($diff) === count($updateData)) {
+                return $entityData;
+            }
+        }
+        return array();
+    }
+
+    /**
      * Create the table entries from the registry annotation
      *
      * @param $registry
      * @param $classAnnotation
+     * @param $oldRegistryEntry
      * @return $this
      */
-    private function createEntities($registry, $classAnnotation)
+    private function createEntities($registry, $classAnnotation, $oldRegistryEntry = null)
     {
-
         if (count($classAnnotation->entity)) {
             foreach ($classAnnotation->entity as $className => $entries) {
-                foreach ($entries as $entryData) {
-                    $entryDataWithSubEntries = $this->getSubEntries($entryData, $registry);
-                    if ($this->getEntity($className, $entryDataWithSubEntries) === null) {
-                        $entry = new $className();
-                        $entryDataWithSubEntries['registry'] = $registry->id;
-                        $entry->updateEntity($entryDataWithSubEntries);
+                if ($oldRegistryEntry !== null && isset($classAnnotation->updateEntity[$className])) {
+                    foreach ($classAnnotation->updateEntity[$className] as $entryData) {
+                        $entry = $this->getEntity($className, $entryData);
+                        if ($entry) {
+                            $entryDataWithSubEntries['registry'] = $registry->id;
+                            $data = $this->getEntityDataForUpdate($entryData, $classAnnotation->entity[$className]);
+                            $entry->updateEntity($data);
+                        }
+                    }
+                } elseif ($oldRegistryEntry === null) {
+                    foreach ($entries as $entryData) {
+                        $entryDataWithSubEntries = $this->getSubEntries($entryData, $registry);
+                        if ($this->getEntity($className, $entryDataWithSubEntries) === null) {
+                            $entry = new $className();
+                            $entryDataWithSubEntries['registry'] = $registry->id;
+                            $entry->updateEntity($entryDataWithSubEntries);
+                        }
                     }
                 }
             }
@@ -491,7 +545,7 @@ class RegistryManager
         if (count($classAnnotation->config)) {
             $className = '\Fraym\Registry\Entity\Config';
             foreach ($classAnnotation->config as $configName => $data) {
-                if(!isset($data['deletable']) || $data['deletable'] === true) {
+                if (!isset($data['deletable']) || $data['deletable'] === true) {
                     $entry = $this->db->getRepository($className)->findOneByName($configName);
                     if ($entry) {
                         $this->db->remove($entry);

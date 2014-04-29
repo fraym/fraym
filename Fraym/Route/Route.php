@@ -626,7 +626,12 @@ class Route
             $this->currentMenuItem = $menuItemTranslation->menuItem;
             $this->locale->setLocale($menuItemTranslation->locale);
             $this->template->setSiteTemplateDir($menuItemTranslation->menuItem->site->templateDir);
-            $this->template->setPageTitle($menuItemTranslation->title);
+
+            $pageTitle = ((string)$menuItemTranslation->pageTitle === '' ?
+                    $menuItemTranslation->title :
+                    $menuItemTranslation->pageTitle) . ' | ' . $menuItemTranslation->menuItem->site->name;
+
+            $this->template->setPageTitle($pageTitle);
             $this->template->setPageDescription($menuItemTranslation->longDescription);
             $this->template->setKeywords(explode(',', $menuItemTranslation->keywords));
 

@@ -987,7 +987,7 @@ class Template
         $source = $this->blockParser->parse($source, __FUNCTION__);
 
         $source = $this->addCmsInfo()->prependHeadDataToDocument($source);
-        $source = $this->appendFooterDataToDocument($source);
+        $source = $this->appendFootDataToDocument($source);
 
         $this->headData = array();
         $this->footData = array();
@@ -1122,7 +1122,7 @@ class Template
      * @param $source
      * @return mixed
      */
-    private function appendFooterDataToDocument($source)
+    private function appendFootDataToDocument($source)
     {
         $siteTpl = $source;
         foreach (array_reverse($this->footData) as $data) {

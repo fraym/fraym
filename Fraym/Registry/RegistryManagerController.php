@@ -59,8 +59,8 @@ class RegistryManagerController extends \Fraym\Core
         $extensionUpdates = new \Doctrine\Common\Collections\ArrayCollection();
 
         $updates = $this->registryManager->getUpdates($extensions);
-        if(is_object($updates)) {
-            foreach($updates as $k => $update) {
+        if (is_object($updates)) {
+            foreach ($updates as $k => $update) {
                 $extensionUpdates->set($k, $update);
             }
         }
@@ -135,14 +135,17 @@ class RegistryManagerController extends \Fraym\Core
     /**
      *
      */
-    public function downloadPackage() {
+    public function downloadPackage()
+    {
         $repositoryKey = $this->request->get('repositoryKey', '');
-        $registryEntry = $this->db->getRepository('\Fraym\Registry\Entity\Registry')->findOneByRepositoryKey($repositoryKey);
+        $registryEntry = $this->db->getRepository('\Fraym\Registry\Entity\Registry')->findOneByRepositoryKey(
+            $repositoryKey
+        );
         $zipFile = $this->registryManager->buildPackage($registryEntry);
         $this->response->addHTTPHeader("Content-type: application/zip");
-        $this->response->addHTTPHeader("Content-Disposition: attachment; filename=\"".$repositoryKey.".zip\"");
+        $this->response->addHTTPHeader("Content-Disposition: attachment; filename=\"" . $repositoryKey . ".zip\"");
         $this->response->addHTTPHeader("Content-Transfer-Encoding: binary");
-        $this->response->addHTTPHeader("Content-Length: ".filesize($zipFile));
+        $this->response->addHTTPHeader("Content-Length: " . filesize($zipFile));
         $content = file_get_contents($zipFile);
         @unlink($zipFile);
         $this->response->send($content);
@@ -166,16 +169,16 @@ class RegistryManagerController extends \Fraym\Core
             array('searchTerm' => $searchTerm, 'offset' => 0, 'limit' => 20)
         );
 
-        foreach($installedExtensions as $installedExtension) {
+        foreach ($installedExtensions as $installedExtension) {
             $availableExtensions->set($installedExtension->repositoryKey, $installedExtension);
         }
 
-        foreach($unregisteredExtensions as $unregisteredExtension) {
+        foreach ($unregisteredExtensions as $unregisteredExtension) {
             $availableExtensions->set($unregisteredExtension['repositoryKey'], $unregisteredExtension);
         }
 
         $this->view->assign('availableExtensions', $availableExtensions);
-        $this->view->assign('extensions', $extensions ?: array());
+        $this->view->assign('extensions', $extensions ? : array());
         return $this->template->fetch('RepositorySearch');
     }
 }

@@ -42,6 +42,13 @@ class MenuItemTranslation extends \Fraym\Entity\BaseEntity
     protected $subtitle;
 
     /**
+     * @var string $pageTitle
+     *
+     * @ORM\Column(name="page_title", type="string", length=255, nullable=true)
+     */
+    protected $pageTitle;
+
+    /**
      * @var string $url
      *
      * @ORM\Column(name="url", type="string", length=255, nullable=false)

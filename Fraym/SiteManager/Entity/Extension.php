@@ -65,9 +65,9 @@ class Extension extends \Fraym\Entity\BaseEntity
     protected $method;
 
     /**
-     * @ORM\Column(name="icon_css_class", type="string", length=255, nullable=false)
+     * @ORM\Column(name="icon_css_class", type="string", length=255, nullable=true)
      */
-    protected $iconCssClass;
+    protected $iconCssClass = 'fa fa-arrow-circle-o-right';
 
     /**
      * @var boolean $active

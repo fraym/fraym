@@ -42,6 +42,12 @@
                                 </div>
                             </div>
                             <div class="form-group">
+                                <label class="col-lg-2 control-label">{_("Page title")}</label>
+                                <div class="col-lg-10">
+                                    <input class="form-control" name="menu[translations][{$locale.id}][pageTitle]" type="text" value="{if $menuItem}{$localeMenuItem.pageTitle}{/if}" />
+                                </div>
+                            </div>
+                            <div class="form-group">
                                 <label class="col-lg-2 control-label">{_("Path")}</label>
                                 <div class="col-lg-10">
                                     <input class="form-control" name="menu[translations][{$locale.id}][url]" type="text" value="{if $menuItem}{$localeMenuItem.url}{/if}" />
