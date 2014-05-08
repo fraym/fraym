@@ -11,7 +11,7 @@
     {js('fraym/libs/datetimepicker.js')}
     {js('fraym/libs/jquery.ui.nestedSortable.js')}
     {js('fraym/libs/jquery.json-2.2.min.js')}
-    {js('fraym/libs/bootstrap/button.js')}
+    {js('fraym/libs/bootstrap.min.js')}
     {js('fraym/main.js')}
     {js('fraym/core/block.js')}
     {js('fraym/core/menu.js')}

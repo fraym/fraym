@@ -279,10 +279,10 @@ Core.Block = {
 				styleActiveLine: true,
 				tabMode: "indent",
 				matchTags: {bothTags: true},
-                extraKeys: {"Ctrl-J": "toMatchingTag"},
-				onChange: function (cm) {
-					$("#templateContent").val(cm.getValue());
-				}
+                extraKeys: {"Ctrl-J": "toMatchingTag"}
+			});
+			Core.Block.CodeMirror.on("change", function(cm, change) {
+				$("#templateContent").val(cm.getValue());
 			});
 		}
 

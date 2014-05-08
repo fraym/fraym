@@ -39,6 +39,11 @@ body .navbar-default .sidebar-collapse a:hover i {
     color: #383c46;
 }
 
+body .navbar-default .side-nav > li > a span {
+    display: block;
+    padding-left: 36px;
+}
+
 body .navbar-default .search > input {
     background-color: rgba(90, 97, 112, 0.04);
     color: #5a6170;

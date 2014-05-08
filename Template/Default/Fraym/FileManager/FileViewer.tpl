@@ -80,10 +80,11 @@
                 styleActiveLine: true,
                 tabMode: "indent",
                 matchTags: { bothTags: true },
-                extraKeys: { "Ctrl-J" : "toMatchingTag" },
-                onChange: function(cm) {
-                    $fileViewer.val(cm.getValue());
-                }
+                extraKeys: { "Ctrl-J" : "toMatchingTag" }
+            });
+
+            fileViewerCodeMirror.on("change", function(cm, change) {
+                $fileViewer.val(cm.getValue());
             });
 
             $(window).resize(function(){

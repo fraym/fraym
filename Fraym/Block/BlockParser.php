@@ -25,6 +25,11 @@ class BlockParser
     const PARSE_HTML = 'html';
 
     /**
+     * @var array
+     */
+    private $customBlockTypes = array();
+
+    /**
      * Holds the current parsing block.
      * Used for view elements with a unique content id.
      *
@@ -158,6 +163,15 @@ class BlockParser
      * @var \Fraym\Request\Request
      */
     public $request;
+
+    /**
+     * @param string $type Block type name
+     * @param array $customBlockType Callback method
+     */
+    public function addCustomBlockType($type, $customBlockType)
+    {
+        $this->customBlockTypes[$type] = $customBlockType;
+    }
 
     /**
      * Remove a block from a string.
@@ -528,7 +542,9 @@ class BlockParser
             $this->db->connect();
         }
 
-        switch (strtolower($this->getXMLAttr($xml, 'type'))) {
+        $blockType = strtolower($this->getXMLAttr($xml, 'type'));
+
+        switch ($blockType) {
             case 'css':
                 return $this->execBlockOfTypeCSS($xml);
                 break;
@@ -550,8 +566,13 @@ class BlockParser
             case 'image':
                 $blockHtml = $this->execBlockOfTypeImage($xml);
                 break;
-            default: // extensions
-                $blockHtml = $this->execBlockOfTypeExtension($xml);
+            default: // extensions & custom block types
+
+                if (isset($this->customBlockTypes[$blockType])) {
+                    $blockHtml = call_user_func($this->customBlockTypes[$blockType]);
+                } else {
+                    $blockHtml = $this->execBlockOfTypeExtension($xml);
+                }
                 break;
         }
 

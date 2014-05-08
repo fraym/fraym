@@ -2,7 +2,7 @@
 
 return array(
     'name' => 'Fraym Core',
-    'version' => '0.9.1',
+    'version' => '0.9.2',
     'author' => 'Fraym.org',
     'website' => 'http://www.fraym.org',
     'updateEntity' => array(
@@ -206,7 +206,9 @@ return array(
                 'name' => 'Container',
                 'description' => 'Add a static content to your website.',
                 'class' => '\Fraym\Block\Block',
-                'execMethod' => 'execBlock'
+                'configMethod' => 'getBlockConfig',
+                'execMethod' => 'execBlock',
+                'saveMethod' => 'saveBlockConfig'
             ),
             array(
                 'name' => 'User',
