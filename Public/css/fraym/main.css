@@ -917,14 +917,17 @@ table td.right, table th.right {
     display: none;
 }
 
+.fraym-menu-input-wrapper,
 .fraym-file-input-wrapper {
     position: relative;
 }
 
+.fraym-menu-input-wrapper input,
 .fraym-file-input-wrapper input {
     padding-right: 35px;
 }
 
+.fraym-menu-input-wrapper i,
 .fraym-file-input-wrapper i {
     position: absolute;
     right: 10px;

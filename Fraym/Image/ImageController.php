@@ -15,10 +15,26 @@ namespace Fraym\Image;
 class ImageController extends \Fraym\Core
 {
     /**
+     * @Inject
+     * @var \Fraym\Database\Database
+     */
+    protected $db;
+
+    /**
      * @param null $blockConfig
      */
     public function getBlockConfig($blockConfig = null)
     {
+        $imageLink = '';
+        $imageLinkId = (string)$blockConfig->image_link;
+
+        if (is_numeric($imageLinkId)) {
+            $menuItem = $this->db->getRepository('\Fraym\Menu\Entity\MenuItem')->findOneById($imageLinkId);
+            if ($menuItem) {
+                $imageLink = $menuItem->getCurrentTranslation()->title;
+            }
+        }
+        $this->view->assign('imageLink', $imageLink);
         $this->view->assign('blockConfig', $blockConfig);
         $this->view->render('BlockConfig.tpl');
     }
@@ -29,7 +45,18 @@ class ImageController extends \Fraym\Core
     public function render($xml)
     {
         foreach ($xml as $field => $val) {
-            $this->view->assign($field, (string)$xml->$field);
+            $val = (string)$val;
+            if ($field === 'image_link') {
+                if (is_numeric($val)) {
+                    $menuItem = $this->db->getRepository('\Fraym\Menu\Entity\MenuItem')->findOneById($val);
+                    if ($menuItem) {
+                        $val = $this->route->buildFullUrl($menuItem, true);
+                    } else {
+                        $val = null;
+                    }
+                }
+            }
+            $this->view->assign($field, $val);
         }
         $this->view->setTemplate('Block');
     }

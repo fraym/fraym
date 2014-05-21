@@ -219,6 +219,7 @@ Core.Block = {
 		});
 
 		FileManager.initFilePathInput();
+		Core.Menu.init();
 
 		$('form#block-add-edit-form').formSubmit({
                 url: Core.getAjaxRequestUri(),
@@ -538,6 +539,7 @@ Core.Block = {
 				}
 
 				FileManager.initFilePathInput();
+				Core.Menu.init();
 
 				Core.Block.History.load(extensionJsonData.id);
 				$(Core.Block).trigger('blockConfigLoaded', [extensionJsonData]).unbind('blockConfigLoaded');

@@ -21,6 +21,18 @@
   <input type="text" class="form-control" name="image[css]" value="{$blockConfig.image_css}">
 </div>
 <div class="form-group">
+  <label>{_('Image link', 'FRAYM_EXT_IMAGE_LINK')}</label>
+  <input type="text" class="form-control" name="image[link]" value="{$blockConfig.image_link}" data-value="{$imageLink}" data-menuselection>
+</div>
+
+<div class="form-group">
+  <label>{_('Image link target', 'FRAYM_EXT_IMAGE_LINK_TARGET')}</label>
+  <select class="form-control" name="image[linkTarget]">
+      <option value="_self"{if $blockConfig.image_linkTarget == '_self'} selected="selected"{/if}>{_('Same window', 'FRAYM_EXT_IMAGE_HREF_SELF')}</option>
+      <option value="_blank"{if $blockConfig.image_linkTarget == '_blank'} selected="selected"{/if}>{_('New window', 'FRAYM_EXT_IMAGE_HREF_NEW')}</option>
+  </select>
+</div>
+<div class="form-group">
     <div class="checkbox-inline">
         <label data-toggle="tooltip" data-placement="right" title="{_('Enable this if you do not want a height and width attribute on the img tag.')}">
             <input type="checkbox" name="image[auto_size]" value="1"{if $blockConfig && $blockConfig.image_auto_size} checked{/if} />
