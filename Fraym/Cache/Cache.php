@@ -72,6 +72,12 @@ class Cache
     protected $user;
 
     /**
+     * @Inject
+     * @var \Fraym\Core
+     */
+    protected $core;
+
+    /**
      * gets the user permission
      *
      * @return bool    true or false
@@ -136,7 +142,7 @@ class Cache
                         $contents = file_get_contents($cacheFilename);
                         $content = $this->blockParser->parse($contents, 'outputFilter', true);
 
-                        echo eval('?>' . $content . '<?php ');
+                        echo $this->core->evalString($content);
                         exit();
                     }
                 }
@@ -161,7 +167,7 @@ class Cache
      */
     public function setCacheContent()
     {
-        if(!is_dir(self::DIR_PAGES)) {
+        if (!is_dir(self::DIR_PAGES)) {
             mkdir(self::DIR_PAGES, 0755, true);
         }
 

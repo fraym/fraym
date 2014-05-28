@@ -104,19 +104,23 @@ class Core
      */
     public function evalString($code, $withPhpTags = true, $errorHanlder = null)
     {
-        ob_start();
-
         if ($errorHanlder) {
             set_error_handler($errorHanlder);
         }
 
         $this->evalCode = $code;
 
-        if ($withPhpTags === true) {
-            $data = eval('?>' . $this->evalCode . '<?php ');
-        } else {
-            $data = eval($this->evalCode);
-        }
+        $tempFile = tempnam(sys_get_temp_dir(), 'eval');
+
+        file_put_contents($tempFile, $this->evalCode);
+
+        ob_start();
+
+        include($tempFile);
+
+        $data = ob_get_clean();
+
+        unlink($tempFile);
 
         if ($errorHanlder) {
             restore_error_handler();
@@ -124,10 +128,7 @@ class Core
 
         $this->evalCode = null;
 
-        if ($data !== null) {
-            echo $data;
-        }
-        return ob_get_clean();
+        return $data;
     }
 
     /**
