@@ -202,6 +202,10 @@ html {
     z-index: 10;
 }
 
+.block-holder .block-holder {
+    margin-top: 22px;
+}
+
 .block-container {
     border: 1px dashed transparent;
     position: relative;

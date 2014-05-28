@@ -124,7 +124,7 @@
                     <option value="development"{if isset($post.environment) && $post.environment == "development"} selected{/if}>Development</option>
                     <option value="testing"{if isset($post.environment) && $post.environment == "testing"} selected{/if}>Testing</option>
                     <option value="staging"{if isset($post.environment) && $post.environment == "staging"} selected{/if}>Staging</option>
-                    <option value="production"{if isset($post.environment) && $post.environment == "production"} selected{/if}>Production</option>
+                    <option value="production"{if !isset($post.environment) || (isset($post.environment) && $post.environment == "production")} selected{/if}>Production</option>
                   </select>
                   </div>
 
