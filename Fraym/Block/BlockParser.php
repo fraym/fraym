@@ -986,6 +986,10 @@ class BlockParser
         // set the point to start drawing text, depending on parent image width
         $descriptionPositionCenter = ceil(($img->getSize()->getWidth() - $descriptionBoxImg) / 2);
 
+        if ($descriptionPositionCenter < 0) {
+            $descriptionPositionCenter = 0;
+        }
+
         $img->draw()->text(
             $configArr['phtext'],
             new \Imagine\Gd\Font(realpath($configArr['phfont']), $configArr['phfontsize'], new \Imagine\Image\Color($configArr['phcolor'])),
@@ -1043,7 +1047,7 @@ class BlockParser
         $src = $this->getXMLAttr($xml, 'src');
         $src = str_replace(array('\\', '/'), DIRECTORY_SEPARATOR, $src);
 
-        if ($src === null) {
+        if (empty($src)) {
             $srcFilePath = $src = $this->createImagePlaceholder($placeHolderConfig);
         } else {
             if (substr($src, 0, 1) === '/' || strpos($src, ':') !== false) {
