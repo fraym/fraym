@@ -335,7 +335,7 @@ var FileManager = {
 		if (FileManager.rteSelectOptionCallback != false) {
 			$(window).unload(function () {
 				var file = FileManager.File.getFileInfo($(FileManager.selectors.selectedItems));
-				window.opener.CKEDITOR.tools.callFunction(FileManager.rteSelectOptionCallback, '/' + file.publicPath);
+				window.opener.CKEDITOR.tools.callFunction(FileManager.rteSelectOptionCallback, file.publicPath);
 			});
 		}
 
