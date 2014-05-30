@@ -26,7 +26,7 @@ class ImageController extends \Fraym\Core
     public function getBlockConfig($blockConfig = null)
     {
         $imageLink = '';
-        $imageLinkId = (string)$blockConfig->image_link;
+        $imageLinkId = isset($blockConfig->image_link) ? (string)$blockConfig->image_link : null;
 
         if (is_numeric($imageLinkId)) {
             $menuItem = $this->db->getRepository('\Fraym\Menu\Entity\MenuItem')->findOneById($imageLinkId);

@@ -212,6 +212,10 @@ html {
     z-index: 10;
 }
 
+.block-container:hover {
+    z-index: 20;
+}
+
 .block-container > .block-info {
     background-color: green;
 }
