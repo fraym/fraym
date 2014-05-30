@@ -195,6 +195,7 @@ class BlockController extends \Fraym\Core
             'getBlockConfig',
             'setEditMode',
             'deleteBlock',
+            'getTemplateConfig',
             'saveBlockConfig'
         );
         $cmd = trim($this->request->gp('cmd', ''));
@@ -203,6 +204,12 @@ class BlockController extends \Fraym\Core
             return true;
         }
         return false;
+    }
+
+
+    private function getTemplateConfig()
+    {
+
     }
 
     /**
@@ -411,7 +418,7 @@ class BlockController extends \Fraym\Core
 
         if ($extensionId) {
             $extension = $this->db->getRepository('\Fraym\Block\Entity\BlockExtension')->findOneById($extensionId);
-            $result = (object)$extension->toArray(1);
+            $result = $extension->toArray(1);
         } elseif ($id) {
             $block = $this->db->getRepository('\Fraym\Block\Entity\Block')->findOneById($id);
 
@@ -424,11 +431,8 @@ class BlockController extends \Fraym\Core
                 $result = (object)array_merge($block->toArray(2), $block->extension->toArray(1), (array)$result);
             }
         }
-        if ($extension) {
-            $this->response->sendAsJson($result);
-        }
 
-        return false;
+        return ($extension ? $this->response->sendAsJson($result) : false);
     }
 
     /**
@@ -550,5 +554,14 @@ class BlockController extends \Fraym\Core
     {
         $this->blockParser->setCurrentParsingBlockId($this->blockParser->getXMLAttr($xml, 'id'));
         $this->view->setTemplate('Content');
+    }
+
+    /**
+     * @param mixed $blockConfig
+     */
+    public function getBlockContainerConfig($blockConfig = null)
+    {
+        $this->view->assign('blockConfig', $blockConfig);
+        $this->view->render('BlockContainerConfig.tpl');
     }
 }

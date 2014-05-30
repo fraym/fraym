@@ -182,4 +182,38 @@ class Block
     {
         return $this->blockController->renderContentBlock($xml);
     }
+
+    /**
+     * @param null $blockId
+     */
+    public function getBlockConfig($blockId = null)
+    {
+        $configXml = null;
+        if ($blockId) {
+            $block = $this->db->getRepository('\Fraym\Block\Entity\Block')->findOneById($blockId);
+            $configXml = $this->blockParser->getXMLObjectFromString($this->blockParser->wrapBlockConfig($block));
+        }
+        $this->blockController->getBlockContainerConfig($configXml);
+    }
+
+    /**
+     * @param $blockId
+     * @param BlockXML $blockXML
+     * @return BlockXML
+     */
+    public function saveBlockConfig($blockId, \Fraym\Block\BlockXML $blockXML)
+    {
+        $blockConfig = $this->request->getGPAsArray();
+        $customProperties = new \Fraym\Block\BlockXMLDom();
+        $config = $customProperties->createElement('sliderConfig');
+        foreach ($blockConfig['sliderConfig'] as $field => $value) {
+            $element = $customProperties->createElement($field);
+            $element->nodeValue = $value;
+            $config->appendChild($element);
+        }
+
+        $customProperties->appendChild($config);
+        $blockXML->setCustomProperty($customProperties);
+        return $blockXML;
+    }
 }
