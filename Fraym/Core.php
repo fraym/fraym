@@ -98,11 +98,10 @@ class Core
 
     /**
      * @param $code
-     * @param bool $withPhpTags
      * @param null $errorHanlder
      * @return string
      */
-    public function evalString($code, $withPhpTags = true, $errorHanlder = null)
+    public function evalString($code, $errorHanlder = null)
     {
         if ($errorHanlder) {
             set_error_handler($errorHanlder);

@@ -679,7 +679,7 @@ class Template
         $this->template = null;
         $vars = $this->getTemplateVarString();
 
-        return $this->core->evalString($vars . $content, true, array(&$this, 'evalErrorHandler'));
+        return $this->core->evalString($vars . $content, array(&$this, 'evalErrorHandler'));
     }
 
     /**

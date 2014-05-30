@@ -678,7 +678,7 @@ class BlockParser
 
             $GLOBALS["TEMPLATE"] = $this->template;
             $templateVarString = '$TEMPLATE = ' . '$GLOBALS["TEMPLATE"];';
-            $content = $this->core->evalString($templateVarString . (string)$xml, false);
+            $content = $this->core->evalString("<?php {$templateVarString} {$xml}");
             unset($GLOBALS["TEMPLATE"]);
             return $content;
         }
@@ -696,7 +696,7 @@ class BlockParser
         ) {
             $GLOBALS["TEMPLATE"] = $this->template;
             $templateVarString = '$TEMPLATE = ' . '$GLOBALS["TEMPLATE"];';
-            $content = $this->core->evalString($templateVarString . (string)$xml, false);
+            $content = $this->core->evalString("<?php {$templateVarString} {$xml}");
             unset($GLOBALS["TEMPLATE"]);
 
             return $content;
@@ -1006,7 +1006,7 @@ class BlockParser
     {
         $convertedImageFileName = trim($this->config->get('IMAGE_PATH')->value, '/');
 
-        if(!is_dir('Public' . DIRECTORY_SEPARATOR . $convertedImageFileName)) {
+        if (!is_dir('Public' . DIRECTORY_SEPARATOR . $convertedImageFileName)) {
             mkdir('Public' . DIRECTORY_SEPARATOR . $convertedImageFileName, 0755, true);
         }
 
@@ -1067,7 +1067,7 @@ class BlockParser
         $image = $imagine->open($srcFilePath);
         $pathInfo = pathinfo($srcFilePath);
 
-        $allowedMethods = array('thumbnail', 'resize', '');
+        $allowedMethods = array('thumbnail', 'resize', 'crop', '');
         // methods fit / resize / none
         $imageQuality = intval($this->getXMLAttr($xml, 'quality') ? : '80');
         $method = $this->getXMLAttr($xml, 'method') ? : '';
@@ -1086,6 +1086,8 @@ class BlockParser
 
                 if ($method == 'resize') {
                     $image->resize($imageBox);
+                } elseif($method == 'crop') {
+                    $image->crop(new \Imagine\Image\Point(0, 0), new \Imagine\Image\Box($imageTags['width'], $imageTags['height']));
                 } else {
                     if ($mode == 'outbound') {
                         $mode = \Imagine\Image\ImageInterface::THUMBNAIL_OUTBOUND;
