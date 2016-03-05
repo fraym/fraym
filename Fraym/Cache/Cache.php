@@ -49,6 +49,12 @@ class Cache
 
     /**
      * @Inject
+     * @var \Fraym\Locale\Locale
+     */
+    protected $locale;
+
+    /**
+     * @Inject
      * @var \Fraym\Block\BlockParser
      */
     protected $blockParser;
@@ -76,6 +82,12 @@ class Cache
      * @var \Fraym\Core
      */
     protected $core;
+
+    /**
+     * @Inject
+     * @var \Fraym\FileManager\FileManager
+     */
+    protected $fileManager;
 
     /**
      * gets the user permission
@@ -120,7 +132,6 @@ class Cache
             is_file($cacheFilename) &&
             is_file($cacheFilenamePhpData)
         ) {
-
             include($cacheFilenamePhpData);
 
             if ($menuItemTranslation) {
@@ -133,15 +144,19 @@ class Cache
                     ) {
                         $this->route->redirectToURL('https://' . $this->route->getRequestRoute());
                     }
+
+                    $this->locale->setLocale($menuItemTranslation->locale);
+                    $this->template->setSiteTemplateDir($menuItemTranslation->menuItem->site->templateDir);
                     $this->route->setCurrentMenuItem($menuItemTranslation->menuItem);
                     $this->route->setCurrentMenuItemTranslation($menuItemTranslation);
                     $this->route->setCurrentDomain($domain);
                     if ($this->isCachingActive($menuItemTranslation->menuItem)) {
                         $this->blockParser->setExecutedBlocks(json_decode($executedBlocks));
+
                         // display the cached file to the client
                         $contents = file_get_contents($cacheFilename);
-                        $content = $this->blockParser->parse($contents, 'outputFilter', true);
-
+                        $this->blockParser->setParseCached(true);
+                        $content = $this->blockParser->parse($contents, 'outputFilter');
                         echo $this->core->evalString($content);
                         exit();
                     }
@@ -206,7 +221,8 @@ class Cache
             // clean the output buffer
             ob_clean();
             // parse cached blocks for first output
-            echo $this->blockParser->parse($source, false, true);
+            $this->blockParser->setParseCached(true);
+            echo $this->blockParser->parse($source, false);
 
             return true;
         }
@@ -215,7 +231,8 @@ class Cache
         // clean the output buffer
         ob_clean();
         // parse cached blocks for first output
-        echo $this->blockParser->parse($source, false, true);
+        $this->blockParser->setParseCached(true);
+        echo $this->blockParser->parse($source, false);
 
 
         return false;
@@ -227,10 +244,10 @@ class Cache
      * @param $menuItem
      * @return bool
      */
-    public function isCachingActive($menuItem)
+    public function isCachingActive($menuItem = null)
     {
-        $menuCachingActive = $menuItem->caching;
-        $siteCachingActive = $menuItem->site->caching;
+        $menuCachingActive = $menuItem ? $menuItem->caching : null;
+        $siteCachingActive = $menuItem ? $menuItem->site->caching : null;
 
         if (GLOBAL_CACHING_ENABLED) {
             if ($menuCachingActive === false) {
@@ -324,5 +341,34 @@ class Cache
             return true;
         }
         return false;
+    }
+
+    /**
+     * @Fraym\Annotation\Route("cache_clear_all", name="cacheClearAll")
+     */
+    public function clearAll() {
+        // clear PHP opcache
+        if(function_exists('opcache_reset')) {
+            opcache_reset();
+        }
+        // clear APC/APCu Cache
+        if(function_exists('apc_clear_cache')) {
+            apc_clear_cache('user');
+            apc_clear_cache();
+        }
+
+        if(defined('CACHE_DI_PATH')) {
+            $this->fileManager->deleteFolder(CACHE_DI_PATH);
+        }
+        if(defined('CACHE_DOCTRINE_PROXY_PATH')) {
+            $this->fileManager->deleteFolder(CACHE_DOCTRINE_PROXY_PATH);
+        }
+
+        if(is_file(CACHE_DOCTRINE_MODULE_FILE)) {
+            unlink(CACHE_DOCTRINE_MODULE_FILE);
+        }
+
+        $this->fileManager->deleteFolder(self::DIR_PAGES);
+        $this->fileManager->deleteFolder(self::DIR_CUSTOM_DATA);
     }
 }

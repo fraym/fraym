@@ -17,21 +17,31 @@
             <div>
                 <table class="table table-striped">
                     <tr>
-                        <td class="title-col">{_('Block Id', 'FRAYM_BLOCKID')}</td>
-                        <td><span id="currentBlockId">{_('No Id', 'FRAYM_NOID')}</span></td>
-                        <td class="title-col">{_('Selected content', 'FRAYM_SELECT_CONTENT')}</td>
-                        <td><span id="selected-content-id"></span></td>
-                    </tr>
-                    <tr>
                         <td class="title-col">{_('Display on', 'FRAYM_LANGUAGE_SELECTION')}</td>
                         <td>
                             <select class="form-control" name="menuTranslation" id="menuTranslation">
                                 <option value="">{_('All languages', 'FRAYM_BLOCK_DISPLAY_ALL')}</option>
                                 <option value="current">{_('Current language', 'FRAYM_BLOCK_DISPLAY_CURRENT')}</option>
                             </select>
+                            <div class="form-group">
+                                <div class="checkbox">
+                                    <label for="all-pages">
+                                        <input type="checkbox" name="menu" id="all-pages" value="1"/> {_('Show on all pages', 'FRAYM_SHOW_ON_ALL_PAGES')}
+                                    </label>
+                                </div>
+                            </div>
                         </td>
-                        <td colspan="2"><label
-                                for="all-pages"><input type="checkbox" name="menu" id="all-pages" value="1"/> {_('Show on all pages', 'FRAYM_SHOW_ON_ALL_PAGES')}</label></td>
+                        <td colspan="2">
+                            <table class="table">
+
+                                <tr>
+                                    <td class="title-col">{_('Block Id', 'FRAYM_BLOCKID')}</td>
+                                    <td><span id="currentBlockId">{_('No Id', 'FRAYM_NOID')}</span></td>
+                                    <td class="title-col">{_('Selected content', 'FRAYM_SELECT_CONTENT')}</td>
+                                    <td><span id="selected-content-id"></span></td>
+                                </tr>
+                            </table>
+                        </td>
                     </tr>
                     <tr>
                         <td width="20%" class="title-col">{_('Extension', 'FRAYM_EXTENSION')}</td>
@@ -120,12 +130,10 @@
                     <tr>
                         <td class="title-col">{_('Active date', 'FRAYM_ACTIVE_DATE')}</td>
                         <td colspan="2">
-                            <strong>{_('Start date', 'FRAYM_START_DATE')}</strong><br/>
-                            <input class="form-control datetime" type="text" name="startDate" />
+                            <input class="form-control datetime" type="text" name="startDate" placeholder="{_('Start date', 'FRAYM_START_DATE')}" />
                         </td>
                         <td colspan="2">
-                            <strong>{_('End date', 'FRAYM_END_DATE')}</strong><br/>
-                            <input class="form-control datetime" type="text" name="endDate" />
+                            <input class="form-control datetime" type="text" name="endDate" placeholder="{_('End date', 'FRAYM_END_DATE')}" />
                         </td>
                     </tr>
                     <tr>

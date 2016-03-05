@@ -2,6 +2,7 @@
 {css('fraym/jquery.contextMenu.css')}
 {css('fraym/font-awesome.min.css')}
 {js('fraym/libs/jquery.min.js', 'default', 'jquery')}
+{js('fraym/libs/jquery.noty.packaged.min.js', 'default', 'noty')}
 {js('fraym/libs/jquery-ui.min.js', 'default', 'jqueryui')}
 {js('fraym/libs/jquery.contextmenu.js', 'default', 'contextmenu')}
 {js('fraym/libs/jquery.ui.nestedSortable.js', 'default', 'ui.nestedSortable')}

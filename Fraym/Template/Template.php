@@ -197,10 +197,15 @@ class Template
         $this->addPseudoFunctionName('shorten', array(&$this, 'shorten'));
         $this->addPseudoFunctionName('age', array(&$this, 'age'));
         $this->addPseudoFunctionName('isLast', array(&$this, 'isLast'));
+        $this->addPseudoFunctionName('formatCurrency', array(&$this, 'formatCurrency'));
         $this->addPseudoFunctionName('formatDate', array(&$this->locale, 'formatDate'));
         $this->addPseudoFunctionName('formatDateTime', array(&$this->locale, 'formatDateTime'));
         $this->addPseudoFunctionName('_', array(&$this->translation, 'getTranslation'));
         $this->addPseudoFunctionName('et', array(&$this->entityManager, 'getEntityTranslation'));
+    }
+
+    public function formatCurrency($number, $symbols = '€') {
+        return trim(number_format($number,2,',','.') . ' ' . $symbols);
     }
 
     /**
@@ -290,6 +295,22 @@ class Template
     public function setSiteTemplateDir($dir)
     {
         $this->siteTemplateDir = $dir;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTemplateDir()
+    {
+        return $this->templateDir;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDefaultDir()
+    {
+        return $this->defaultDir;
     }
 
     /**
@@ -395,7 +416,7 @@ class Template
             }
             $templateFile = $this->getTemplateFilePath($tpl);
             if ($templateFile === false || !is_file($templateFile)) {
-                throw new \Exception('Template file not found: ' . $tpl, E_NOTICE);
+                trigger_error('Template file not found: ' . $tpl, E_USER_NOTICE);
                 return false;
             }
             $content = file_get_contents($templateFile);
@@ -411,7 +432,7 @@ class Template
      * @param string $cacheKey
      * @return string
      */
-    public function includeTemplate($file, $vars = array(), $cacheKey = null)
+    public function includeTemplate($file, $vars = array(), $cacheKey = null, $showError = true)
     {
         $filename = $this->getTemplateFilePath($file);
 
@@ -436,7 +457,7 @@ class Template
 
             return $content;
         }
-        return "Template: {$file} not found.";
+        return $showError ? "Template: {$file} not found." : "";
     }
 
     /**
@@ -649,6 +670,7 @@ class Template
     {
         if($code !== E_NOTICE && $code !== E_USER_NOTICE) {
             ob_clean();
+            error_log("$text $file $line");
             $lines = explode("\n", $this->currentTemplateContent);
             $linePhp = explode("\n", $this->core->getEvalCode());
             echo "{$text} \n\n" . $lines[$line-1];
@@ -1005,7 +1027,7 @@ class Template
 
         if (count($this->keywords)) {
             // replace keywords
-            $keywords = htmlspecialchars(trim(implode(',', $this->keywords)), ENT_QUOTES, 'utf-8');
+            $keywords = htmlspecialchars(trim(implode(',', $this->keywords), ','), ENT_QUOTES, 'utf-8');
             $search = '/<meta\s*name=\"keywords\"\s*content=\"(.*)\"\s*\/>/im';
             $replaceWith = empty($keywords) ? '' : '<meta name="keywords" content="' . $keywords . '" />';
             $source = preg_replace($search, $replaceWith, $source);
@@ -1051,21 +1073,31 @@ class Template
 
     /**
      * @param $string
-     * @return Template
+     * @param null $key
+     * @return $this
      */
-    public function addHeadData($string)
+    public function addHeadData($string, $key = null)
     {
-        $this->headData[] = $string;
+        if($key) {
+            $this->headData[$key] = $string;
+        } else {
+            $this->headData[] = $string;
+        }
         return $this;
     }
 
     /**
      * @param $string
-     * @return Template
+     * @param null $key
+     * @return $this
      */
-    public function addFootData($string)
+    public function addFootData($string, $key = null)
     {
-        $this->footData[] = $string;
+        if($key) {
+            $this->footData[$key] = $string;
+        } else {
+            $this->footData[] = $string;
+        }
         return $this;
     }
 
@@ -1094,8 +1126,8 @@ class Template
 
         $poweredByText = "\n\t<!-- \n\t\tThis website is powered by {$name} - power of simplicity!\n\t\t{$name} is a free open source content management system initially created by {$author} and licensed under GNU/GPL version 2 or later.\n\t\t{$name} is copyright {$year} of {$author}. Extensions are copyright of their respective owners.\n\t\tInformation and contribution at {$website}\n\t-->\n";
         $metaTagGenerator = '<meta name="generator" content="' . $name . ' (' . $website . ')' . '">';
-        $this->addHeadData($poweredByText);
-        $this->addHeadData($metaTagGenerator);
+        $this->addHeadData($poweredByText, 'powered-by');
+        $this->addHeadData($metaTagGenerator, 'generator');
 
         return $this;
     }

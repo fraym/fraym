@@ -8,6 +8,17 @@
                     <input type="hidden" value="1" name="logout">
                     <button type="submit" id="submit" class="btn btn-default button-loading" data-loading-text="{_('Loading', 'FRAYM_LOADING')}...">{_('Logout', 'FRAYM_LOGOUT')}</button>
                 </form>
+
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">{_('Administrator options', 'FRAYM_ADMIN_OPTIONS')}</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-danger" data-placement="top" data-toggle="tooltip" title="{_('Clears cached pages, data and APC/APCu/OPcache.', 'FRAYM_CLEAR_CACHE_INFO')}">{_('Clear cache', 'FRAYM_CLEAR_CACHE')}</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

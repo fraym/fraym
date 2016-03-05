@@ -83,7 +83,6 @@
     var initNewsView = function() {
         var nview = $('#newsView').val();
         $('.newsOptions').children().hide();
-        console.log(nview);
         if(nview == 'list') {
             $('#listConfig').show();
         } else if(nview == 'detail' || nview == 'detail-category' || nview == 'detail-tag' || nview == 'list-category' || nview == 'list-tag') {

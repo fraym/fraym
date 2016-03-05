@@ -6,7 +6,7 @@
                         <div class="form-group">
                             <label for="id">{_('Type', 'FRAYM_TYPE')}</label>
 
-                            <select name="model" id="model">
+                            <select name="model" id="model" style="width:100%;">
                                 <option value="">- {_('Please choose a type', 'FRAYM_CHOOSE_A_TYPE')} -</option>
                                 {foreach $groupedModels as $group}
                                     <optgroup label="{_($group.name, 'MANAGED_ENTITY_GROUP-' . $group.name)}">
@@ -23,7 +23,7 @@
                             <div class="form-group">
                                 <label for="id">{_('Entry', 'FRAYM_ENTRY')}</label>
 
-                                <select name="id" id="id">
+                                <select name="id" id="id" style="width:100%;">
                                     <option value="">{_('[New]', 'FRAYM_[NEW]')}</option>
                                     {foreach $entities as $item}
                                         <option value="{$item.id}" {if $currentEntity && $currentEntity.id == $item.id}selected{/if}>{$item}</option>

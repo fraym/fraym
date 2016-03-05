@@ -9,19 +9,16 @@ namespace Fraym\Block\Entity;
 
 use \Doctrine\ORM\Mapping as ORM;
 use Fraym\Annotation\FormField;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Fraym\Annotation\LifecycleCallback;
 
 /**
  * Class Block
  * @package Fraym\Block\Entity
  * @ORM\Table(name="blocks")
- * @ORM\Entity(repositoryClass="Gedmo\Sortable\Entity\Repository\SortableRepository")
+ * @ORM\Entity
  * @LifecycleCallback(postPersist={"\Fraym\Block\Block"="clearCache"}, onFlush={"\Fraym\Block\Block"="clearCache"})
  */
-class Block extends \Fraym\Entity\BaseEntity
-{
-
+class Block extends \Fraym\Entity\BaseEntity {
     /**
      * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
@@ -31,7 +28,6 @@ class Block extends \Fraym\Entity\BaseEntity
 
     /**
      * @var string $contentId
-     * @Gedmo\SortableGroup
      * @ORM\Column(name="content_id", type="string", length=255, nullable=false)
      */
     protected $contentId;
@@ -45,7 +41,6 @@ class Block extends \Fraym\Entity\BaseEntity
 
     /**
      * @var integer $position
-     * @Gedmo\SortablePosition
      * @ORM\Column(name="position", type="integer", nullable=false)
      */
     protected $position;

@@ -38,6 +38,7 @@ class FileManager
         $config = $this->config->get('FILEMANAGER_STORAGES')->value;
         $storages = explode(',', $config);
         $storagesGroup = array();
+
         foreach ($storages as $path) {
             $key = basename($path);
             $realPath = realpath($path);
@@ -365,6 +366,7 @@ class FileManager
             $dirs,
             $globFiles
         );
+
         foreach ($globFiles as $filename) {
             $lastAccess = fileatime($filename);
             $lastChange = filectime($filename);
@@ -398,6 +400,10 @@ class FileManager
      */
     public function deleteFolder($dir)
     {
+        if(is_dir($dir) === false) {
+            return false;
+        }
+
         $iterator = new \RecursiveIteratorIterator(
             new \RecursiveDirectoryIterator(
                 $dir,

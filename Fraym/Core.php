@@ -279,10 +279,6 @@ class Core
                 // Try to load a site by the requested URI
                 $this->route->loadSite();
 
-                if (!$this->request->isXmlHttpRequest() && !$this->request->isPost()) {
-                    echo '<!-- ' . $this->getPageLoadTime() . 'sec -->';
-                }
-
                 $this->response->finish(false, true);
             }
         } else {
@@ -290,7 +286,7 @@ class Core
 
             if ($params['p']) {
                 $_SERVER['REQUEST_URI'] = $params['p'];
-                $this->route->loadVirtualRoutes();
+                $this->route->loadRoutes();
                 echo $this->route->checkVirtualRoute();
             }
         }

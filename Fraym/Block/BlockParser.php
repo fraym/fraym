@@ -164,6 +164,11 @@ class BlockParser
      */
     public $request;
 
+    public function setParseCached($val) {
+        $this->cached = $val;
+        return $this;
+    }
+
     /**
      * @param string $type Block type name
      * @param array $customBlockType Callback method
@@ -525,7 +530,7 @@ class BlockParser
         $xml = $this->getXMLObjectFromString($this->xmlString);
 
         if ($xml === false) {
-            throw new \Exception('XML Error');
+            throw new \Exception('XML Error. XML Block is not supported: ' . $this->xmlString);
         } elseif ($this->isBlockEnable($xml) === false) {
             return '';
         } elseif ($this->isBlockCached($xml) === true) {
@@ -565,6 +570,9 @@ class BlockParser
                 break;
             case 'image':
                 $blockHtml = $this->execBlockOfTypeImage($xml);
+                break;
+            case 'dcontent':
+                $blockHtml = $this->execBlockOfTypeDynamicContent($xml);
                 break;
             default: // extensions & custom block types
 
@@ -610,7 +618,7 @@ class BlockParser
      */
     private function isBlockCached($xml)
     {
-        return $this->getXMLAttr($xml, 'cached') &&
+        return !$this->request->isPost() && $this->getXMLAttr($xml, 'cached') &&
         $this->cached === false &&
         GLOBAL_CACHING_ENABLED === true &&
         $this->route->getCurrentMenuItem()->caching === true;
@@ -650,7 +658,8 @@ class BlockParser
                         $xml,
                         'cache'
                     ) === false ||
-                    (isset($xml->cache) && $xml->cache == 0)
+                    (isset($xml->cache) && $xml->cache == 0 && !$this->request->isPost() && GLOBAL_CACHING_ENABLED === true &&
+                        $this->route->getCurrentMenuItem()->caching === true)
                 )
             ) {
                 $blockHtml = $this->disableBlockCaching($xml);
@@ -675,7 +684,6 @@ class BlockParser
         if (($this->sequence === false && !$this->getXMLAttr($xml, 'sequence')) ||
             ($this->sequence !== false && $this->getXMLAttr($xml, 'cached'))
         ) {
-
             $GLOBALS["TEMPLATE"] = $this->template;
             $templateVarString = '$TEMPLATE = ' . '$GLOBALS["TEMPLATE"];';
             $content = $this->core->evalString("<?php {$templateVarString} {$xml}");
@@ -789,7 +797,10 @@ class BlockParser
     private function disableBlockCaching($xml)
     {
         unset($xml['cache']);
-        unset($xml['id']);
+        /**
+         * Auskommentiert da im bearbeitungs modus die blockinfo nicht richtig geladen wird
+         */
+//        unset($xml['id']);
         $xml['cached'] = true;
         $block = $this->removeXmlHeader($xml->asXml());
         return $block;
@@ -813,7 +824,7 @@ class BlockParser
             ->andWhere("block.menuItemTranslation IS NULL OR block.menuItemTranslation = :menuTranslationId")
             ->setParameter('menuId', $menuId)
             ->setParameter('menuTranslationId', $this->route->getCurrentMenuItemTranslation()->id)
-            ->setParameter('site', $this->route->getCurrentMenuItem()->site)
+            ->setParameter('site', $this->route->getCurrentMenuItem()->site->id)
             ->setParameter('contentId', $contentId)
             ->getQuery()
             ->getResult();
@@ -1020,15 +1031,16 @@ class BlockParser
      * @return string
      * @throws \Exception
      */
-    private function execBlockOfTypeImage($xml)
+    public function execBlockOfTypeImage($xml)
     {
-
         $imageTags = array(
             'width' => $this->getXMLAttr($xml, 'width'),
             'height' => $this->getXMLAttr($xml, 'height'),
             'alt' => $this->getXMLAttr($xml, 'alt'),
             'class' => $this->getXMLAttr($xml, 'class'),
             'align' => $this->getXMLAttr($xml, 'align'),
+            'id' => $this->getXMLAttr($xml, 'id'),
+            'itemprop' => $this->getXMLAttr($xml, 'itemprop'),
             'ismap' => $this->getXMLAttr($xml, 'ismap'),
             'crossoriginNew' => $this->getXMLAttr($xml, 'crossoriginNew'),
             'usemap' => $this->getXMLAttr($xml, 'usemap'),
@@ -1280,7 +1292,8 @@ class BlockParser
     {
         $blockXmlString = $this->addIdToXmlBlock($block->id, $this->wrapBlockConfig($block));
         $blockXmlString = $this->cleanUpBlockTemplate($blockXmlString);
-        $html = $this->parse($blockXmlString, false, false, self::PARSE_XML);
+        $html = $this->parse($blockXmlString, false, self::PARSE_XML);
+
         $this->executedBlocks[$block->id] = $blockXmlString;
         return $html;
     }
@@ -1306,16 +1319,13 @@ class BlockParser
      *
      * @param $string
      * @param mixed $sequence
-     * @param bool $cached
      * @param string $parseType
      * @return bool|mixed|string
      */
-    public function parse($string, $sequence = false, $cached = false, $parseType = self::PARSE_HTML)
+    public function parse($string, $sequence = false, $parseType = self::PARSE_HTML)
     {
         // sequence tell us if we want to render content before or after the sub content modules
         $this->sequence = $sequence;
-        $this->cached = $cached;
-
         if ($parseType === self::PARSE_XML) {
             $string = $this->exec($string);
         } else {

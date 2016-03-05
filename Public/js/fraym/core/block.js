@@ -320,77 +320,53 @@ Core.Block = {
 
 
 	initBlockDragging: function () {
-		var originalItem = '';
+		var start = false;
 		$(Core.$.BLOCK_VIEW_CONTAINER).sortable({
 			placeholder: 'draghelper',
 			connectWith: Core.$.BLOCK_VIEW_CONTAINER,
 			handle: Core.$.BLOCK_INFO,
 			tolerance:"pointer",
 			cursorAt: { top:0, left: 0 },
+			delay: 150,
+			start: function (ev, ui) {
+				start = true;
+				ev.stopPropagation();
+			},
 			receive: function (ev, ui) {
-				originalItem = ui.item;
+				ev.stopPropagation();
 			},
 			stop: function (ev, ui) {
-				$(ui.item).replaceWith(originalItem);
+				if(start) {
+					ev.stopPropagation();
+					start = false;
 
-			    var contentId = $(this).attr('id');
-				var contentBlocks = [];
+					var contentId = $(ui.item).parent().attr('id');
+					var contentBlocks = [];
 
-				$.each($(this).children(Core.$.BLOCK_HOLDER), function(){
-					var blockElement = {contentId: contentId, blockId: $(this).data('id'), menuId: window.parent.menu_id};
-					contentBlocks.push(blockElement);
-				});
+					$.each($(ui.item).parent().children(Core.$.BLOCK_HOLDER), function(){
+						var blockElement = {contentId: contentId, blockId: $(ui.item).data('id'), menuId: window.parent.menu_id};
+						contentBlocks.push(blockElement);
+					});
 
-			    if ($.trim(contentId) != '') {
-				    var parentWindow = Core.getBaseWindow();
-					var location = parentWindow.location.href.substring(parentWindow.location.protocol.length+2);
-			        $.ajax({
-			            url:Core.getAjaxRequestUri(),
-			            dataType:'json',
-			            data:{cmd:'moveBlockToView', blocks: contentBlocks, location: location},
-			            type:'post',
-			            success:function (data, textStatus, jqXHR) {
-			                if (data.success == false) {
-			                    Core.showMessage(Core.getBaseWindow().Core.Translation.Global.PermissionDenied);
-			                }
-			            }
-			        });
-			    }
-			}
-		});
-
-		$(Core.$.BLOCK_HOLDER).draggable({
-			connectToSortable: Core.$.BLOCK_VIEW_CONTAINER,
-			helper: 'clone',
-			handle: Core.$.BLOCK_INFO,
-			refreshPositions: true,
-			scroll: true,
-			start: function (ev, ui) {
-				if (Core.Admin.isMobile() == false) {
-					var $blockContainer = $(Core.$.BLOCK_CONTAINER);
-					$blockContainer.animate({borderColor: 'rgba(0, 137, 205, 1.0)'});
-					$blockContainer.find(Core.$.BLOCK_VIEW_CONTAINER).animate({borderColor: 'rgba(0, 137, 205, 1.0)'});
-					$blockContainer.find(Core.$.BLOCK_HOLDER).animate({borderColor: 'rgba(23, 184, 19, 1.0)'});
-					$blockContainer.find(Core.$.BLOCK_INFO).animate({opacity: '1'});
-
-					$blockContainer.find(Core.$.BLOCK_VIEW_INFO_CONTAINER).animate({opacity: '1'});
-				}
-			},
-			drag: function() {
-				$(this).hide();
-			},
-			stop: function() {
-				$(this).show();
-				if(Core.Admin.isMobile() == false) {
-					var $blockContainer = $(Core.$.BLOCK_CONTAINER);
-					$blockContainer.animate({borderColor:'rgba(0, 137, 205, 0.0)'});
-					$blockContainer.find(Core.$.BLOCK_VIEW_CONTAINER).animate({borderColor:'rgba(0, 137, 205, 0)'});
-					$blockContainer.find(Core.$.BLOCK_HOLDER).animate({borderColor:'rgba(23, 184, 19, 0)'});
-					$blockContainer.find(Core.$.BLOCK_INFO).animate({opacity:'0'});
-					$blockContainer.find(Core.$.BLOCK_VIEW_INFO_CONTAINER).animate({opacity:'0'});
+					if ($.trim(contentId) != '') {
+						var parentWindow = Core.getBaseWindow();
+						var location = parentWindow.location.href.substring(parentWindow.location.protocol.length+2);
+						$.ajax({
+							url:Core.getAjaxRequestUri(),
+							dataType:'json',
+							data:{cmd:'moveBlockToView', blocks: contentBlocks, location: location},
+							type:'post',
+							success:function (data, textStatus, jqXHR) {
+								if (data.success == false) {
+									Core.showMessage(Core.getBaseWindow().Core.Translation.Global.PermissionDenied);
+								}
+							}
+						});
+					}
 				}
 			}
 		});
+
 
 
 	},

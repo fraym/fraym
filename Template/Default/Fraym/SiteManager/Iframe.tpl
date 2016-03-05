@@ -16,6 +16,7 @@
 
     {js('fraym/libs/jquery.min.js')}
     {js('fraym/libs/jquery.contextmenu.js')}
+    {js('fraym/libs/jquery.noty.packaged.min.js')}
     {js('fraym/libs/jquery.slimscroll.min.js')}
     {js('fraym/libs/jquery.touchSwipe.min.js')}
     {js('fraym/libs/jquery-ui.min.js')}

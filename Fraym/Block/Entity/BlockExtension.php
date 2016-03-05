@@ -76,11 +76,6 @@ class BlockExtension extends \Fraym\Entity\BaseEntity
     protected $metadataMethod;
 
     /**
-     * @ORM\OneToMany(targetEntity="\Fraym\Block\Entity\Permission", mappedBy="extension", orphanRemoval=true, cascade={"all"})
-     */
-    protected $blockPermissions;
-
-    /**
      * @ORM\OneToMany(targetEntity="\Fraym\Block\Entity\Block", mappedBy="extension", orphanRemoval=true, cascade={"all"})
      */
     protected $blocks;

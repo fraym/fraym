@@ -133,7 +133,7 @@ class RegistryManagerController extends \Fraym\Core
     }
 
     /**
-     *
+     * @Fraym\Annotation\Route("/fraym/registry/download", name="registryManagerDownload", permission={"GROUP:Administrator"})
      */
     public function downloadPackage()
     {

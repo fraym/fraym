@@ -59,7 +59,9 @@ html {
     z-index: 10000;
     position: absolute;
     top: 0;
+    left: 0;
     right: 0;
+    width: 100%;
     color: #fff;
     padding: 3px;
     background-color: #17b813;
@@ -92,15 +94,21 @@ html {
     -webkit-animation: animate-bg 5s linear infinite;
     -moz-animation: animate-bg 5s linear infinite;
     border: 1px solid;
+    border-radius: 5px;
     position: fixed;
     color: #fff;
     padding: 15px;
-    top: 0;
-    left: 0;
-    width: 100%;
+    right: 5%;
     box-sizing: border-box;
     z-index: 1;
     display: none;
+    width: auto;
+}
+
+.notification i.fa-times {
+    position: absolute;
+    right: 4px;
+    top: 4px;
 }
 
 #registry-extensions {
@@ -192,25 +200,54 @@ html {
     margin: 0;
 }
 
-.edit-view-content:hover {
-    padding: 0 0 30px 0;
+.block-holder .block-holder {
+    margin-top: 20px;
+}
+
+body.dragging, body.dragging * {
+    cursor: move !important;
+}
+
+.dragged {
+    position: absolute;
+    opacity: 0.5;
+    z-index: 2000;
+}
+
+.placeholder {
+    position: relative;
+    /** More li styles **/
+}
+.placeholder:before {
+    position: absolute;
+    content:">";
+    font-size: 30px;
+    color:red;
+    /** Define arrowhead **/
 }
 
 .block-holder {
     border: 2px solid transparent;
     position: relative;
     z-index: 10;
-}
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
 
-.block-holder .block-holder {
-    margin-top: 22px;
 }
 
 .block-container {
     border: 1px dashed transparent;
     position: relative;
     z-index: 10;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
 }
+
+
 
 .block-container:hover {
     z-index: 20;
@@ -578,12 +615,17 @@ button.small {
     outline: none;
 }
 
-label input[type="radio"], label input[type="checkbox"] {
-    margin: 0;
-}
-
 .title-col {
     font-weight: bold;
+}
+
+#block-add-edit-form .table>thead>tr>th,
+#block-add-edit-form .table>tbody>tr>th,
+#block-add-edit-form .table>tfoot>tr>th,
+#block-add-edit-form .table>thead>tr>td,
+#block-add-edit-form .table>tbody>tr>td,
+#block-add-edit-form .table>tfoot>tr>td {
+    border-top: 0;
 }
 
 .ui-draggable .ui-dialog-titlebar-buttons a {
@@ -618,6 +660,7 @@ label input[type="radio"], label input[type="checkbox"] {
     box-shadow: none;
     border-radius: 0;
     z-index: 50000;
+    outline: none;
     border: 6px solid #707070;
 }
 
@@ -945,4 +988,28 @@ table td.right, table th.right {
 
 .site-menu-overview p {
     padding-top: 30px;
+}
+
+#entityForm .chosen-container {
+    display: block;
+    width: 100%;
+}
+
+
+.panel-primary {
+    border-color: #9B9DA1
+}
+
+.panel-primary>.panel-heading {
+    color: #fff;
+    background-color: #9B9DA1;
+    border-color: #9B9DA1
+}
+
+.panel-primary>.panel-heading+.panel-collapse .panel-body {
+    border-top-color: #9B9DA1
+}
+
+.panel-primary>.panel-footer+.panel-collapse .panel-body {
+    border-bottom-color: #9B9DA1
 }

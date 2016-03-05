@@ -14,7 +14,6 @@ require 'Fraym/ClassLoader/ClassLoader.php';
 $classLoader = new Fraym\ClassLoader\ClassLoader();
 $classLoader->register();
 
-
 if (is_file('Config.php')) {
     require 'Config.php';
 } else {
@@ -28,14 +27,17 @@ date_default_timezone_set(TIMEZONE);
 $diContainer = new \DI\ContainerBuilder();
 
 define('APC_ENABLED', extension_loaded('apc') && ini_get('apc.enabled'));
+define('CACHE_DI_PATH', 'Cache/DI');
+define('CACHE_DOCTRINE_PROXY_PATH', 'Cache/DoctrineProxies');
+define('CACHE_DOCTRINE_MODULE_FILE', 'Cache/doctrine_module_dir.cache');
 
 if (\Fraym\Core::ENV_STAGING === ENV || \Fraym\Core::ENV_PRODUCTION === ENV) {
 
     error_reporting(0);
     ini_set("display_errors", 0);
 
-    if (!is_dir('Cache/DI')) {
-        mkdir('Cache/DI', 0755);
+    if (!is_dir(CACHE_DI_PATH)) {
+        mkdir(CACHE_DI_PATH, 0755);
     }
 
     $builder = new \DI\ContainerBuilder();
@@ -47,7 +49,7 @@ if (\Fraym\Core::ENV_STAGING === ENV || \Fraym\Core::ENV_PRODUCTION === ENV) {
     $cache->setNamespace('Fraym_instance_' . FRAYM_INSTANCE);
     $builder->setDefinitionCache($cache);
 
-    $builder->writeProxiesToFile(true, 'Cache/DI');
+    $builder->writeProxiesToFile(true, CACHE_DI_PATH);
     $diContainer = $builder->build();
     define('GLOBAL_CACHING_ENABLED', true);
 } else {

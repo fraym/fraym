@@ -121,14 +121,11 @@ class BlockController extends \Fraym\Core
     /**
      * Block config
      *
+     * @Fraym\Annotation\Route("/fraym/admin/block", name="block", permission={"GROUP:Administrator"})
      * @return mixed
      */
     public function renderBlock()
     {
-        if ($this->user->isAdmin() === false) {
-            return;
-        }
-
         $contentId = $this->request->gp('contentId');
 
         $blockTemplates = $this->db->getRepository('\Fraym\Block\Entity\BlockTemplate')->findBy(
@@ -159,7 +156,7 @@ class BlockController extends \Fraym\Core
     {
         $contentId = $this->blockParser->getXMLAttr($xml, 'id');
         $cssClass = $this->blockParser->getXMLAttr($xml, 'class');
-        $editStyle = $this->blockParser->getXMLAttr($xml, 'editstyle');
+        $editStyle = $this->blockParser->getXMLAttr($xml, 'editStyle');
 
         $renderElement = $this->blockParser->getXMLAttr($xml, 'renderElement') === false ? false : true;
         $htmlElement = $this->blockParser->getXMLAttr($xml, 'element') ? : 'div';
@@ -404,6 +401,13 @@ class BlockController extends \Fraym\Core
     }
 
     /**
+     *
+     */
+    public function getConfigurableTplBlockConfig() {
+
+    }
+
+    /**
      * Loading the block xml configuration. Response JSON.
      *
      * @return bool
@@ -465,17 +469,20 @@ class BlockController extends \Fraym\Core
         $blocks = $this->request->gp('blocks', array());
 
         foreach ($blocks as $k => $block) {
-            $movedblock = $this->db->getRepository('\Fraym\Block\Entity\Block')->findOneById($block['blockId']);
-            if ($movedblock) {
-                $movedblock->contentId = $block['contentId'];
-                $movedblock->position = intval($k);
-                $this->db->persist($movedblock);
+            if(isset($block['blockId'])) {
+                $movedblock = $this->db->getRepository('\Fraym\Block\Entity\Block')->findOneById($block['blockId']);
+                if ($movedblock) {
+                    $movedblock->contentId = $block['contentId'];
+                    $movedblock->position = intval($k);
+                    $this->db->flush();
+                } else {
+                    $this->response->sendAsJson(array('success' => false));
+                }
             } else {
                 $this->response->sendAsJson(array('success' => false));
             }
         }
 
-        $this->db->flush();
         $this->response->sendAsJson(array('success' => true));
     }
 

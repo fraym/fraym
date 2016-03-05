@@ -39,13 +39,12 @@ class BlockHistory extends \Fraym\Entity\BaseEntity
     /**
      * @var text $block
      *
-     * @ORM\Column(name="block", type="text", nullable=true)
+     * @ORM\Column(name="config", type="text", nullable=true)
      */
-    protected $block;
+    protected $config;
 
     /**
      * @var integer $position
-     * @Gedmo\SortablePosition
      * @ORM\Column(name="position", type="integer", nullable=false)
      */
     protected $position;
@@ -60,7 +59,15 @@ class BlockHistory extends \Fraym\Entity\BaseEntity
      *   @ORM\JoinColumn(name="menu_id", referencedColumnName="id")
      * })
      */
-    protected $menu;
+    protected $menuItem;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="\Fraym\Menu\Entity\MenuItemTranslation")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="menu_translation_id", referencedColumnName="id")
+     * })
+     */
+    protected $menuItemTranslation;
 
     /**
      * @ORM\ManyToOne(targetEntity="\Fraym\Block\Entity\BlockExtension")

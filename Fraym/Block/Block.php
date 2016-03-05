@@ -99,44 +99,6 @@ class Block
     }
 
     /**
-     * Checks if the current user can do a block action
-     *
-     * @param $permission
-     * @param $extension_id
-     * @return bool
-     */
-    public function permissionAllowed($permission, $extension_id)
-    {
-        //TODO: Implement this function
-        $user = $this->user;
-        if (!$user) {
-            return false;
-        }
-        $extension = $this->db->getRepository('\Fraym\Block\Entity\BlockExtension')->findOneById($extension_id);
-
-        if ($extension && count($extension->permissions)) {
-            $identifiers = $user->getIdentifiersFromGroups();
-            $identifiers[] = $user->identifier;
-
-            $result = $this->db->createQueryBuilder()
-                ->select("perm")
-                ->from('\Fraym\Block\Entity\Permission', 'perm')
-                ->where(
-                    "perm.extension = :id AND perm.identifier IN ('" . implode(
-                        "','",
-                        $identifiers
-                    ) . "') AND perm.permission LIKE :permission"
-                )
-                ->setParameter('id', $extension_id)
-                ->setParameter('permission', "%{$permission}%")
-                ->getQuery()->getOneOrNullResult();
-
-            return $result ? true : false;
-        }
-        return true;
-    }
-
-    /**
      * @param $block
      * @param $historyType
      */
@@ -194,26 +156,5 @@ class Block
             $configXml = $this->blockParser->getXMLObjectFromString($this->blockParser->wrapBlockConfig($block));
         }
         $this->blockController->getBlockContainerConfig($configXml);
-    }
-
-    /**
-     * @param $blockId
-     * @param BlockXML $blockXML
-     * @return BlockXML
-     */
-    public function saveBlockConfig($blockId, \Fraym\Block\BlockXML $blockXML)
-    {
-        $blockConfig = $this->request->getGPAsArray();
-        $customProperties = new \Fraym\Block\BlockXMLDom();
-        $config = $customProperties->createElement('sliderConfig');
-        foreach ($blockConfig['sliderConfig'] as $field => $value) {
-            $element = $customProperties->createElement($field);
-            $element->nodeValue = $value;
-            $config->appendChild($element);
-        }
-
-        $customProperties->appendChild($config);
-        $blockXML->setCustomProperty($customProperties);
-        return $blockXML;
     }
 }

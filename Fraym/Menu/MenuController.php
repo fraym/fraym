@@ -144,14 +144,11 @@ class MenuController extends \Fraym\Core
     }
 
     /**
+     * @Fraym\Annotation\Route("/fraym/admin/menu/selection", name="menuSelection", permission={"GROUP:Administrator"})
      * @return bool|mixed
      */
     public function getContent()
     {
-        if($this->user->isAdmin() === false) {
-            return false;
-        }
-
         if ($this->request->isXmlHttpRequest()) {
             return $this->ajaxHandler();
         } else {
@@ -322,6 +319,7 @@ class MenuController extends \Fraym\Core
     }
 
     /**
+     * @Fraym\Annotation\Route("/fraym/admin/menu/ajax", name="menuControllerAjax", permission={"GROUP:Administrator"})
      * @return bool
      */
     public function ajaxHandler()

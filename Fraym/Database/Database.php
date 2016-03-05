@@ -87,6 +87,9 @@ class Database
      */
     public function __call($method, $param)
     {
+        if(!is_object($this->entityManager)) {
+            $this->connect();
+        }
         if (is_object($this->entityManager) && method_exists($this->entityManager, $method)) {
             return call_user_func_array(array(&$this->entityManager, $method), $param);
         }
@@ -141,9 +144,7 @@ class Database
         if ($this->moduleDirCacheFile === false) {
             $applicationDir = $this->core->getApplicationDir();
 
-            $this->moduleDirCacheFile = $applicationDir . DIRECTORY_SEPARATOR .
-                'Cache' . DIRECTORY_SEPARATOR .
-                'doctrine_module_dir.cache';
+            $this->moduleDirCacheFile = $applicationDir . DIRECTORY_SEPARATOR . CACHE_DOCTRINE_MODULE_FILE;
         }
         return $this->moduleDirCacheFile;
     }
@@ -160,9 +161,7 @@ class Database
 
         $applicationDir = $this->core->getApplicationDir();
 
-        $this->moduleDirCacheFile = $applicationDir . DIRECTORY_SEPARATOR .
-            'Cache' . DIRECTORY_SEPARATOR .
-            'doctrine_module_dir.cache';
+        $this->moduleDirCacheFile = $applicationDir . DIRECTORY_SEPARATOR . CACHE_DOCTRINE_MODULE_FILE;
 
         $this->createModuleDirCache();
 
@@ -241,7 +240,7 @@ class Database
         $config->setMetadataDriverImpl($annotationDriver);
         $config->setQueryCacheImpl($cache);
         $config->setResultCacheImpl($cache);
-        $config->setProxyDir($applicationDir . DIRECTORY_SEPARATOR . 'Cache/DoctrineProxies');
+        $config->setProxyDir($applicationDir . DIRECTORY_SEPARATOR . CACHE_DOCTRINE_PROXY_PATH);
         $config->setProxyNamespace('Proxies');
         $this->fetchMode = \PDO::FETCH_OBJ;
 
@@ -277,7 +276,6 @@ class Database
             ),
             $this->eventListener
         );
-
         return $this;
     }
 
@@ -514,6 +512,7 @@ class Database
      * Updates the DB schema using Doctrine's SchemaTool. The $safeMode flag is passed
      * to SchemaTool unchanged.
      *
+     * @Fraym\Annotation\Route("updateSchema", name="databaseUpdateSchema")
      * @param boolean $safeMode
      * @param string $outputPathAndFilename A file to write SQL to, instead of executing it
      * @return string

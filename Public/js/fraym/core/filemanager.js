@@ -95,7 +95,6 @@ var FileManager = {
 			$selectFileBtn.click(function(e){
 				e.preventDefault();
 				FileManager.open($this.data('filefilter'), $this.data('singlefileselect'), $this.val(), function (filemanager) {
-
 					if($this.prop("tagName") === 'SELECT') {
 						$this.html('');
 						$.each(filemanager.File.getSelectedItems(), function(){
@@ -108,9 +107,13 @@ var FileManager = {
 					} else {
 						var file = filemanager.File.getSelectedItems()[0];
 						if($this.data('absolutepath')) {
-							$this.val(file.path);
+							var newVal = file.path;
 						} else {
-							$this.val(file.relativePath);
+							var newVal = file.relativePath;
+						}
+						if(newVal !== $this.val()) {
+							$this.val(newVal);
+							$this.trigger('change');
 						}
 					}
 				});

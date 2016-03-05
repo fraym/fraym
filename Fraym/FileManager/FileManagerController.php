@@ -57,14 +57,11 @@ class FileManagerController extends \Fraym\Core
     protected $serviceLocator;
 
     /**
+     * @Fraym\Annotation\Route("/fraym/admin/filemanager", name="fileManager", permission={"GROUP:Administrator"})
      * @return mixed
      */
     public function getContent()
     {
-        if ($this->user->isAdmin() === false) {
-            return false;
-        }
-
         if (($cmd = $this->request->gp('cmd')) && method_exists($this, $cmd)) {
             return $this->$cmd();
         }
@@ -239,13 +236,11 @@ class FileManagerController extends \Fraym\Core
     }
 
     /**
+     * @Fraym\Annotation\Route("/fraym/admin/fileViewer", name="fileViewer", permission={"GROUP:Administrator"})
      * @return mixed
      */
     public function fileViewer()
     {
-        if ($this->user->isAdmin() === false) {
-            return;
-        }
         $fileContent = $this->request->post('fileContent', false);
         $storage = $this->request->gp('storage');
         $path = $this->request->gp('path');

@@ -166,6 +166,7 @@ class UserController extends \Fraym\Core
     }
 
     /**
+     * @Fraym\Annotation\Route("/fraym", name="adminLogin")
      * @return string
      */
     public function renderAdminPage()

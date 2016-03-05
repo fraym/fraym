@@ -6,6 +6,10 @@
  * @license   http://www.opensource.org/licenses/gpl-license.php GNU General Public License, version 2 or later (see the LICENSE file)
  */
 namespace Fraym\Route;
+use Gedmo\SoftDeleteable\Mapping\Driver\Annotation;
+use Symfony\Component\Routing\Loader\AnnotationDirectoryLoader;
+use Symfony\Component\Routing\Loader\AnnotationFileLoader;
+use Symfony\Component\Routing\Router;
 
 /**
  * Class Route
@@ -144,6 +148,12 @@ class Route
     public $siteManager;
 
     /**
+     * @Inject
+     * @var \Fraym\FileManager\FileManager
+     */
+    protected $fileManager;
+
+    /**
      * If we have a virtual URI we must set force page load to true, otherwise we get page note fount error
      *
      * @param bool $forcePageLoad
@@ -207,6 +217,50 @@ class Route
             );
         }
         return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    private function initAnnotationRoutes()
+    {
+        \Doctrine\Common\Annotations\AnnotationRegistry::registerFile($this->core->getApplicationDir() . '/Fraym/Annotation/Route.php');
+
+        $coreFiles = $this->fileManager->findFiles(
+            $this->core->getApplicationDir() . DIRECTORY_SEPARATOR . 'Fraym' . DIRECTORY_SEPARATOR . '*.php'
+        );
+        $extensionFiles = $this->fileManager->findFiles(
+            $this->core->getApplicationDir() . DIRECTORY_SEPARATOR . 'Extension' . DIRECTORY_SEPARATOR . '*.php'
+        );
+
+        foreach (array_merge($coreFiles, $extensionFiles) as $file) {
+            $classname = basename($file, '.php');
+            $namespace = str_ireplace($this->core->getApplicationDir(), '', dirname($file));
+            $namespace = str_replace('/', '\\', $namespace) . '\\';
+            $class = $namespace . $classname;
+
+            if (is_file($file)) {
+                require_once($file);
+                if (class_exists($class)) {
+                    foreach(get_class_methods($class) as $method) {
+                        $refMethod = new \ReflectionMethod($class, $method);
+                        $methodAnnotation = $this->db->getAnnotationReader()->getMethodAnnotation(
+                            $refMethod,
+                            'Fraym\Annotation\Route'
+                        );
+                        if(empty($methodAnnotation) === false) {
+                            $route = $methodAnnotation->value;
+                            $key = $methodAnnotation->name;
+                            $this->addVirtualRoute(
+                                $key,
+                                $route,
+                                array($class, $method),
+                                $methodAnnotation->permission);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -368,13 +422,15 @@ class Route
      * @param $key
      * @param $route
      * @param $callback
+     * @param array $permission
      */
-    public function addVirtualRoute($key, $route, $callback)
+    public function addVirtualRoute($key, $route, $callback, $permission = array())
     {
         $stdClass = new \stdClass();
         $stdClass->route = $route;
         $stdClass->controller = $callback[0];
         $stdClass->action = $callback[1];
+        $stdClass->permission = $permission;
         $this->virutalRoutes[$key] = $stdClass;
     }
 
@@ -401,11 +457,27 @@ class Route
                 ($isRelativeRoute === true && ltrim($this->getAddionalURI(), '/') == $data->route ||
                     ($isRelativeRoute === false && $route == $this->getRequestRoute(false, false)))
             ) {
-                $controller = $data->controller;
-                $action = $data->action;
-                $instance = $this->serviceLocator->get($controller);
 
-                return $instance->$action();
+                $allowAccess = false;
+                if(count($data->permission) && $this->user->isLoggedIn()) {
+                    $user = $this->user->getUserEntity();
+                    $identifiers = $user->getIdentifiersFromGroups();
+                    $identifiers[] = $user->identifier;
+                    foreach($identifiers as  $identifier) {
+                        if(in_array($identifier, $data->permission)) {
+                            $allowAccess = true;
+                            break;
+                        }
+                    }
+                }
+
+                if(count($data->permission) === 0 || $allowAccess) {
+                    $controller = $data->controller;
+                    $action = $data->action;
+                    $instance = $this->serviceLocator->get($controller);
+
+                    return $instance->$action();
+                }
             }
         }
         return false;
@@ -437,6 +509,24 @@ class Route
     }
 
     /**
+     *
+     */
+    public function loadRoutes() {
+        if($this->core->isCLI() === false && $this->cache->isCachingActive()) {
+            if(($routes = $this->cache->getDataCache('routes')) === false) {
+                $this->initExtensionRoutes();
+                $this->initAnnotationRoutes();
+                $this->cache->setDataCache('routes', $this->virutalRoutes);
+            } else {
+                $this->virutalRoutes = $routes;
+            }
+        } else {
+            $this->initExtensionRoutes();
+            $this->initAnnotationRoutes();
+        }
+    }
+
+    /**
      * Trys to load a site by the requested URI.
      *
      * @return bool
@@ -445,25 +535,12 @@ class Route
     {
         // Connect database after tring to load the cache
         $this->db->connect();
-        $this->initExtensionRoutes();
-
         $this->db->setUpTranslateable()->setUpSortable();
 
         if ($menuItem = $this->checkRouteHook()) {
             $this->renderSite(true, $menuItem);
         } else {
             $this->renderSite(true, $this->parseRoute());
-        }
-    }
-
-    /**
-     *
-     */
-    public function loadVirtualRoutes()
-    {
-        $routes = $this->db->connect()->getRepository('\Fraym\Route\Entity\VirtualRoute')->findAll();
-        foreach ($routes as $route) {
-            $this->addVirtualRoute($route->key, $route->route, array($route->class, $route->method));
         }
     }
 
@@ -481,12 +558,11 @@ class Route
      */
     public function renderSite($routeInit = true, $menuItemTranslation = null)
     {
-
         $tpl = $this->template;
 
         if (is_object($menuItemTranslation)) {
 
-            $this->loadVirtualRoutes();
+            $this->loadRoutes();
 
             $menuItemTranslation = $this->db->getRepository('\Fraym\Menu\Entity\MenuItemTranslation')->findOneById(
                 $menuItemTranslation->id
@@ -522,7 +598,6 @@ class Route
                     $this->currentMenuItem->parent !== null &&
                     $this->user->isLoggedIn() === false
                 ) {
-
                     return $this->menuItemNotFound();
                 }
 
@@ -532,6 +607,7 @@ class Route
                     $this->getDefaultMenuItemTemplate());
 
                 if ($this->getFoundURI(false) != trim($this->getRequestRoute(false, false), '/')) {
+
                     $this->blockParser->setCheckRouteError(true);
                     $tpl->setTemplate('string:' . $mainTemplateString);
                     $content = $tpl->prepareTemplate();
@@ -577,7 +653,6 @@ class Route
     public function menuItemNotFound()
     {
         $page404 = null;
-
         if ($this->currentMenuItem) {
             $localeId = $this->session->get('localeId', false);
 
@@ -811,6 +886,7 @@ class Route
      */
     public function createSlug($uri, $separator = '-')
     {
+        $uri = str_replace(',', '-', $uri);
         // Remove all characters that are not the separator, letters, numbers, or whitespace
         $uri = preg_replace('![^' . preg_quote($separator) . '\pL\pN\s]+!u', '', mb_strtolower($uri, 'UTF-8'));
         // Replace all separator characters and whitespace by a single separator

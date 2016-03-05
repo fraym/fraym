@@ -7,7 +7,10 @@
 Core.Notification = {
     show: function(type, title, message, timeout) {
         var timeout = typeof timeout != 'undefined' ? timeout : 4000;
-        var $notification = $('<div class="notification"><h3><i class="icon-remove icon-white"></i>' + title + '</h3></div>');
+        var $notification = $('<div class="notification"><h3><i class="close fa-times fa"></i>' + title + '</h3></div>');
+        $notification.find('.close').click(function(){
+            $notification.fadeOut('fast', function(){$(this).remove()});
+        });
         if(typeof message != 'undefined') {
             $notification.append('<p>' + message + '</p>');
         }

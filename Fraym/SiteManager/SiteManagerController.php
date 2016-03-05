@@ -77,6 +77,7 @@ class SiteManagerController extends \Fraym\Core
     }
 
     /**
+     * @Fraym\Annotation\Route("/fraym/admin/adminpanel", name="adminPanel", permission={"GROUP:Administrator"})
      * @return mixed
      */
     public function getAdminPanel()

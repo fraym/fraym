@@ -46,6 +46,7 @@ Core.Admin = {
 
     initPanel:function () {
 
+		$('body').prepend($('#blockConfigMenu'));
         $('[data-url]').click(function (e) {
             e.preventDefault();
             parent.window.Core.Block.showDialog({title: $(this).find('span.title').html()}, $(this).data('url'));

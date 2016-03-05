@@ -203,6 +203,14 @@ return array(
                 'saveMethod' => 'saveBlockConfig'
             ),
             array(
+                'name' => 'Configurable template',
+                'description' => 'Add a configurable template to your website.',
+                'class' => '\Fraym\Block\Block',
+                'configMethod' => 'getConfigurableTplBlockConfig',
+                'execMethod' => 'execConfigurableTplBlock',
+                'saveMethod' => 'saveConfigurableTplBlockConfig'
+            ),
+            array(
                 'name' => 'Container',
                 'description' => 'Add a static content to your website.',
                 'class' => '\Fraym\Block\Block',

@@ -20,6 +20,10 @@ class Config
      */
     protected $db;
 
+    /**
+     * @param $key
+     * @return Entity\Config
+     */
     public function get($key)
     {
         $obj = null;
