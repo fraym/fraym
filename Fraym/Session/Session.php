@@ -92,7 +92,7 @@ class Session
         if ($fp = @fopen($sess_file, "w")) {
             $return = fwrite($fp, $data);
             fclose($fp);
-            return $return;
+            return true;
         }
         return false;
     }

@@ -109,7 +109,7 @@ class Core
 
         $this->scriptCode = $code;
 
-        $tempFile = tempnam(sys_get_temp_dir(), 'eval');
+        $tempFile = tempnam(sys_get_temp_dir(), 'include');
 
         file_put_contents($tempFile, $this->scriptCode);
 
@@ -273,12 +273,10 @@ class Core
             $_COOKIE = $this->sanitize($_COOKIE);
 
             if ($mode === Core::ROUTE_NORMAL) {
-
                 $this->cache->load();
 
                 // Try to load a site by the requested URI
                 $this->route->loadSite();
-
                 $this->response->finish(false, true);
             }
         } else {

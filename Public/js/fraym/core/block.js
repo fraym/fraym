@@ -237,7 +237,7 @@ Core.Block = {
                     $(Core.Block).trigger('blockConfigSaved');
                     if (json && json.data) {
                         if ($(Core.$.BLOCK_CURRENT_INPUT).val() == '') {
-                            window.parent.$('#' + $(Core.$.BLOCK_CURRENT_CONTENTID_INPUT).val()).append(json.data);
+                            window.parent.$('#' + $(Core.$.BLOCK_CURRENT_CONTENTID_INPUT).val()).prepend(json.data);
                             window.parent.Core.Block.initBlockDragging();
                         } else {
                             Core.Block.replaceBlock($(Core.$.BLOCK_CURRENT_INPUT).val(), json.data);
@@ -371,7 +371,7 @@ Core.Block = {
 
 	},
 
-	addViewContextMenu: function (id) {
+	addViewActions: function (id) {
 		if (id == '') {
 			return;
 		}
@@ -379,7 +379,31 @@ Core.Block = {
 		Core.Block.contextMenuItemsDisabled['paste'] = !(typeof $.cookie('copy') != 'undefined' || typeof $.cookie('cut') != 'undefined');
 		Core.Block.contextMenuItemsDisabled['pasteAsRef'] = !(typeof $.cookie('copy') != 'undefined');
 
-        $.contextMenu( 'destroy', '.edit-view-content' );
+		$('#' + id + '-block-container-actionbar').find('a.add').click(function(e){
+			e.preventDefault();
+			Core.Block.showBlockDialog(id);
+		});
+
+		if(Core.Block.contextMenuItemsDisabled['paste'] !== false) {
+			$('.block-container-actionbar').find('a.paste').hide();
+		}
+
+		if(Core.Block.contextMenuItemsDisabled['pasteAsRef'] !== false) {
+			$('.block-container-actionbar').find('a.pasteref').hide();
+		}
+
+		$('#' + id + '-block-container-actionbar').find('a.paste').click(function(e){
+			e.preventDefault();
+			Core.Block.pasteBlock(id, false);
+		});
+
+		$('#' + id + '-block-container-actionbar').find('a.pasteref').click(function(e){
+			e.preventDefault();
+			Core.Block.pasteBlock(id, true);
+		});
+
+
+		$.contextMenu( 'destroy', '.edit-view-content' );
 
 		$.contextMenu({
 			selector: '#' + id,
@@ -552,6 +576,8 @@ Core.Block = {
 		Core.Block.contextMenuItemsDisabled['pasteAsRef'] = false;
 		$.cookie('copy', id, { path: '/' });
 		$.removeCookie('cut', { path: '/' });
+		$('.block-container-actionbar').find('a.paste').show();
+		$('.block-container-actionbar').find('a.pasteref').show();
 	},
 
 	cutBlock: function (id) {
@@ -559,6 +585,8 @@ Core.Block = {
 		$.cookie('cut', id, { path: '/' });
 		$.removeCookie('copy', { path: '/' });
 		$('[data-id="' + id + '"]').css('opacity', 0.5);
+		$('.block-container-actionbar').find('a.paste').show();
+		$('.block-container-actionbar').find('a.pasteref').hide();
 	},
 
 	pasteBlock: function (contentId, byRef) {
@@ -574,6 +602,10 @@ Core.Block = {
 			type: 'post',
 			success: function (json, textStatus, jqXHR) {
 
+				if(op === 'cut') {
+					$('.block-container-actionbar').find('a.paste').hide();
+					$('.block-container-actionbar').find('a.pasteref').hide();
+				}
 				$.removeCookie('cut', { path: '/' });
 
 				if (json.success == true) {
@@ -582,7 +614,7 @@ Core.Block = {
 							$(this).remove();
 						});
 					}
-					$('#' + contentId).append(json.data);
+					$('#' + contentId).prepend(json.data);
 					Core.Block.initBlockDragging();
 				} else if (typeof json.message != 'undefined') {
 					Core.showMessage(json.message);
@@ -596,10 +628,27 @@ Core.Block = {
 		window.parent.Core.Block.initBlockDragging();
 	},
 
-	addBlockContextMenu: function (id) {
+	addBlockActions: function (id) {
 		if (id == '') {
 			return;
 		}
+
+		$('[data-id=' + id + ']').find('a.edit').click(function(e){
+			e.preventDefault();
+			Core.Block.showBlockDialog($(this).parents(Core.$.BLOCK_VIEW_CONTAINER).attr('id'), $(this).parents(Core.$.BLOCK_HOLDER).data('id'));
+		});
+		$('[data-id=' + id + ']').find('a.copy').click(function(e){
+			e.preventDefault();
+			Core.Block.copyBlock($(this).parents(Core.$.BLOCK_HOLDER).data('id'));
+		});
+		$('[data-id=' + id + ']').find('a.cut').click(function(e){
+			e.preventDefault();
+			Core.Block.cutBlock($(this).parents(Core.$.BLOCK_HOLDER).data('id'));
+		});
+		$('[data-id=' + id + ']').find('a.delete').click(function(e){
+			e.preventDefault();
+			Core.Block.deleteBlock($(this).parents(Core.$.BLOCK_HOLDER).data('id'));
+		});
 
 		$.contextMenu({
 			selector: '[data-id=' + id + ']',
@@ -625,8 +674,6 @@ Core.Block = {
 				"cut": { name: Core.getBaseWindow().Core.Translation.ContextMenu.CutBlock, icon: "cut" },
 				"delete": { name: Core.getBaseWindow().Core.Translation.ContextMenu.DeleteBlock, icon: "delete" }
 			}
-		});
-		$(document.body).on("contextmenu:hide", '[data-id=' + id + ']', function (e) {
 		});
 
 		$('[data-id=' + id + ']').swipe({
