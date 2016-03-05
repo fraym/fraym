@@ -666,13 +666,13 @@ class Template
      * @param $line
      * @return bool
      */
-    public function evalErrorHandler($code, $text, $file, $line)
+    public function errorHandler($code, $text, $file, $line)
     {
         if($code !== E_NOTICE && $code !== E_USER_NOTICE) {
             ob_clean();
             error_log("$text $file $line");
             $lines = explode("\n", $this->currentTemplateContent);
-            $linePhp = explode("\n", $this->core->getEvalCode());
+            $linePhp = explode("\n", $this->core->getScriptCode());
             echo "{$text} \n\n" . $lines[$line-1];
             echo "\n\nPhp Code: \n\n" . $linePhp[$line-1];
             exit(0);
@@ -701,7 +701,7 @@ class Template
         $this->template = null;
         $vars = $this->getTemplateVarString();
 
-        return $this->core->evalString($vars . $content, array(&$this, 'evalErrorHandler'));
+        return $this->core->includeScript($vars . $content, array(&$this, 'errorHandler'));
     }
 
     /**

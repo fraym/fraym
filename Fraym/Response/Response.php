@@ -126,7 +126,7 @@ class Response
 
         if ($parseOutput === true) {
             // Output the source to the client, for dynamic cache we need to eval the output source
-            $content = $this->core->evalString($content);
+            $content = $this->core->includeScript($content);
             // Filter the output to assign css or js files, sets title or meta tags
             $content = $this->template->outputFilter($content);
         }

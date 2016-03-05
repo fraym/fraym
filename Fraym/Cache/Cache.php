@@ -157,7 +157,7 @@ class Cache
                         $contents = file_get_contents($cacheFilename);
                         $this->blockParser->setParseCached(true);
                         $content = $this->blockParser->parse($contents, 'outputFilter');
-                        echo $this->core->evalString($content);
+                        echo $this->core->includeScript($content);
                         exit();
                     }
                 }
@@ -344,7 +344,7 @@ class Cache
     }
 
     /**
-     * @Fraym\Annotation\Route("cache_clear_all", name="cacheClearAll")
+     * @Fraym\Annotation\Route("cacheClearAll", name="cacheClearAll")
      */
     public function clearAll() {
         // clear PHP opcache

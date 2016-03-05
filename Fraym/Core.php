@@ -32,7 +32,7 @@ class Core
     /**
      * Eval code
      */
-    private $evalCode = null;
+    private $scriptCode = null;
 
     /**
      * @var array
@@ -101,17 +101,17 @@ class Core
      * @param null $errorHanlder
      * @return string
      */
-    public function evalString($code, $errorHanlder = null)
+    public function includeScript($code, $errorHanlder = null)
     {
         if ($errorHanlder) {
             set_error_handler($errorHanlder);
         }
 
-        $this->evalCode = $code;
+        $this->scriptCode = $code;
 
         $tempFile = tempnam(sys_get_temp_dir(), 'eval');
 
-        file_put_contents($tempFile, $this->evalCode);
+        file_put_contents($tempFile, $this->scriptCode);
 
         ob_start();
 
@@ -125,7 +125,7 @@ class Core
             restore_error_handler();
         }
 
-        $this->evalCode = null;
+        $this->scriptCode = null;
 
         return $data;
     }
@@ -133,9 +133,9 @@ class Core
     /**
      * @return mixed
      */
-    public function getEvalCode()
+    public function getScriptCode()
     {
-        return $this->evalCode;
+        return $this->scriptCode;
     }
 
     /**

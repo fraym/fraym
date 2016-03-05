@@ -686,7 +686,7 @@ class BlockParser
         ) {
             $GLOBALS["TEMPLATE"] = $this->template;
             $templateVarString = '$TEMPLATE = ' . '$GLOBALS["TEMPLATE"];';
-            $content = $this->core->evalString("<?php {$templateVarString} {$xml}");
+            $content = $this->core->includeScript("<?php {$templateVarString} {$xml}");
             unset($GLOBALS["TEMPLATE"]);
             return $content;
         }
@@ -704,7 +704,7 @@ class BlockParser
         ) {
             $GLOBALS["TEMPLATE"] = $this->template;
             $templateVarString = '$TEMPLATE = ' . '$GLOBALS["TEMPLATE"];';
-            $content = $this->core->evalString("<?php {$templateVarString} {$xml}");
+            $content = $this->core->includeScript("<?php {$templateVarString} {$xml}");
             unset($GLOBALS["TEMPLATE"]);
 
             return $content;
@@ -1203,11 +1203,11 @@ class BlockParser
 
             $result = $this->contentChildViews($child);
             if (count($result) > 0) {
-                $content = (isset($result['beforeContent']) ? $result['beforeContent'] : '') . $this->core->evalString(
+                $content = (isset($result['beforeContent']) ? $result['beforeContent'] : '') . $this->core->includeScript(
                     $blocks
                 ) . (isset($result['afterContent']) ? $result['afterContent'] : '');
             } else {
-                $content = $this->core->evalString($this->parse($blocks));
+                $content = $this->core->includeScript($this->parse($blocks));
             }
 
             $html .= $this->blockController->createEditViewContentDIV($child, $content);
@@ -1242,7 +1242,7 @@ class BlockParser
 
             if (count($result) > 0) {
                 $blockhtml = (isset($result['beforeContent']) ? $result['beforeContent'] : '') .
-                    $this->core->evalString(
+                    $this->core->includeScript(
                         $blocks
                     ) .
                     (isset($result['afterContent']) ? $result['afterContent'] : '');
@@ -1264,7 +1264,7 @@ class BlockParser
                         );
                 }
             } else {
-                $blockhtml = $this->core->evalString($blocks);
+                $blockhtml = $this->core->includeScript($blocks);
 
                 if (($this->getXMLAttr($child, 'hideEmpty') === null ||
                         $this->getXMLAttr(
