@@ -349,12 +349,32 @@ var FileManager = {
 			$(FileManager.selectors.selection).hide();
 		};
 
+		var shortcuts = function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			var keyCode = (e.which ? e.which : e.keyCode);
+			if(keyCode == '65' && (e.metaKey || e.ctrlKey)) {
+				$(FileManager.selectors.fileItem).addClass('selected');
+			} else if(keyCode == '67' && (e.metaKey || e.ctrlKey)) {
+				FileManager.File.copy();
+			} else if(keyCode == '86' && (e.metaKey || e.ctrlKey)) {
+				FileManager.File.paste();
+			} else if(keyCode == '88' && (e.metaKey || e.ctrlKey)) {
+				FileManager.File.cut();
+			}
+		};
+
+		$(window).keydown(shortcuts);
+		$(window).focus();
+
+		var selecting = false;
 		$(FileManager.selectors.fileView).mousedown(function (e) {
 			if (e.which === 1) {
 				e.preventDefault();
 				FileManager.mouseX = (e.pageX ? e.pageX : e.clientX);
 				FileManager.mouseY = (e.pageY ? e.pageY : e.clientY);
 			}
+			selecting = false;
 		}).mousemove(function (e) {
 				e.preventDefault();
 				if (FileManager.mouseX && FileManager.mouseY) {
@@ -378,7 +398,7 @@ var FileManager = {
 					var newMouseY = (e.pageY ? e.pageY : e.clientY);
 					var elements = FileManager.rectangleSelect(FileManager.selectors.fileItem, FileManager.mouseX, FileManager.mouseY, newMouseX, newMouseY);
 					$(FileManager.selectors.fileItem).removeClass('selected');
-
+					selecting = true;
 					$.each(elements, function () {
 						this.addClass('selected');
 						if (FileManager.singleFileSelect) {
@@ -388,9 +408,10 @@ var FileManager = {
 				}
 			}).mouseup($doneSelectionFunc).bind('contextmenu',function (e) {
 				e.preventDefault();
+				selecting = false;
 			}).click(function (e) {
 				e.preventDefault();
-				if ($(e.target).attr('id') == 'fileView') {
+				if ($(e.target).attr('id') == 'fileView' && selecting === false) {
 					$(FileManager.selectors.fileItem).removeClass('selected');
 					var e = jQuery.Event("keydown");
 					e.which = 27;

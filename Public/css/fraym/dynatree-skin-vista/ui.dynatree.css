@@ -535,10 +535,3 @@ span.dynatree-drop-target.dynatree-drop-after a
     white-space: nowrap;
 }
 
-.file-item:hover .file-name {
-    overflow: visible;
-    z-index: 2;
-    background-color: #fff;
-    word-break: break-word;
-    white-space: normal;
-}
