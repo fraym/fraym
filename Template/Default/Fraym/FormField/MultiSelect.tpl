@@ -21,18 +21,21 @@
 
 <script type="text/javascript">
     $("#{$propertyName}_{$entity.id}").chosen({
-        no_results_text: "{_('No results matched', 'FRAYM_NO_RESULTS_MATCHED')}",
+        no_results_text: "{_('No results matched', 'FRAYM_NO_RESULTS_MATCHED')}" {if $field.createNewInline != ''},
+
         create_option: function(term){
             var chosen = this;
             var fieldname = $(chosen.form_field).data('fieldname');
             $.ajax({ type: 'post', data: { field: fieldname, value: term, model: '{addslashes($field.model)}' } }).done(function(result) {
-                chosen.append_option({
-                   value: result.id,
-                   text: term
-                 });
+                if(result.id) {
+                    chosen.append_option({
+                        value: result.id,
+                        text: term
+                    });
+                }
             });
 
           },
-        create_option_text: '{_('Add', 'FRAYM_ADD')}'
+        create_option_text: '{_('Add', 'FRAYM_ADD')}' {/if}
     });
 </script>

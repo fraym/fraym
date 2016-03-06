@@ -148,7 +148,7 @@ class BaseEntity
         }
 
         if ($flush) {
-            if(!\Doctrine\ORM\UnitOfWork::STATE_MANAGED === $em->getUnitOfWork()->getEntityState($newEntity)) {
+            if(\Doctrine\ORM\UnitOfWork::STATE_MANAGED !== $em->getUnitOfWork()->getEntityState($newEntity) || \Doctrine\ORM\UnitOfWork::STATE_NEW !== $em->getUnitOfWork()->getEntityState($newEntity)) {
                 $em->persist($newEntity);
             }
             $em->flush();

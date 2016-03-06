@@ -18,7 +18,6 @@ use \Gedmo\Translatable\Translatable;
  * @package Extension\News\Entity
  * @ORM\Table(name="news")
  * @ORM\Entity
- * @LifecycleCallback(postPersist={"\Extension\News\News"="setTags"}, onFlush={"\Extension\News\News"="setTags"})
  */
 class News extends \Fraym\Entity\BaseEntity
 {
@@ -95,11 +94,7 @@ class News extends \Fraym\Entity\BaseEntity
 
     /**
      * @ORM\ManyToMany(targetEntity="\Extension\News\Entity\Tag", inversedBy="news", cascade={"persist"})
-     * @ORM\JoinTable(name="news_tag_mm",
-     *   joinColumns={@ORM\JoinColumn(name="news_id", referencedColumnName="id")},
-     *   inverseJoinColumns={@ORM\JoinColumn(name="tag_id", referencedColumnName="id")}
-     * )
-     * @FormField(label="Tags", type="multiselect", readOnly=true)
+     * @FormField(label="Tags", type="multiselect", createNewInline="name")
      */
     protected $tags;
 
@@ -107,15 +102,6 @@ class News extends \Fraym\Entity\BaseEntity
      * @Gedmo\Locale
      */
     protected $locale;
-
-    /**
-     * @param $tag
-     */
-    public function setTags($tag)
-    {
-        $this->tags->add($tag);
-        $tag->news->add($this);
-    }
 
     public function __construct()
     {

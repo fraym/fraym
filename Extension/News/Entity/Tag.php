@@ -32,7 +32,7 @@ class Tag extends \Fraym\Entity\BaseEntity
     protected $name;
 
     /**
-     * @ORM\ManyToMany(targetEntity="\Extension\News\Entity\News", mappedBy="tags")
+     * @ORM\OneToMany(targetEntity="\Extension\News\Entity\News", mappedBy="tags", fetch="EXTRA_LAZY")
      */
     protected $news;
 
