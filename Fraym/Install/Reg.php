@@ -60,56 +60,6 @@ return array(
                 'iconCssClass' => 'fa fa-archive'
             ),
         ),
-        '\Fraym\Route\Entity\VirtualRoute' => array(
-            array(
-                'key' => 'menuControllerAjax',
-                'route' => '/fraym/admin/menu/ajax',
-                'class' => '\Fraym\Menu\MenuController',
-                'method' => 'ajaxHandler'
-            ),
-            array(
-                'key' => 'block',
-                'route' => '/fraym/admin/block',
-                'class' => '\Fraym\Block\BlockController',
-                'method' => 'renderBlock'
-            ),
-            array(
-                'key' => 'adminPanel',
-                'route' => '/fraym/admin/adminpanel',
-                'class' => '\Fraym\SiteManager\SiteManagerController',
-                'method' => 'getAdminPanel'
-            ),
-            array(
-                'key' => 'fileViewer',
-                'route' => '/fraym/admin/fileViewer',
-                'class' => '\Fraym\FileManager\FileManagerController',
-                'method' => 'fileViewer'
-            ),
-            array(
-                'key' => 'fileManager',
-                'route' => '/fraym/admin/filemanager',
-                'class' => '\Fraym\FileManager\FileManagerController',
-                'method' => 'getContent'
-            ),
-            array(
-                'key' => 'menuSelection',
-                'route' => '/fraym/admin/menu/selection',
-                'class' => '\Fraym\Menu\MenuController',
-                'method' => 'getContent'
-            ),
-            array(
-                'key' => 'adminLogin',
-                'route' => '/fraym',
-                'class' => '\Fraym\User\UserController',
-                'method' => 'renderAdminPage'
-            ),
-            array(
-                'key' => 'registryManagerDownload',
-                'route' => '/fraym/registry/download',
-                'class' => '\Fraym\Registry\RegistryManagerController',
-                'method' => 'downloadPackage'
-            ),
-        ),
         '\Fraym\EntityManager\Entity\Entity' => array(
             array(
                 'className' => '\Fraym\User\Entity\User',
@@ -205,10 +155,10 @@ return array(
             array(
                 'name' => 'Configurable template',
                 'description' => 'Add a configurable template to your website.',
-                'class' => '\Fraym\Block\Block',
-                'configMethod' => 'getConfigurableTplBlockConfig',
-                'execMethod' => 'execConfigurableTplBlock',
-                'saveMethod' => 'saveConfigurableTplBlockConfig'
+                'class' => '\Fraym\Template\DynamicTemplate',
+                'configMethod' => 'getBlockConfig',
+                'execMethod' => 'execBlock',
+                'saveMethod' => 'saveBlockConfig'
             ),
             array(
                 'name' => 'Container',

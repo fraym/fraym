@@ -2,8 +2,8 @@
 
 namespace Gedmo\Blameable\Mapping\Driver;
 
-use Gedmo\Mapping\Driver\Xml as BaseXml,
-    Gedmo\Exception\InvalidMappingException;
+use Gedmo\Mapping\Driver\Xml as BaseXml;
+use Gedmo\Exception\InvalidMappingException;
 
 /**
  * This is a xml mapping driver for Blameable
@@ -16,7 +16,6 @@ use Gedmo\Mapping\Driver\Xml as BaseXml,
  */
 class Xml extends BaseXml
 {
-
     /**
      * List of types which are valid for blame
      *
@@ -25,7 +24,8 @@ class Xml extends BaseXml
     private $validTypes = array(
         'one',
         'string',
-        'int',
+        'int', // mongodb driver has both int and integer types
+        'integer',
     );
 
     /**
@@ -118,11 +118,13 @@ class Xml extends BaseXml
      *
      * @param object $meta
      * @param string $field
+     *
      * @return boolean
      */
     protected function isValidField($meta, $field)
     {
         $mapping = $meta->getFieldMapping($field);
+
         return $mapping && in_array($mapping['type'], $this->validTypes);
     }
 }

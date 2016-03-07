@@ -180,7 +180,7 @@ html {
 .block-container .block-info {
     cursor: move;
     line-height: 16px;
-    text-align: left;
+    text-align: center;
     padding: 3px 3px 5px;
 }
 
@@ -195,20 +195,27 @@ html {
 }
 
 .block-container-actionbar a {
-    display: inline;
+    display: inline-block;
     margin-right: 6px;
-    color: #fff;
+    color: #17b813;
     font-size: 14px;
-    border: 1px solid #fff;
-    padding: 2px 8px 3px;
+    vertical-align: top;
+    line-height: 14px;
+    border: 1px solid #17b813;
+    padding: 4px 8px 4px;
     border-radius: 2px;
 }
 
 .block-container-actionbar a:hover,
-.block-holder-actionbar a:hover,
 .block-container-actionbar a:active,
+.block-container-actionbar a:focus {
+    color: #17b813;
+    border: 1px solid #17b813;
+    opacity: 0.8;
+}
+
+.block-holder-actionbar a:hover,
 .block-holder-actionbar a:active,
-.block-container-actionbar a:focus,
 .block-holder-actionbar a:focus
 {
     color: #000;
@@ -221,28 +228,35 @@ html {
     line-height: 21px;
     z-index: 1000;
     position: relative;
-    color: #000;
-    display: none;
+    color: #17b813;
 }
-.block-container-actionbar a {
-    color:#000;
+.block-container-actionbar > a {
+    color:#17b813;
+    background-color: rgb(0, 0, 0);
 }
-.block-container-actionbar span {
+.block-container-actionbar > span {
     font-size: 11px;
-    padding: 3px;
-    border-radius: 4px;
-    color: #a4a4a4;
-    border: 1px solid #a4a4a4;
-    margin-right: 10px;
+    padding: 5px 10px 6px;
+    display: inline-block;
+    border-radius: 2px;
+    color: #17b813;
+    vertical-align: top;
+    line-height: 11px;
+    border: 1px solid #17b813;
+    margin-right: 6px;
+    background-color: rgb(0, 0, 0);
 }
 .block-holder-actionbar {
     color: #fff;
     float: right;
+    position: absolute;
+    right: 0;
+    top: 1px;
 }
-.block-container-actionbar:hover,
-.block-container-content:hover > .block-container-actionbar {
-    display: block;
-}
+/*.block-container-actionbar:hover,*/
+/*.block-container-content:hover > .block-container-actionbar {*/
+    /*!*display: block;*!*/
+/*}*/
 
 .edit-view-content,
 .block-container {
@@ -688,6 +702,10 @@ button.small {
 #block-add-edit-form .table>tbody>tr>td,
 #block-add-edit-form .table>tfoot>tr>td {
     border-top: 0;
+}
+
+a.block-to-top.active {
+    opacity: 0.3;
 }
 
 .ui-draggable .ui-dialog-titlebar-buttons a {

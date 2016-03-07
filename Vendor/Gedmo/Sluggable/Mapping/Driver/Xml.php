@@ -2,8 +2,8 @@
 
 namespace Gedmo\Sluggable\Mapping\Driver;
 
-use Gedmo\Mapping\Driver\Xml as BaseXml,
-    Gedmo\Exception\InvalidMappingException;
+use Gedmo\Mapping\Driver\Xml as BaseXml;
+use Gedmo\Exception\InvalidMappingException;
 
 /**
  * This is a xml mapping driver for Sluggable
@@ -17,7 +17,6 @@ use Gedmo\Mapping\Driver\Xml as BaseXml,
  */
 class Xml extends BaseXml
 {
-
     /**
      * List of types which are valid for slug and sluggable fields
      *
@@ -29,6 +28,7 @@ class Xml extends BaseXml
         'integer',
         'int',
         'datetime',
+        'citext',
     );
 
     /**
@@ -58,7 +58,7 @@ class Xml extends BaseXml
                     if (!$this->isValidField($meta, $field)) {
                         throw new InvalidMappingException("Cannot use field - [{$field}] for slug storage, type is not valid and must be 'string' in class - {$meta->name}");
                     }
-                    $fields = array_map('trim', explode(',', (string)$this->_getAttribute($slug, 'fields')));
+                    $fields = array_map('trim', explode(',', (string) $this->_getAttribute($slug, 'fields')));
                     foreach ($fields as $slugField) {
                         if (!$meta->hasField($slugField)) {
                             throw new InvalidMappingException("Unable to find slug [{$slugField}] as mapped property in entity - {$meta->name}");
@@ -71,11 +71,11 @@ class Xml extends BaseXml
                     $handlers = array();
                     if (isset($slug->handler)) {
                         foreach ($slug->handler as $handler) {
-                            $class = (string)$this->_getAttribute($handler, 'class');
+                            $class = (string) $this->_getAttribute($handler, 'class');
                             $handlers[$class] = array();
                             foreach ($handler->{'handler-option'} as $option) {
-                                $handlers[$class][(string)$this->_getAttribute($option, 'name')]
-                                    = (string)$this->_getAttribute($option, 'value')
+                                $handlers[$class][(string) $this->_getAttribute($option, 'name')]
+                                    = (string) $this->_getAttribute($option, 'value')
                                 ;
                             }
                             $class::validate($handlers[$class], $meta);
@@ -94,8 +94,8 @@ class Xml extends BaseXml
                             $this->_getAttribute($slug, 'dateFormat') : 'Y-m-d-H:i',
                         'unique' => $this->_isAttributeSet($slug, 'unique') ?
                             $this->_getBooleanAttribute($slug, 'unique') : true,
-                        'unique_base' => $this->_isAttributeSet($slug, 'unique_base') ?
-                            $this->_getAttribute($slug, 'unique_base') : null,
+                        'unique_base' => $this->_isAttributeSet($slug, 'unique-base') ?
+                            $this->_getAttribute($slug, 'unique-base') : null,
                         'separator' => $this->_isAttributeSet($slug, 'separator') ?
                             $this->_getAttribute($slug, 'separator') : '-',
                         'prefix' => $this->_isAttributeSet($slug, 'prefix') ?
@@ -111,7 +111,7 @@ class Xml extends BaseXml
                     if ($config['slugs'][$field]['unique'] === false && $ubase) {
                         throw new InvalidMappingException("Slug annotation [unique_base] can not be set if unique is unset or 'false'");
                     }
-                    if ($ubase && !$this->isValidField($meta, $ubase) && !$meta->hasAssociation($ubase)) {
+                    if ($ubase && !$meta->hasField($ubase) && !$meta->hasAssociation($ubase)) {
                         throw new InvalidMappingException("Unable to find [{$ubase}] as mapped property in entity - {$meta->name}");
                     }
                 }
@@ -124,11 +124,13 @@ class Xml extends BaseXml
      *
      * @param object $meta
      * @param string $field
+     *
      * @return boolean
      */
     protected function isValidField($meta, $field)
     {
         $mapping = $meta->getFieldMapping($field);
+
         return $mapping && in_array($mapping['type'], $this->validTypes);
     }
 }

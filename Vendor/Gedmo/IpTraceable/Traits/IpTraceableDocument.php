@@ -2,6 +2,9 @@
 
 namespace Gedmo\IpTraceable\Traits;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Gedmo\Mapping\Annotation as Gedmo;
+
 /**
  * IpTraceable Trait, usable with PHP >= 5.4
  *
@@ -11,16 +14,18 @@ namespace Gedmo\IpTraceable\Traits;
 trait IpTraceableDocument
 {
     /**
+     * @var string
      * @Gedmo\IpTraceable(on="create")
      * @ODM\String
      */
-    private $createdFromIp;
+    protected $createdFromIp;
 
     /**
+     * @var string
      * @Gedmo\IpTraceable(on="update")
      * @ODM\String
      */
-    private $updatedFromIp;
+    protected $updatedFromIp;
 
     /**
      * Sets createdFromIp.

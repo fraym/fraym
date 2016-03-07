@@ -19,10 +19,11 @@
 
 namespace Doctrine\Common\Proxy;
 
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\Mapping\ClassMetadataFactory;
 use Doctrine\Common\Proxy\Exception\InvalidArgumentException;
+use Doctrine\Common\Proxy\Exception\OutOfBoundsException;
 use Doctrine\Common\Util\ClassUtils;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 
 /**
  * Abstract factory for proxy objects.
@@ -86,7 +87,7 @@ abstract class AbstractProxyFactory
     /**
      * @var \Doctrine\Common\Proxy\ProxyDefinition[]
      */
-    private $definitions = array();
+    private $definitions = [];
 
     /**
      * @param \Doctrine\Common\Proxy\ProxyGenerator                     $proxyGenerator
@@ -108,6 +109,8 @@ abstract class AbstractProxyFactory
      * @param  array  $identifier
      *
      * @return \Doctrine\Common\Proxy\Proxy
+     *
+     * @throws \Doctrine\Common\Proxy\Exception\OutOfBoundsException
      */
     public function getProxy($className, array $identifier)
     {
@@ -118,6 +121,10 @@ abstract class AbstractProxyFactory
         $proxy      = new $fqcn($definition->initializer, $definition->cloner);
 
         foreach ($definition->identifierFields as $idField) {
+            if (! isset($identifier[$idField])) {
+                throw OutOfBoundsException::missingPrimaryKeyValue($className, $idField);
+            }
+
             $definition->reflectionFields[$idField]->setValue($proxy, $identifier[$idField]);
         }
 
@@ -182,6 +189,8 @@ abstract class AbstractProxyFactory
     /**
      * Get a proxy definition for the given class name.
      *
+     * @param string $className
+     *
      * @return ProxyDefinition
      */
     private function getProxyDefinition($className)
@@ -225,13 +234,15 @@ abstract class AbstractProxyFactory
      * Determine if this class should be skipped during proxy generation.
      *
      * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $metadata
+     *
      * @return bool
      */
     abstract protected function skipClass(ClassMetadata $metadata);
 
     /**
+     * @param string $className
+     *
      * @return ProxyDefinition
      */
     abstract protected function createProxyDefinition($className);
 }
-

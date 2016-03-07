@@ -2,9 +2,9 @@
 
 namespace Gedmo\SoftDeleteable\Filter;
 
-use Doctrine\ORM\Mapping\ClassMetaData,
-    Doctrine\ORM\Query\Filter\SQLFilter,
-    Gedmo\SoftDeleteable\SoftDeleteableListener;
+use Doctrine\ORM\Mapping\ClassMetaData;
+use Doctrine\ORM\Query\Filter\SQLFilter;
+use Gedmo\SoftDeleteable\SoftDeleteableListener;
 
 /**
  * The SoftDeleteableFilter adds the condition necessary to
@@ -43,9 +43,10 @@ class SoftDeleteableFilter extends SQLFilter
 
         $addCondSql = $platform->getIsNullExpression($targetTableAlias.'.'.$column);
         if (isset($config['timeAware']) && $config['timeAware']) {
-            $now = $conn->quote(date('Y-m-d H:i:s')); // should use UTC in database and PHP
+            $now = $conn->quote(date($platform->getDateTimeFormatString())); // should use UTC in database and PHP
             $addCondSql = "({$addCondSql} OR {$targetTableAlias}.{$column} > {$now})";
         }
+
         return $addCondSql;
     }
 

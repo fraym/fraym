@@ -20,6 +20,7 @@ Core.$ = {
     BLOCK_TEMPLATE_SELECTION: '#template',
     BLOCK_TEMPLATE_SELECTION_CUSTOM: 'option[value=custom]',
     BLOCK_VIEW_CONTAINER: '.edit-view-content',
+    BLOCK_BLOCK_TO_TOP: '.block-to-top',
     BLOCK_VIEW_INFO_CONTAINER: '.edit-view-bar',
     BLOCK_DIALOG: '.block-dialog',
     BLOCK_CURRENT_INPUT: '[name=currentBlockId]',

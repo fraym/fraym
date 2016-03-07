@@ -1,5 +1,6 @@
 {if $inEditMode}
-    <div id="{$contentId}-block-container-actionbar" class="block-container-actionbar">
+    <div id="{$contentId}-block-container-actionbar" class="block-container-actionbar" data-toggle="tooltip" data-placement="bottom" title="{$description}" style="{$actionBarStyle}">
+        <a class="block-to-top" href="#" title="{_('Block to top', 'FRAYM_ADMIN_BLOCK_TO_TOP')}"><i class="fa fa-caret-square-o-up"></i></a>
         <span>{_('Container Id', 'FRAYM_CONTAINER_ID')}: {$contentId}</span>
         <a class="add" href="#" title="{_('Add block', 'FRAYM_ADMIN_CONTEXT_MENU_ADD_BLOCK')}"><i class="fa fa-plus"></i></a>
         <a class="paste" href="#" title="{_('Paste block', 'FRAYM_ADMIN_CONTEXT_MENU_PASTE_BLOCK')}"><i class="fa fa-clipboard"></i></a>
@@ -13,9 +14,4 @@
 
 {if($renderElement && $inEditMode == false) || ($renderElement == false && $inEditMode == true) || ($renderElement && $inEditMode)}
 </{$htmlElement}>
-{/if}
-{if $inEditMode}
-<script type="text/javascript">
-    $(function(){ Core.Block.addViewActions('{$contentId}'); });
-</script>
 {/if}

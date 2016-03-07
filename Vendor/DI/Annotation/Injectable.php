@@ -1,18 +1,12 @@
 <?php
-/**
- * PHP-DI
- *
- * @link      http://mnapoli.github.io/PHP-DI/
- * @copyright Matthieu Napoli (http://mnapoli.fr/)
- * @license   http://www.opensource.org/licenses/mit-license.php MIT (see the LICENSE file)
- */
 
 namespace DI\Annotation;
 
 use DI\Scope;
+use UnexpectedValueException;
 
 /**
- * "Injectable" annotation
+ * "Injectable" annotation.
  *
  * Marks a class as injectable
  *
@@ -25,14 +19,14 @@ use DI\Scope;
 final class Injectable
 {
     /**
-     * The scope of an class: prototype, singleton
-     * @var Scope|null
+     * The scope of an class: prototype, singleton.
+     * @var string|null
      */
     private $scope;
 
     /**
-     * Should the object be lazy-loaded
-     * @var boolean|null
+     * Should the object be lazy-loaded.
+     * @var bool|null
      */
     private $lazy;
 
@@ -42,15 +36,21 @@ final class Injectable
     public function __construct(array $values)
     {
         if (isset($values['scope'])) {
-            $this->scope = new Scope($values['scope']);
+            if ($values['scope'] === 'prototype') {
+                $this->scope = Scope::PROTOTYPE;
+            } elseif ($values['scope'] === 'singleton') {
+                $this->scope = Scope::SINGLETON;
+            } else {
+                throw new UnexpectedValueException(sprintf("Value '%s' is not a valid scope", $values['scope']));
+            }
         }
         if (isset($values['lazy'])) {
-            $this->lazy = (boolean) $values['lazy'];
+            $this->lazy = (bool) $values['lazy'];
         }
     }
 
     /**
-     * @return Scope|null
+     * @return string|null
      */
     public function getScope()
     {
@@ -58,7 +58,7 @@ final class Injectable
     }
 
     /**
-     * @return boolean|null
+     * @return bool|null
      */
     public function isLazy()
     {

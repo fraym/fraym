@@ -164,6 +164,26 @@ class ForeignKeyConstraint extends AbstractAsset implements Constraint
     }
 
     /**
+     * Returns unquoted representation of local table column names for comparison with other FK
+     *
+     * @return array
+     */
+    public function getUnquotedLocalColumns()
+    {
+        return array_map(array($this, 'trimQuotes'), $this->getLocalColumns());
+    }
+
+    /**
+     * Returns unquoted representation of foreign table column names for comparison with other FK
+     *
+     * @return array
+     */
+    public function getUnquotedForeignColumns()
+    {
+        return array_map(array($this, 'trimQuotes'), $this->getForeignColumns());
+    }
+
+    /**
      * {@inheritdoc}
      *
      * @see getLocalColumns
@@ -211,6 +231,7 @@ class ForeignKeyConstraint extends AbstractAsset implements Constraint
     public function getUnqualifiedForeignTableName()
     {
         $parts = explode(".", $this->_foreignTableName->getName());
+
         return strtolower(end($parts));
     }
 
@@ -342,5 +363,27 @@ class ForeignKeyConstraint extends AbstractAsset implements Constraint
 
         return false;
     }
-}
 
+    /**
+     * Checks whether this foreign key constraint intersects the given index columns.
+     *
+     * Returns `true` if at least one of this foreign key's local columns
+     * matches one of the given index's columns, `false` otherwise.
+     *
+     * @param Index $index The index to be checked against.
+     *
+     * @return boolean
+     */
+    public function intersectsIndexColumns(Index $index)
+    {
+        foreach ($index->getColumns() as $indexColumn) {
+            foreach ($this->_localColumnNames as $localColumn) {
+                if (strtolower($indexColumn) === strtolower($localColumn->getName())) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+}

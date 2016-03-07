@@ -16,10 +16,3 @@
     {{$content}}
     </div>
 </div>
-
-
-{if $type !== 'content'}
-    <script type="text/javascript">
-        $(function(){ Core.Block.addBlockActions('{$id}'); });
-    </script>
-{/if}

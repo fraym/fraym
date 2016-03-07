@@ -2,6 +2,8 @@
 
 namespace Gedmo\SoftDeleteable\Traits;
 
+use Doctrine\ORM\Mapping as ORM;
+
 /**
  * SoftDeletable Trait, usable with PHP >= 5.4
  *
@@ -11,6 +13,7 @@ namespace Gedmo\SoftDeleteable\Traits;
 trait SoftDeleteableEntity
 {
     /**
+     * @var \DateTime
      * @ORM\Column(type="datetime", nullable=true)
      */
     protected $deletedAt;
@@ -19,7 +22,7 @@ trait SoftDeleteableEntity
      * Sets deletedAt.
      *
      * @param \Datetime|null $deletedAt
-     * 
+     *
      * @return $this
      */
     public function setDeletedAt(\DateTime $deletedAt = null)
@@ -38,10 +41,10 @@ trait SoftDeleteableEntity
     {
         return $this->deletedAt;
     }
-    
+
     /**
      * Is deleted?
-     * 
+     *
      * @return bool
      */
     public function isDeleted()

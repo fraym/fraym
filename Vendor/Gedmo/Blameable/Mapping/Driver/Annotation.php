@@ -2,9 +2,8 @@
 
 namespace Gedmo\Blameable\Mapping\Driver;
 
-use Gedmo\Mapping\Driver\AbstractAnnotationDriver,
-    Doctrine\Common\Annotations\AnnotationReader,
-    Gedmo\Exception\InvalidMappingException;
+use Gedmo\Mapping\Driver\AbstractAnnotationDriver;
+use Gedmo\Exception\InvalidMappingException;
 
 /**
  * This is an annotation mapping driver for Blameable
@@ -30,7 +29,8 @@ class Annotation extends AbstractAnnotationDriver
     protected $validTypes = array(
         'one',
         'string',
-        'int',
+        'int', // mongodb driver has both int and integer types
+        'integer',
     );
 
     /**

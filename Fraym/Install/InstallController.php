@@ -73,7 +73,7 @@ class InstallController extends \Fraym\Core
     public function setup()
     {
         if (is_file($this->_configFile) && filesize($this->_configFile) > 0) {
-            $this->response->send('Fraym is already installed!')->sendHTTPStatusCode(404)->finish();
+            $this->response->send('Fraym is already installed! Delete Config.php to reinstall.')->sendHTTPStatusCode(404)->finish();
         }
 
         $this->view->assign('timezones', $this->getTimezones());
@@ -364,37 +364,6 @@ class InstallController extends \Fraym\Core
         );
         $newPageTranslation->longDescription = $this->translation->autoTranslation(
             '404 Page not found',
-            'en',
-            $gp->locale
-        );
-        $newPageTranslation->externalUrl = false;
-        $this->db->persist($newPageTranslation);
-
-        /**
-         * Blog Page
-         */
-        $newPage = new \Fraym\Menu\Entity\MenuItem();
-        $newPage->site = $site;
-        $newPage->caching = true;
-        $newPage->visible = true;
-        $newPage->active = true;
-        $newPage->https = false;
-        $newPage->checkPermission = false;
-        $newPage->is404 = false;
-        $newPage->parent = $pageRoot;
-
-        $newPageTranslation = new \Fraym\Menu\Entity\MenuItemTranslation();
-        $newPageTranslation->menuItem = $newPage;
-        $newPageTranslation->title = $this->translation->autoTranslation('Blog', 'en', $gp->locale);
-        $newPageTranslation->subtitle = $this->translation->autoTranslation('This is my blog.', 'en', $gp->locale);
-        $newPageTranslation->url = "blog";
-        $newPageTranslation->shortDescription = $this->translation->autoTranslation(
-            'Check out my blog.',
-            'en',
-            $gp->locale
-        );
-        $newPageTranslation->longDescription = $this->translation->autoTranslation(
-            'Check out my blog.',
             'en',
             $gp->locale
         );

@@ -73,10 +73,17 @@
                             </div>
 
                             <div class="form-group">
-                                <div class="col-lg-offset-2 col-lg-10">
+                                <div class="col-xs-3">
                                     <div class="checkbox">
                                         <label>
-                                            <input name="menu[translations][{$locale.id}][externalUrl]" type="checkbox" value="1"{if $menuItem && $localeMenuItem.externalUrl == true} checked="checked"{/if}/> {_("Is URL External")}?
+                                            <input name="menu[translations][{$locale.id}][externalUrl]" type="checkbox" value="1"{if $menuItem && $localeMenuItem.externalUrl == true} checked="checked"{/if}/> {_("Is URL external")}?
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-xs-3">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input name="menu[translations][{$locale.id}][anchor]" type="checkbox" value="1"{if $menuItem && $localeMenuItem.anchor == true} checked="checked"{/if}/> {_("Is anchor")}?
                                         </label>
                                     </div>
                                 </div>

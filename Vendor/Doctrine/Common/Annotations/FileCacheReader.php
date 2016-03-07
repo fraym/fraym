@@ -19,12 +19,15 @@
 
 namespace Doctrine\Common\Annotations;
 
-
 /**
  * File cache reader for annotations.
  *
  * @author Johannes M. Schmitt <schmittjoh@gmail.com>
  * @author Benjamin Eberlei <kontakt@beberlei.de>
+ *
+ * @deprecated the FileCacheReader is deprecated and will be removed
+ *             in version 2.0.0 of doctrine/annotations. Please use the
+ *             {@see \Doctrine\Common\Annotations\CachedReader} instead.
  */
 class FileCacheReader implements Reader
 {
@@ -48,25 +51,39 @@ class FileCacheReader implements Reader
      */
     private $loadedAnnotations = array();
 
+    /**
+     * @var array
+     */
     private $classNameHashes = array();
 
     /**
-     * Constructor
+     * @var int
+     */
+    private $umask;
+
+    /**
+     * Constructor.
      *
-     * @param Reader $reader
-     * @param string $cacheDir
-     * @param bool $debug
+     * @param Reader  $reader
+     * @param string  $cacheDir
+     * @param boolean $debug
      *
      * @throws \InvalidArgumentException
      */
-    public function __construct(Reader $reader, $cacheDir, $debug = false)
+    public function __construct(Reader $reader, $cacheDir, $debug = false, $umask = 0002)
     {
-        $this->reader = $reader;
-        if (!is_dir($cacheDir) && !@mkdir($cacheDir, 0777, true)) {
-            throw new \InvalidArgumentException(sprintf('The directory "%s" does not exist and could not be created.', $cacheDir));
+        if ( ! is_int($umask)) {
+            throw new \InvalidArgumentException(sprintf(
+                'The parameter umask must be an integer, was: %s',
+                gettype($umask)
+            ));
         }
-        if (!is_writable($cacheDir)) {
-            throw new \InvalidArgumentException(sprintf('The directory "%s" is not writable. Both, the webserver and the console user need access. You can manage access rights for multiple users with "chmod +a". If your system does not support this, check out the acl package.', $cacheDir));
+
+        $this->reader = $reader;
+        $this->umask = $umask;
+
+        if (!is_dir($cacheDir) && !@mkdir($cacheDir, 0777 & (~$this->umask), true)) {
+            throw new \InvalidArgumentException(sprintf('The directory "%s" does not exist and could not be created.', $cacheDir));
         }
 
         $this->dir   = rtrim($cacheDir, '\\/');
@@ -74,10 +91,7 @@ class FileCacheReader implements Reader
     }
 
     /**
-     * Retrieve annotations for class
-     *
-     * @param \ReflectionClass $class
-     * @return array
+     * {@inheritDoc}
      */
     public function getClassAnnotations(\ReflectionClass $class)
     {
@@ -111,10 +125,7 @@ class FileCacheReader implements Reader
     }
 
     /**
-     * Get annotations for property
-     *
-     * @param \ReflectionProperty $property
-     * @return array
+     * {@inheritDoc}
      */
     public function getPropertyAnnotations(\ReflectionProperty $property)
     {
@@ -149,10 +160,7 @@ class FileCacheReader implements Reader
     }
 
     /**
-     * Retrieve annotations for method
-     *
-     * @param \ReflectionMethod $method
-     * @return array
+     * {@inheritDoc}
      */
     public function getMethodAnnotations(\ReflectionMethod $method)
     {
@@ -187,24 +195,41 @@ class FileCacheReader implements Reader
     }
 
     /**
-     * Save cache file
+     * Saves the cache file.
      *
      * @param string $path
-     * @param mixed $data
+     * @param mixed  $data
+     *
+     * @return void
      */
     private function saveCacheFile($path, $data)
     {
-        file_put_contents($path, '<?php return unserialize('.var_export(serialize($data), true).');');
+        if (!is_writable($this->dir)) {
+            throw new \InvalidArgumentException(sprintf('The directory "%s" is not writable. Both, the webserver and the console user need access. You can manage access rights for multiple users with "chmod +a". If your system does not support this, check out the acl package.', $this->dir));
+        }
+
+        $tempfile = tempnam($this->dir, uniqid('', true));
+
+        if (false === $tempfile) {
+            throw new \RuntimeException(sprintf('Unable to create tempfile in directory: %s', $this->dir));
+        }
+
+        $written = file_put_contents($tempfile, '<?php return unserialize('.var_export(serialize($data), true).');');
+
+        if (false === $written) {
+            throw new \RuntimeException(sprintf('Unable to write cached file to: %s', $tempfile));
+        }
+
+        @chmod($tempfile, 0666 & (~$this->umask));
+
+        if (false === rename($tempfile, $path)) {
+            @unlink($tempfile);
+            throw new \RuntimeException(sprintf('Unable to rename %s to %s', $tempfile, $path));
+        }
     }
 
     /**
-     * Gets a class annotation.
-     *
-     * @param \ReflectionClass $class The ReflectionClass of the class from which
-     *                               the class annotations should be read.
-     * @param string $annotationName The name of the annotation.
-     *
-     * @return mixed The Annotation or NULL, if the requested annotation does not exist.
+     * {@inheritDoc}
      */
     public function getClassAnnotation(\ReflectionClass $class, $annotationName)
     {
@@ -220,11 +245,7 @@ class FileCacheReader implements Reader
     }
 
     /**
-     * Gets a method annotation.
-     *
-     * @param \ReflectionMethod $method
-     * @param string $annotationName The name of the annotation.
-     * @return mixed The Annotation or NULL, if the requested annotation does not exist.
+     * {@inheritDoc}
      */
     public function getMethodAnnotation(\ReflectionMethod $method, $annotationName)
     {
@@ -240,11 +261,7 @@ class FileCacheReader implements Reader
     }
 
     /**
-     * Gets a property annotation.
-     *
-     * @param \ReflectionProperty $property
-     * @param string $annotationName The name of the annotation.
-     * @return mixed The Annotation or NULL, if the requested annotation does not exist.
+     * {@inheritDoc}
      */
     public function getPropertyAnnotation(\ReflectionProperty $property, $annotationName)
     {
@@ -260,7 +277,9 @@ class FileCacheReader implements Reader
     }
 
     /**
-     * Clear stores annotations
+     * Clears loaded annotations.
+     *
+     * @return void
      */
     public function clearLoadedAnnotations()
     {

@@ -4,7 +4,6 @@ namespace Gedmo\Translatable\Mapping\Event\Adapter;
 
 use Gedmo\Mapping\Event\Adapter\ODM as BaseAdapterODM;
 use Gedmo\Tool\Wrapper\AbstractWrapper;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo;
 use Doctrine\ODM\MongoDB\Cursor;
 use Gedmo\Translatable\Mapping\Event\TranslatableAdapter;
@@ -62,10 +61,11 @@ final class ODM extends BaseAdapterODM implements TranslatableAdapter
                         if ($trans->getLocale() === $locale) {
                             $result[] = array(
                                 'field' => $trans->getField(),
-                                'content' => $trans->getContent()
+                                'content' => $trans->getContent(),
                             );
                         }
                     }
+
                     return $result;
                 }
             }
@@ -91,6 +91,7 @@ final class ODM extends BaseAdapterODM implements TranslatableAdapter
         if ($result instanceof Cursor) {
             $result = $result->toArray();
         }
+
         return $result;
     }
 
@@ -117,6 +118,7 @@ final class ODM extends BaseAdapterODM implements TranslatableAdapter
         if ($result instanceof Cursor) {
             $result = current($result->toArray());
         }
+
         return $result;
     }
 
@@ -137,6 +139,7 @@ final class ODM extends BaseAdapterODM implements TranslatableAdapter
             $qb->field('objectClass')->equals($objectClass);
         }
         $q = $qb->getQuery();
+
         return $q->execute();
     }
 
@@ -174,6 +177,7 @@ final class ODM extends BaseAdapterODM implements TranslatableAdapter
         if ($value === false) {
             $value = $wrapped->getPropertyValue($field);
         }
+
         return $type->convertToDatabaseValue($value);
     }
 

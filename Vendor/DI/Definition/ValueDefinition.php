@@ -1,11 +1,4 @@
 <?php
-/**
- * PHP-DI
- *
- * @link      http://mnapoli.github.io/PHP-DI/
- * @copyright Matthieu Napoli (http://mnapoli.fr/)
- * @license   http://www.opensource.org/licenses/mit-license.php MIT (see the LICENSE file)
- */
 
 namespace DI\Definition;
 
@@ -19,7 +12,7 @@ use DI\Scope;
 class ValueDefinition implements Definition
 {
     /**
-     * Entry name
+     * Entry name.
      * @var string
      */
     private $name;
@@ -54,7 +47,7 @@ class ValueDefinition implements Definition
      */
     public function getScope()
     {
-        return Scope::SINGLETON();
+        return Scope::SINGLETON;
     }
 
     /**

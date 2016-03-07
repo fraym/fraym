@@ -141,6 +141,13 @@ Core.Block = {
 		Core.Block.initBlockDragging();
 		Core.Block.History.init();
 
+		$.each($(Core.$.BLOCK_HOLDER), function(){
+			Core.Block.addBlockActions($(this).attr('data-id'));
+		});
+		$.each($(Core.$.BLOCK_VIEW_CONTAINER), function(){
+			Core.Block.addViewActions($(this).attr('id'));
+		});
+
 		if(typeof $.cookie != 'undefined') {
 			if(typeof $.cookie('copy') != 'undefined') {
 				Core.Block.copyBlock($.cookie('copy'));
@@ -155,6 +162,17 @@ Core.Block = {
 			}
 			e.preventDefault();
 			Core.Admin.setEditMode();
+		});
+
+		$(Core.$.BLOCK_BLOCK_TO_TOP).click(function(){
+			var $container = $(this).parents('.block-container-content:first, .block-container:first');
+			if($(this).hasClass('active')) {
+				$(this).removeClass('active');
+				$container.css('z-index', '');
+			} else {
+				$(this).addClass('active');
+				$container.css('z-index', '9000');
+			}
 		});
 
 		if (Core.Admin.isMobile() == false) {

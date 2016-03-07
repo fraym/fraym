@@ -4,7 +4,6 @@ namespace Gedmo\Tree\Strategy\ORM;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Version;
-use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\Common\Persistence\ObjectManager;
@@ -27,7 +26,7 @@ class Closure implements Strategy
     /**
      * TreeListener
      *
-     * @var AbstractTreeListener
+     * @var TreeListener
      */
     protected $listener = null;
 
@@ -96,12 +95,12 @@ class Closure implements Strategy
                         'onDelete' => 'CASCADE',
                         'onUpdate' => null,
                         'columnDefinition' => null,
-                    )
+                    ),
                 ),
                 'inversedBy' => null,
                 'targetEntity' => $meta->name,
                 'cascade' => null,
-                'fetch' => ClassMetadataInfo::FETCH_LAZY
+                'fetch' => ClassMetadataInfo::FETCH_LAZY,
             );
             $closureMetadata->mapManyToOne($ancestorMapping);
             if (Version::compare('2.3.0-dev') <= 0) {
@@ -126,12 +125,12 @@ class Closure implements Strategy
                         'onDelete' => 'CASCADE',
                         'onUpdate' => null,
                         'columnDefinition' => null,
-                    )
+                    ),
                 ),
                 'inversedBy' => null,
                 'targetEntity' => $meta->name,
                 'cascade' => null,
-                'fetch' => ClassMetadataInfo::FETCH_LAZY
+                'fetch' => ClassMetadataInfo::FETCH_LAZY,
             );
             $closureMetadata->mapManyToOne($descendantMapping);
             if (Version::compare('2.3.0-dev') <= 0) {
@@ -142,17 +141,17 @@ class Closure implements Strategy
             }
         }
         // create unique index on ancestor and descendant
-        $indexName = substr(strtoupper("IDX_" . md5($closureMetadata->name)), 0, 20);
+        $indexName = substr(strtoupper("IDX_".md5($closureMetadata->name)), 0, 20);
         $closureMetadata->table['uniqueConstraints'][$indexName] = array(
             'columns' => array(
                 $this->getJoinColumnFieldName($em->getClassMetadata($config['closure'])->getAssociationMapping('ancestor')),
-                $this->getJoinColumnFieldName($em->getClassMetadata($config['closure'])->getAssociationMapping('descendant'))
-            )
+                $this->getJoinColumnFieldName($em->getClassMetadata($config['closure'])->getAssociationMapping('descendant')),
+            ),
         );
-        // this one may not be very usefull
-        $indexName = substr(strtoupper("IDX_" . md5($meta->name . 'depth')), 0, 20);
+        // this one may not be very useful
+        $indexName = substr(strtoupper("IDX_".md5($meta->name.'depth')), 0, 20);
         $closureMetadata->table['indexes'][$indexName] = array(
-            'columns' => array('depth')
+            'columns' => array('depth'),
         );
         if ($cacheDriver = $cmf->getCacheDriver()) {
             $cacheDriver->save($closureMetadata->name."\$CLASSMETADATA", $closureMetadata, null);
@@ -163,7 +162,8 @@ class Closure implements Strategy
      * {@inheritdoc}
      */
     public function onFlushEnd($em, AdapterInterface $ea)
-    {}
+    {
+    }
 
     /**
      * {@inheritdoc}
@@ -177,25 +177,29 @@ class Closure implements Strategy
      * {@inheritdoc}
      */
     public function processPreUpdate($em, $node)
-    {}
+    {
+    }
 
     /**
      * {@inheritdoc}
      */
     public function processPreRemove($em, $node)
-    {}
+    {
+    }
 
      /**
      * {@inheritdoc}
      */
     public function processScheduledInsertion($em, $node, AdapterInterface $ea)
-    {}
+    {
+    }
 
     /**
      * {@inheritdoc}
      */
     public function processScheduledDelete($em, $entity)
-    {}
+    {
+    }
 
     protected function getJoinColumnFieldName($association)
     {
@@ -224,7 +228,8 @@ class Closure implements Strategy
      * {@inheritdoc}
      */
     public function processPostRemove($em, $entity, AdapterInterface $ea)
-    {}
+    {
+    }
 
     /**
      * {@inheritdoc}
@@ -249,12 +254,15 @@ class Closure implements Strategy
             $descendantColumnName = $this->getJoinColumnFieldName($em->getClassMetadata($config['closure'])->getAssociationMapping('descendant'));
             $depthColumnName = $em->getClassMetadata($config['closure'])->getColumnName('depth');
 
+            $referenceMapping = $em->getClassMetadata($config['closure'])->getAssociationMapping('ancestor');
+            $referenceId = $referenceMapping['sourceToTargetKeyColumns'][$ancestorColumnName];
+            
             $entries = array(
                 array(
                     $ancestorColumnName => $nodeId,
                     $descendantColumnName => $nodeId,
-                    $depthColumnName => 0
-                )
+                    $depthColumnName => 0,
+                ),
             );
 
             if ($parent) {
@@ -267,18 +275,20 @@ class Closure implements Strategy
 
                 foreach ($ancestors as $ancestor) {
                     $entries[] = array(
-                        $ancestorColumnName => $ancestor['ancestor']['id'],
+                        $ancestorColumnName => $ancestor['ancestor'][$referenceId],
                         $descendantColumnName => $nodeId,
-                        $depthColumnName => $ancestor['depth'] + 1
+                        $depthColumnName => $ancestor['depth'] + 1,
                     );
                 }
 
                 if (isset($config['level'])) {
                     $this->pendingNodesLevelProcess[$nodeId] = $node;
                 }
-            } else if (isset($config['level'])) {
+            } elseif (isset($config['level'])) {
                 $uow->scheduleExtraUpdate($node, array($config['level'] => array(null, 1)));
                 $ea->setOriginalObjectProperty($uow, spl_object_hash($node), $config['level'], 1);
+                $levelProp = $meta->getReflectionProperty($config['level']);
+                $levelProp->setValue($node, 1);
             }
 
             foreach ($entries as $closure) {
@@ -332,23 +342,33 @@ class Closure implements Strategy
             $type = 'integer' === $mapping['type'] ? Connection::PARAM_INT_ARRAY : Connection::PARAM_STR_ARRAY;
 
             // We calculate levels for all nodes
-            $sql = 'SELECT c.descendant, MAX(c.depth) + 1 AS level ';
+            $sql = 'SELECT c.descendant, MAX(c.depth) + 1 AS levelNum ';
             $sql .= 'FROM '.$closureMeta->getTableName().' c ';
             $sql .= 'WHERE c.descendant IN (?) ';
             $sql .= 'GROUP BY c.descendant';
 
-            $levels = $em->getConnection()->executeQuery($sql, array(array_keys($this->pendingNodesLevelProcess)), array($type))->fetchAll(\PDO::FETCH_KEY_PAIR);
+            $levelsAssoc = $em->getConnection()->executeQuery($sql, array(array_keys($this->pendingNodesLevelProcess)), array($type))->fetchAll(\PDO::FETCH_NUM);
+            
+            //create key pair array with resultset
+            $levels = array();
+            foreach( $levelsAssoc as $level )
+            {
+                $levels[$level[0]] = $level[1];
+            }
+            $levelsAssoc = null;
 
             // Now we update levels
             foreach ($this->pendingNodesLevelProcess as $nodeId => $node) {
                 // Update new level
                 $level = $levels[$nodeId];
+                $levelProp = $meta->getReflectionProperty($config['level']);
                 $uow->scheduleExtraUpdate(
                     $node,
                     array($config['level'] => array(
-                        $meta->getReflectionProperty($config['level'])->getValue($node), $level
+                        $levelProp->getValue($node), $level,
                     ))
                 );
+                $levelProp->setValue($node, $level);
                 $uow->setOriginalEntityProperty(spl_object_hash($node), $config['level'], $level);
             }
 
@@ -374,7 +394,7 @@ class Closure implements Strategy
             if ($parent && !$parent->getIdentifier()) {
                 $this->pendingNodeUpdates[spl_object_hash($node)] = array(
                     'node'      => $node,
-                    'oldParent' => $changeSet[$config['parent']][0]
+                    'oldParent' => $changeSet[$config['parent']][0],
                 );
             } else {
                 $this->updateNode($em, $node, $changeSet[$config['parent']][0]);
@@ -386,8 +406,8 @@ class Closure implements Strategy
      * Update node and closures
      *
      * @param EntityManager $em
-     * @param object $node
-     * @param object $oldParent
+     * @param object        $node
+     * @param object        $oldParent
      */
     public function updateNode(EntityManager $em, $node, $oldParent)
     {
@@ -419,7 +439,7 @@ class Closure implements Strategy
 
             $ids = $conn->fetchAll($subQuery, compact('nodeId'));
             if ($ids) {
-                $ids = array_map(function($el) {
+                $ids = array_map(function ($el) {
                     return $el['id'];
                 }, $ids);
             }

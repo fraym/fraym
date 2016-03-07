@@ -2,6 +2,9 @@
 
 namespace Gedmo\Blameable\Traits;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Gedmo\Mapping\Annotation as Gedmo;
+
 /**
  * Blameable Trait, usable with PHP >= 5.4
  *
@@ -11,16 +14,18 @@ namespace Gedmo\Blameable\Traits;
 trait BlameableDocument
 {
     /**
+     * @var string
      * @Gedmo\Blameable(on="create")
      * @ODM\String
      */
-    private $createdBy;
+    protected $createdBy;
 
     /**
+     * @var string
      * @Gedmo\Blameable(on="update")
      * @ODM\String
      */
-    private $updatedBy;
+    protected $updatedBy;
 
     /**
      * Sets createdBy.

@@ -2,9 +2,9 @@
 
 namespace Gedmo\Blameable\Mapping\Driver;
 
-use Gedmo\Mapping\Driver\File,
-    Gedmo\Mapping\Driver,
-    Gedmo\Exception\InvalidMappingException;
+use Gedmo\Mapping\Driver\File;
+use Gedmo\Mapping\Driver;
+use Gedmo\Exception\InvalidMappingException;
 
 /**
  * This is a yaml mapping driver for Blameable
@@ -31,7 +31,8 @@ class Yaml extends File implements Driver
     private $validTypes = array(
         'one',
         'string',
-        'int',
+        'int', // mongodb driver has both int and integer types
+        'integer',
     );
 
     /**
@@ -82,7 +83,7 @@ class Yaml extends File implements Driver
                     if (!isset($mappingProperty['on']) || !in_array($mappingProperty['on'], array('update', 'create', 'change'))) {
                         throw new InvalidMappingException("Field - [{$field}] trigger 'on' is not one of [update, create, change] in class - {$meta->name}");
                     }
-                
+
                     if ($mappingProperty['on'] == 'change') {
                         if (!isset($mappingProperty['field'])) {
                             throw new InvalidMappingException("Missing parameters on property - {$field}, field must be set on [change] trigger in class - {$meta->name}");
@@ -109,19 +110,21 @@ class Yaml extends File implements Driver
      */
     protected function _loadMappingFile($file)
     {
-        return \Symfony\Component\Yaml\Yaml::parse($file);
+        return \Symfony\Component\Yaml\Yaml::parse(file_get_contents($file));
     }
 
     /**
      * Checks if $field type is valid
      *
      * @param \Doctrine\ODM\MongoDB\Mapping\ClassMetadata $meta
-     * @param string $field
+     * @param string                                      $field
+     *
      * @return boolean
      */
     protected function isValidField($meta, $field)
     {
         $mapping = $meta->getFieldMapping($field);
+
         return $mapping && in_array($mapping['type'], $this->validTypes);
     }
 }

@@ -29,6 +29,7 @@ namespace Doctrine\Common\Cache;
  * @author Jonathan Wage <jonwage@gmail.com>
  * @author Roman Borschel <roman@code-factory.org>
  * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
+ * @author Kévin Dunglas <dunglas@gmail.com>
  */
 interface Cache
 {
@@ -51,37 +52,41 @@ interface Cache
      *
      * @return mixed The cached data or FALSE, if no cache entry exists for the given id.
      */
-    function fetch($id);
+    public function fetch($id);
 
     /**
      * Tests if an entry exists in the cache.
      *
      * @param string $id The cache id of the entry to check for.
      *
-     * @return boolean TRUE if a cache entry exists for the given cache id, FALSE otherwise.
+     * @return bool TRUE if a cache entry exists for the given cache id, FALSE otherwise.
      */
-    function contains($id);
+    public function contains($id);
 
     /**
      * Puts data into the cache.
      *
+     * If a cache entry with the given id already exists, its data will be replaced.
+     *
      * @param string $id       The cache id.
      * @param mixed  $data     The cache entry/data.
-     * @param int    $lifeTime The cache lifetime.
-     *                         If != 0, sets a specific lifetime for this cache entry (0 => infinite lifeTime).
+     * @param int    $lifeTime The lifetime in number of seconds for this cache entry.
+     *                         If zero (the default), the entry never expires (although it may be deleted from the cache
+     *                         to make place for other entries).
      *
-     * @return boolean TRUE if the entry was successfully stored in the cache, FALSE otherwise.
+     * @return bool TRUE if the entry was successfully stored in the cache, FALSE otherwise.
      */
-    function save($id, $data, $lifeTime = 0);
+    public function save($id, $data, $lifeTime = 0);
 
     /**
      * Deletes a cache entry.
      *
      * @param string $id The cache id.
      *
-     * @return boolean TRUE if the cache entry was successfully deleted, FALSE otherwise.
+     * @return bool TRUE if the cache entry was successfully deleted, FALSE otherwise.
+     *              Deleting a non-existing entry is considered successful.
      */
-    function delete($id);
+    public function delete($id);
 
     /**
      * Retrieves cached information from the data store.
@@ -107,5 +112,5 @@ interface Cache
      *
      * @return array|null An associative array with server's statistics if available, NULL otherwise.
      */
-    function getStats();
+    public function getStats();
 }

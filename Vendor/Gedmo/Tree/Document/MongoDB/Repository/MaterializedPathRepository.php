@@ -2,10 +2,9 @@
 
 namespace Gedmo\Tree\Document\MongoDB\Repository;
 
-use Gedmo\Exception\InvalidArgumentException,
-    Gedmo\Tree\Strategy,
-    Gedmo\Tree\Strategy\ODM\MongoDB\MaterializedPath,
-    Gedmo\Tool\Wrapper\MongoDocumentWrapper;
+use Gedmo\Exception\InvalidArgumentException;
+use Gedmo\Tree\Strategy;
+use Gedmo\Tool\Wrapper\MongoDocumentWrapper;
 
 /**
  * The MaterializedPathRepository has some useful functions
@@ -21,7 +20,7 @@ class MaterializedPathRepository extends AbstractTreeRepository
     /**
      * Get tree query builder
      *
-     * @param object Root node
+     * @param object $rootNode
      *
      * @return \Doctrine\ODM\MongoDB\Query\Builder
      */
@@ -33,7 +32,7 @@ class MaterializedPathRepository extends AbstractTreeRepository
     /**
      * Get tree query
      *
-     * @param object Root node
+     * @param object $rootNode
      *
      * @return \Doctrine\ODM\MongoDB\Query\Query
      */
@@ -45,7 +44,7 @@ class MaterializedPathRepository extends AbstractTreeRepository
     /**
      * Get tree
      *
-     * @param object Root node
+     * @param object $rootNode
      *
      * @return \Doctrine\ODM\MongoDB\Cursor
      */
@@ -125,12 +124,11 @@ class MaterializedPathRepository extends AbstractTreeRepository
                      $nodePath,
                      $separator,
                      $separator);
-                
             } else {
                 $regex = sprintf('/^%s(.+)'.($includeNode ? '?' : '').'/',
                      $nodePath);
             }
-        } else if ($direct) {
+        } elseif ($direct) {
             $regex = sprintf('/^([^%s]+)'.($includeNode ? '?' : '').'%s$/',
                 $separator,
                 $separator);
@@ -140,7 +138,7 @@ class MaterializedPathRepository extends AbstractTreeRepository
             $qb->field($config['path'])->equals(new \MongoRegex($regex));
         }
 
-        $qb->sort(is_null($sortByField) ? $config['path'] : $sortByField, $direction === 'asc' ? 'asc' : 'desc');
+        $qb->sort(null === $sortByField ? $config['path'] : $sortByField, $direction === 'asc' ? 'asc' : 'desc');
 
         return $qb;
     }
@@ -168,7 +166,7 @@ class MaterializedPathRepository extends AbstractTreeRepository
     {
         $sortBy = array(
             'field'     => null,
-            'dir'       => 'asc'
+            'dir'       => 'asc',
         );
 
         if (isset($options['childSort'])) {

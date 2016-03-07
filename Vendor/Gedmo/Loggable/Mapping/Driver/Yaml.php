@@ -2,9 +2,9 @@
 
 namespace Gedmo\Loggable\Mapping\Driver;
 
-use Gedmo\Mapping\Driver\File,
-    Gedmo\Mapping\Driver,
-    Gedmo\Exception\InvalidMappingException;
+use Gedmo\Mapping\Driver\File;
+use Gedmo\Mapping\Driver;
+use Gedmo\Exception\InvalidMappingException;
 
 /**
  * This is a yaml mapping driver for Loggable
@@ -36,16 +36,30 @@ class Yaml extends File implements Driver
             if (isset($classMapping['loggable'])) {
                 $config['loggable'] = true;
                 if (isset ($classMapping['loggable']['logEntryClass'])) {
-                    if (!class_exists($classMapping['loggable']['logEntryClass'])) {
+                    if (!$cl = $this->getRelatedClassName($meta, $classMapping['loggable']['logEntryClass'])) {
                         throw new InvalidMappingException("LogEntry class: {$classMapping['loggable']['logEntryClass']} does not exist.");
                     }
-                    $config['logEntryClass'] = $classMapping['loggable']['logEntryClass'];
+                    $config['logEntryClass'] = $cl;
                 }
             }
         }
 
         if (isset($mapping['fields'])) {
             foreach ($mapping['fields'] as $field => $fieldMapping) {
+                if (isset($fieldMapping['gedmo'])) {
+                    if (in_array('versioned', $fieldMapping['gedmo'])) {
+                        if ($meta->isCollectionValuedAssociation($field)) {
+                            throw new InvalidMappingException("Cannot versioned [{$field}] as it is collection in object - {$meta->name}");
+                        }
+                        // fields cannot be overrided and throws mapping exception
+                        $config['versioned'][] = $field;
+                    }
+                }
+            }
+        }
+
+        if (isset($mapping['attributeOverride'])) {
+            foreach ($mapping['attributeOverride'] as $field => $fieldMapping) {
                 if (isset($fieldMapping['gedmo'])) {
                     if (in_array('versioned', $fieldMapping['gedmo'])) {
                         if ($meta->isCollectionValuedAssociation($field)) {
@@ -101,6 +115,6 @@ class Yaml extends File implements Driver
      */
     protected function _loadMappingFile($file)
     {
-        return \Symfony\Component\Yaml\Yaml::parse($file);
+        return \Symfony\Component\Yaml\Yaml::parse(file_get_contents($file));
     }
 }

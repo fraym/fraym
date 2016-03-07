@@ -4,13 +4,15 @@ namespace Gedmo\Translatable\Query\TreeWalker;
 
 use Gedmo\Translatable\Mapping\Event\Adapter\ORM as TranslatableEventAdapter;
 use Gedmo\Translatable\TranslatableListener;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\SqlWalker;
-use Doctrine\ORM\Query\TreeWalkerAdapter;
 use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\Exec\SingleSelectExecutor;
 use Doctrine\ORM\Query\AST\RangeVariableDeclaration;
 use Doctrine\ORM\Query\AST\Join;
+use Doctrine\DBAL\Platforms\MySqlPlatform;
+use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 
 /**
  * The translation sql output walker makes it possible
@@ -105,6 +107,7 @@ class TranslationWalker extends SqlWalker
             throw new \Gedmo\Exception\UnexpectedValueException('Translation walker should be used only on select statement');
         }
         $this->prepareTranslatedComponents();
+
         return new SingleSelectExecutor($AST, $this);
     }
 
@@ -134,6 +137,7 @@ class TranslationWalker extends SqlWalker
             );
             $this->getQuery()->setHint(Query::HINT_REFRESH, true);
         }
+
         return $result;
     }
 
@@ -144,6 +148,7 @@ class TranslationWalker extends SqlWalker
     {
         $result = parent::walkSelectClause($selectClause);
         $result = $this->replace($this->replacements, $result);
+
         return $result;
     }
 
@@ -154,6 +159,7 @@ class TranslationWalker extends SqlWalker
     {
         $result = parent::walkFromClause($fromClause);
         $result .= $this->joinTranslations($fromClause);
+
         return $result;
     }
 
@@ -163,6 +169,7 @@ class TranslationWalker extends SqlWalker
     public function walkWhereClause($whereClause)
     {
         $result = parent::walkWhereClause($whereClause);
+
         return $this->replace($this->replacements, $result);
     }
 
@@ -172,6 +179,7 @@ class TranslationWalker extends SqlWalker
     public function walkHavingClause($havingClause)
     {
         $result = parent::walkHavingClause($havingClause);
+
         return $this->replace($this->replacements, $result);
     }
 
@@ -181,6 +189,7 @@ class TranslationWalker extends SqlWalker
     public function walkOrderByClause($orderByClause)
     {
         $result = parent::walkOrderByClause($orderByClause);
+
         return $this->replace($this->replacements, $result);
     }
 
@@ -190,6 +199,7 @@ class TranslationWalker extends SqlWalker
     public function walkSubselect($subselect)
     {
         $result = parent::walkSubselect($subselect);
+
         return $result;
     }
 
@@ -200,6 +210,7 @@ class TranslationWalker extends SqlWalker
     {
         $result = parent::walkSubselectFromClause($subselectFromClause);
         $result .= $this->joinTranslations($subselectFromClause);
+
         return $result;
     }
 
@@ -209,15 +220,17 @@ class TranslationWalker extends SqlWalker
     public function walkSimpleSelectClause($simpleSelectClause)
     {
         $result = parent::walkSimpleSelectClause($simpleSelectClause);
+
         return $this->replace($this->replacements, $result);
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public function walkGroupByClause($groupByClause)
     {
         $result = parent::walkGroupByClause($groupByClause);
+
         return $this->replace($this->replacements, $result);
     }
 
@@ -225,7 +238,7 @@ class TranslationWalker extends SqlWalker
      * Walks from clause, and creates translation joins
      * for the translated components
      *
-     * @param \Doctrine\ORM\Query\AST\FromClause $from
+     * @param  \Doctrine\ORM\Query\AST\FromClause $from
      * @return string
      */
     private function joinTranslations($from)
@@ -256,6 +269,7 @@ class TranslationWalker extends SqlWalker
                 }
             }
         }
+
         return $result;
     }
 
@@ -280,7 +294,7 @@ class TranslationWalker extends SqlWalker
             return;
         }
         $em = $this->getEntityManager();
-        $ea = new TranslatableEventAdapter;
+        $ea = new TranslatableEventAdapter();
         $ea->setEntityManager($em);
         $joinStrategy = $q->getHint(TranslatableListener::HINT_INNER_JOIN) ? 'INNER' : 'LEFT';
 
@@ -289,7 +303,7 @@ class TranslationWalker extends SqlWalker
             $config = $this->listener->getConfiguration($em, $meta->name);
             $transClass = $this->listener->getTranslationClass($ea, $meta->name);
             $transMeta = $em->getClassMetadata($transClass);
-            $transTable = $transMeta->getQuotedTableName($this->platform);
+            $transTable = $em->getConfiguration()->getQuoteStrategy()->getTableName($transMeta, $this->platform);
             foreach ($config['fields'] as $field) {
                 $compTblAlias = $this->walkIdentificationVariable($dqlAlias, $field);
                 $tblAlias = $this->getSQLTableAlias('trans'.$compTblAlias.$field);
@@ -305,19 +319,27 @@ class TranslationWalker extends SqlWalker
                         .' = '.$compTblAlias.'.'.$idColName;
                 } else {
                     $sql .= ' AND '.$tblAlias.'.'.$transMeta->getQuotedColumnName('objectClass', $this->platform)
-                        .' = '.$this->conn->quote($meta->name);
+                        .' = '.$this->conn->quote($config['useObjectClass']);
+
+                    $mappingFK = $transMeta->getFieldMapping('foreignKey');
+                    $mappingPK = $meta->getFieldMapping($identifier);
+                    $fkColName = $this->getCastedForeignKey($compTblAlias.'.'.$idColName, $mappingFK['type'], $mappingPK['type']);
                     $sql .= ' AND '.$tblAlias.'.'.$transMeta->getQuotedColumnName('foreignKey', $this->platform)
-                        .' = '.$compTblAlias.'.'.$idColName;
+                        .' = '.$fkColName;
                 }
                 isset($this->components[$dqlAlias]) ? $this->components[$dqlAlias] .= $sql : $this->components[$dqlAlias] = $sql;
 
                 $originalField = $compTblAlias.'.'.$meta->getQuotedColumnName($field, $this->platform);
-                $substituteField = $tblAlias . '.' . $transMeta->getQuotedColumnName('content', $this->platform);
+                $substituteField = $tblAlias.'.'.$transMeta->getQuotedColumnName('content', $this->platform);
 
-                // If original field is integer - treat translation as integer (for ORDER BY, WHERE, etc)
+                // Treat translation as original field type
                 $fieldMapping = $meta->getFieldMapping($field);
-                if (in_array($fieldMapping["type"], array("integer", "bigint", "tinyint", "int"))) {
-                    $substituteField = 'CAST(' . $substituteField . ' AS SIGNED)';
+                if ((($this->platform instanceof MySqlPlatform) &&
+                    in_array($fieldMapping["type"], array("decimal"))) ||
+                    (!($this->platform instanceof MySqlPlatform) &&
+                    !in_array($fieldMapping["type"], array("datetime", "datetimetz", "date", "time")))) {
+                    $type = Type::getType($fieldMapping["type"]);
+                    $substituteField = 'CAST('.$substituteField.' AS '.$type->getSQLDeclaration($fieldMapping, $this->platform).')';
                 }
 
                 // Fallback to original if was asked for
@@ -345,16 +367,15 @@ class TranslationWalker extends SqlWalker
             // non overrided
             $fallback = $this->listener->getTranslationFallback();
         }
-        return (bool)$fallback
-            && $q->getHydrationMode() !== Query::HYDRATE_SCALAR
-            && $q->getHydrationMode() !== Query::HYDRATE_SINGLE_SCALAR;
+
+        // applies fallbacks to scalar hydration as well
+        return (bool) $fallback;
     }
 
     /**
      * Search for translated components in the select clause
      *
      * @param array $queryComponents
-     * @return void
      */
     private function extractTranslatedComponents(array $queryComponents)
     {
@@ -375,45 +396,72 @@ class TranslationWalker extends SqlWalker
      * Get the currently used TranslatableListener
      *
      * @throws \Gedmo\Exception\RuntimeException - if listener is not found
+     *
      * @return TranslatableListener
      */
     private function getTranslatableListener()
     {
-        $translatableListener = null;
         $em = $this->getEntityManager();
         foreach ($em->getEventManager()->getListeners() as $event => $listeners) {
             foreach ($listeners as $hash => $listener) {
                 if ($listener instanceof TranslatableListener) {
-                    $translatableListener = $listener;
-                    break;
+                    return $listener;
                 }
-            }
-            if ($translatableListener) {
-                break;
             }
         }
 
-        if (is_null($translatableListener)) {
-            throw new \Gedmo\Exception\RuntimeException('The translation listener could not be found');
-        }
-        return $translatableListener;
+        throw new \Gedmo\Exception\RuntimeException('The translation listener could not be found');
     }
 
     /**
      * Replaces given sql $str with required
      * results
      *
-     * @param array $repl
+     * @param array  $repl
      * @param string $str
+     *
      * @return string
      */
     private function replace(array $repl, $str)
     {
         foreach ($repl as $target => $result) {
-            $str = preg_replace_callback('/(\s|\()('.$target.')(,?)(\s|\))/smi', function($m) use ($result) {
+            $str = preg_replace_callback('/(\s|\()('.$target.')(,?)(\s|\))/smi', function ($m) use ($result) {
                 return $m[1].$result.$m[3].$m[4];
             }, $str);
         }
+
         return $str;
+    }
+
+    /**
+     * Casts a foreign key if needed
+     * @NOTE: personal translations manages that for themselves.
+     *
+     * @param $component - a column with an alias to cast
+     * @param $typeFK - translation table foreign key type
+     * @param $typePK - primary key type which references translation table
+     * @return string - modified $component if needed
+     */
+    private function getCastedForeignKey($component, $typeFK, $typePK)
+    {
+        // the keys are of same type
+        if ($typeFK === $typePK) {
+            return $component;
+        }
+
+        // try to look at postgres casting
+        if ($this->platform instanceof PostgreSqlPlatform) {
+            switch ($typeFK) {
+            case 'string':
+            case 'guid':
+                // need to cast to VARCHAR
+                $component = $component . '::VARCHAR';
+                break;
+            }
+        }
+
+        // @TODO may add the same thing for MySQL for performance to match index
+
+        return $component;
     }
 }

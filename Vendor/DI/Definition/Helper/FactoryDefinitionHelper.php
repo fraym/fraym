@@ -1,14 +1,8 @@
 <?php
-/**
- * PHP-DI
- *
- * @link      http://mnapoli.github.io/PHP-DI/
- * @copyright Matthieu Napoli (http://mnapoli.fr/)
- * @license   http://www.opensource.org/licenses/mit-license.php MIT (see the LICENSE file)
- */
 
 namespace DI\Definition\Helper;
 
+use DI\Definition\DecoratorDefinition;
 use DI\Definition\FactoryDefinition;
 
 /**
@@ -24,11 +18,37 @@ class FactoryDefinitionHelper implements DefinitionHelper
     private $factory;
 
     /**
-     * @param callable $factory
+     * @var string|null
      */
-    public function __construct($factory)
+    private $scope;
+
+    /**
+     * @var bool
+     */
+    private $decorate;
+
+    /**
+     * @param callable $factory
+     * @param bool     $decorate Is the factory decorating a previous definition?
+     */
+    public function __construct($factory, $decorate = false)
     {
         $this->factory = $factory;
+        $this->decorate = $decorate;
+    }
+
+    /**
+     * Defines the scope of the entry.
+     *
+     * @param string $scope
+     *
+     * @return FactoryDefinitionHelper
+     */
+    public function scope($scope)
+    {
+        $this->scope = $scope;
+
+        return $this;
     }
 
     /**
@@ -37,6 +57,10 @@ class FactoryDefinitionHelper implements DefinitionHelper
      */
     public function getDefinition($entryName)
     {
-        return new FactoryDefinition($entryName, $this->factory);
+        if ($this->decorate) {
+            return new DecoratorDefinition($entryName, $this->factory, $this->scope);
+        }
+
+        return new FactoryDefinition($entryName, $this->factory, $this->scope);
     }
 }

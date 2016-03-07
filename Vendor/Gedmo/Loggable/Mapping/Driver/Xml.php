@@ -2,8 +2,8 @@
 
 namespace Gedmo\Loggable\Mapping\Driver;
 
-use Gedmo\Mapping\Driver\Xml as BaseXml,
-    Gedmo\Exception\InvalidMappingException;
+use Gedmo\Mapping\Driver\Xml as BaseXml;
+use Gedmo\Exception\InvalidMappingException;
 
 /**
  * This is a xml mapping driver for Loggable
@@ -34,16 +34,16 @@ class Xml extends BaseXml
         if ($xmlDoctrine->getName() == 'entity' || $xmlDoctrine->getName() == 'document' || $xmlDoctrine->getName() == 'mapped-superclass') {
             if (isset($xml->loggable)) {
                 /**
-                 * @var SimpleXMLElement $data;
+                 * @var \SimpleXMLElement $data;
                  */
                 $data = $xml->loggable;
                 $config['loggable'] = true;
                 if ($this->_isAttributeSet($data, 'log-entry-class')) {
                     $class = $this->_getAttribute($data, 'log-entry-class');
-                    if (!class_exists($class)) {
+                    if (!$cl = $this->getRelatedClassName($meta, $class)) {
                         throw new InvalidMappingException("LogEntry class: {$class} does not exist.");
                     }
-                    $config['logEntryClass'] = $class;
+                    $config['logEntryClass'] = $cl;
                 }
             }
         }
@@ -60,6 +60,9 @@ class Xml extends BaseXml
         if (isset($xmlDoctrine->{'reference-one'})) {
             $this->inspectElementForVersioned($xmlDoctrine->{'reference-one'}, $config, $meta);
         }
+        if (isset($xmlDoctrine->{'embedded'})) {
+            $this->inspectElementForVersioned($xmlDoctrine->{'embedded'}, $config, $meta);
+        }
 
         if (!$meta->isMappedSuperclass && $config) {
             if (is_array($meta->identifier) && count($meta->identifier) > 1) {
@@ -74,9 +77,9 @@ class Xml extends BaseXml
     /**
      * Searches mappings on element for versioned fields
      *
-     * @param SimpleXMLElement $element
-     * @param array $config
-     * @param object $meta
+     * @param \SimpleXMLElement $element
+     * @param array             $config
+     * @param object            $meta
      */
     private function inspectElementForVersioned(\SimpleXMLElement $element, array &$config, $meta)
     {

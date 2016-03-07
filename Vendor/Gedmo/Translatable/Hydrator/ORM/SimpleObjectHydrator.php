@@ -17,35 +17,41 @@ use Doctrine\ORM\Internal\Hydration\SimpleObjectHydrator as BaseSimpleObjectHydr
 class SimpleObjectHydrator extends BaseSimpleObjectHydrator
 {
     /**
-     * 2.1 version
+     * State of skipOnLoad for listener between hydrations
+     *
+     * @see SimpleObjectHydrator::prepare()
+     * @see SimpleObjectHydrator::cleanup()
+     *
+     * @var bool
+     */
+    private $savedSkipOnLoad;
+
+    /**
      * {@inheritdoc}
      */
-    protected function _hydrateAll()
+    protected function prepare()
     {
         $listener = $this->getTranslatableListener();
+        $this->savedSkipOnLoad = $listener->isSkipOnLoad();
         $listener->setSkipOnLoad(true);
-        $result = parent::_hydrateAll();
-        $listener->setSkipOnLoad(false);
-        return $result;
+        parent::prepare();
     }
 
     /**
-     * 2.2 version
      * {@inheritdoc}
      */
-    protected function hydrateAllData()
+    protected function cleanup()
     {
+        parent::cleanup();
         $listener = $this->getTranslatableListener();
-        $listener->setSkipOnLoad(true);
-        $result = parent::hydrateAllData();
-        $listener->setSkipOnLoad(false);
-        return $result;
+        $listener->setSkipOnLoad($this->savedSkipOnLoad !== null ? $this->savedSkipOnLoad : false);
     }
 
     /**
      * Get the currently used TranslatableListener
      *
      * @throws \Gedmo\Exception\RuntimeException - if listener is not found
+     *
      * @return TranslatableListener
      */
     protected function getTranslatableListener()
@@ -63,9 +69,10 @@ class SimpleObjectHydrator extends BaseSimpleObjectHydrator
             }
         }
 
-        if (is_null($translatableListener)) {
+        if (null === $translatableListener) {
             throw new \Gedmo\Exception\RuntimeException('The translation listener could not be found');
         }
+
         return $translatableListener;
     }
 }

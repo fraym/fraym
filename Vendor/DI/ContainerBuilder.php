@@ -1,24 +1,18 @@
 <?php
-/**
- * PHP-DI
- *
- * @link      http://mnapoli.github.io/PHP-DI/
- * @copyright Matthieu Napoli (http://mnapoli.fr/)
- * @license   http://www.opensource.org/licenses/mit-license.php MIT (see the LICENSE file)
- */
 
 namespace DI;
 
-use DI\Definition\DefinitionManager;
-use DI\Definition\Source\AnnotationDefinitionSource;
-use DI\Definition\Source\PHPFileDefinitionSource;
-use DI\Definition\Source\ReflectionDefinitionSource;
+use DI\Definition\Source\AnnotationReader;
+use DI\Definition\Source\Autowiring;
+use DI\Definition\Source\CachedDefinitionSource;
+use DI\Definition\Source\DefinitionArray;
+use DI\Definition\Source\DefinitionFile;
+use DI\Definition\Source\DefinitionSource;
+use DI\Definition\Source\SourceChain;
+use DI\Proxy\ProxyFactory;
 use Doctrine\Common\Cache\Cache;
-use Interop\Container\ContainerInterface as ContainerInteropInterface;
+use Interop\Container\ContainerInterface;
 use InvalidArgumentException;
-use ProxyManager\Configuration;
-use ProxyManager\Factory\LazyLoadingValueHolderFactory;
-use ProxyManager\GeneratorStrategy\EvaluatingGeneratorStrategy;
 
 /**
  * Helper to create and configure a Container.
@@ -42,14 +36,19 @@ class ContainerBuilder
     private $containerClass;
 
     /**
-     * @var boolean
+     * @var bool
      */
     private $useAutowiring = true;
 
     /**
-     * @var boolean
+     * @var bool
      */
-    private $useAnnotations = true;
+    private $useAnnotations = false;
+
+    /**
+     * @var bool
+     */
+    private $ignorePhpDocErrors = false;
 
     /**
      * @var Cache
@@ -58,7 +57,7 @@ class ContainerBuilder
 
     /**
      * If true, write the proxies to disk to improve performances.
-     * @var boolean
+     * @var bool
      */
     private $writeProxiesToFile = false;
 
@@ -70,15 +69,14 @@ class ContainerBuilder
 
     /**
      * If PHP-DI is wrapped in another container, this references the wrapper.
-     * @var ContainerInteropInterface
+     * @var ContainerInterface
      */
     private $wrapperContainer;
 
     /**
-     * Files of definitions for the container.
-     * @var string[]
+     * @var DefinitionSource[]
      */
-    private $files = array();
+    private $definitionSources = [];
 
     /**
      * Build a container configured for the dev environment.
@@ -88,6 +86,7 @@ class ContainerBuilder
     public static function buildDevContainer()
     {
         $builder = new self();
+
         return $builder->build();
     }
 
@@ -106,72 +105,71 @@ class ContainerBuilder
      */
     public function build()
     {
-        // Definition sources
-        $firstSource = null;
-        $lastSource = null;
-        foreach (array_reverse($this->files) as $file) {
-            $source = new PHPFileDefinitionSource($file);
-            // Chain file sources
-            if ($lastSource instanceof PHPFileDefinitionSource) {
-                $lastSource->chain($source);
-            } else {
-                $firstSource = $source;
-            }
-            $lastSource = $source;
-        }
+        $sources = array_reverse($this->definitionSources);
         if ($this->useAnnotations) {
-            if ($lastSource) {
-                $lastSource->chain(new AnnotationDefinitionSource());
-            } else {
-                $firstSource = new AnnotationDefinitionSource();
-            }
+            $sources[] = new AnnotationReader($this->ignorePhpDocErrors);
         } elseif ($this->useAutowiring) {
-            if ($lastSource) {
-                $lastSource->chain(new ReflectionDefinitionSource());
-            } else {
-                $firstSource = new ReflectionDefinitionSource();
-            }
+            $sources[] = new Autowiring();
         }
 
-        // Definition manager
-        $definitionManager = new DefinitionManager($firstSource);
+        $chain = new SourceChain($sources);
+
         if ($this->cache) {
-            $definitionManager->setCache($this->cache);
+            $source = new CachedDefinitionSource($chain, $this->cache);
+            $chain->setRootDefinitionSource($source);
+        } else {
+            $source = $chain;
+            // Mutable definition source
+            $source->setMutableDefinitionSource(new DefinitionArray());
         }
 
-        // Proxy factory
-        $proxyFactory = $this->buildProxyFactory();
+        $proxyFactory = new ProxyFactory($this->writeProxiesToFile, $this->proxyDirectory);
 
         $containerClass = $this->containerClass;
 
-        return new $containerClass($definitionManager, $proxyFactory, $this->wrapperContainer);
+        return new $containerClass($source, $proxyFactory, $this->wrapperContainer);
     }
 
     /**
      * Enable or disable the use of autowiring to guess injections.
      *
-     * By default, enabled.
+     * Enabled by default.
      *
-     * @param boolean $bool
+     * @param bool $bool
      * @return ContainerBuilder
      */
     public function useAutowiring($bool)
     {
         $this->useAutowiring = $bool;
+
         return $this;
     }
 
     /**
      * Enable or disable the use of annotations to guess injections.
      *
-     * By default, enabled.
+     * Disabled by default.
      *
-     * @param $bool
+     * @param bool $bool
      * @return ContainerBuilder
      */
     public function useAnnotations($bool)
     {
         $this->useAnnotations = $bool;
+
+        return $this;
+    }
+
+    /**
+     * Enable or disable ignoring phpdoc errors (non-existent classes in `@param` or `@var`).
+     *
+     * @param bool $bool
+     * @return ContainerBuilder
+     */
+    public function ignorePhpDocErrors($bool)
+    {
+        $this->ignorePhpDocErrors = $bool;
+
         return $this;
     }
 
@@ -184,20 +182,20 @@ class ContainerBuilder
     public function setDefinitionCache(Cache $cache)
     {
         $this->cache = $cache;
+
         return $this;
     }
 
     /**
-     * Configure the proxy generation
+     * Configure the proxy generation.
      *
      * For dev environment, use writeProxiesToFile(false) (default configuration)
      * For production environment, use writeProxiesToFile(true, 'tmp/proxies')
      *
-     * @param boolean     $writeToFile    If true, write the proxies to disk to improve performances
+     * @param bool     $writeToFile    If true, write the proxies to disk to improve performances
      * @param string|null $proxyDirectory Directory where to write the proxies
-     * @return ContainerBuilder
-     *
      * @throws InvalidArgumentException when writeToFile is set to true and the proxy directory is null
+     * @return ContainerBuilder
      */
     public function writeProxiesToFile($writeToFile, $proxyDirectory = null)
     {
@@ -205,7 +203,7 @@ class ContainerBuilder
 
         if ($writeToFile && $proxyDirectory === null) {
             throw new InvalidArgumentException(
-                "The proxy directory must be specified if you want to write proxies on disk"
+                'The proxy directory must be specified if you want to write proxies on disk'
             );
         }
         $this->proxyDirectory = $proxyDirectory;
@@ -217,10 +215,10 @@ class ContainerBuilder
      * If PHP-DI's container is wrapped by another container, we can
      * set this so that PHP-DI will use the wrapper rather than itself for building objects.
      *
-     * @param ContainerInteropInterface $otherContainer
+     * @param ContainerInterface $otherContainer
      * @return $this
      */
-    public function wrapContainer(ContainerInteropInterface $otherContainer)
+    public function wrapContainer(ContainerInterface $otherContainer)
     {
         $this->wrapperContainer = $otherContainer;
 
@@ -228,31 +226,30 @@ class ContainerBuilder
     }
 
     /**
-     * Add a file containing definitions to the container.
+     * Add definitions to the container.
      *
-     * @param string $file
+     * @param string|array|DefinitionSource $definitions Can be an array of definitions, the
+     *                                                   name of a file containing definitions
+     *                                                   or a DefinitionSource object.
+     * @return $this
      */
-    public function addDefinitions($file)
+    public function addDefinitions($definitions)
     {
-        $this->files[] = $file;
-    }
-
-    /**
-     * @return LazyLoadingValueHolderFactory
-     */
-    private function buildProxyFactory()
-    {
-        $config = new Configuration();
-        // TODO useless since ProxyManager 0.5, line kept for compatibility with previous versions
-        $config->setAutoGenerateProxies(true);
-
-        if ($this->writeProxiesToFile) {
-            $config->setProxiesTargetDir($this->proxyDirectory);
-            spl_autoload_register($config->getProxyAutoloader());
-        } else {
-            $config->setGeneratorStrategy(new EvaluatingGeneratorStrategy());
+        if (is_string($definitions)) {
+            // File
+            $definitions = new DefinitionFile($definitions);
+        } elseif (is_array($definitions)) {
+            $definitions = new DefinitionArray($definitions);
+        } elseif (! $definitions instanceof DefinitionSource) {
+            throw new InvalidArgumentException(sprintf(
+                '%s parameter must be a string, an array or a DefinitionSource object, %s given',
+                'ContainerBuilder::addDefinitions()',
+                is_object($definitions) ? get_class($definitions) : gettype($definitions)
+            ));
         }
 
-        return new LazyLoadingValueHolderFactory($config);
+        $this->definitionSources[] = $definitions;
+
+        return $this;
     }
 }

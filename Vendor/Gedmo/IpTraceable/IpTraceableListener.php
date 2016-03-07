@@ -2,12 +2,9 @@
 
 namespace Gedmo\IpTraceable;
 
-use Doctrine\Common\EventArgs,
-    Gedmo\Mapping\MappedEventSubscriber,
-    Doctrine\Common\NotifyPropertyChanged,
-    Gedmo\Exception\UnexpectedValueException,
-    Gedmo\Exception\InvalidArgumentException;
-use Gedmo\Timestampable\TimestampableListener;
+use Gedmo\AbstractTrackingListener;
+use Gedmo\Exception\InvalidArgumentException;
+use Gedmo\Mapping\Event\AdapterInterface;
 
 /**
  * The IpTraceable listener handles the update of
@@ -16,8 +13,11 @@ use Gedmo\Timestampable\TimestampableListener;
  * @author Pierre-Charles Bertineau <pc.bertineau@alterphp.com>
  * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
-class IpTraceableListener extends TimestampableListener
+class IpTraceableListener extends AbstractTrackingListener
 {
+    /**
+     * @var string|null
+     */
     protected $ip;
 
     /**
@@ -25,9 +25,11 @@ class IpTraceableListener extends TimestampableListener
      *
      * @param object $meta
      * @param string $field
-     * @return mixed
+     * @param AdapterInterface $eventAdapter
+     *
+     * @return null|string
      */
-    public function getIpValue($meta, $field)
+    public function getFieldValue($meta, $field, $eventAdapter)
     {
         return $this->ip;
     }
@@ -35,7 +37,8 @@ class IpTraceableListener extends TimestampableListener
     /**
      * Set a ip value to return
      *
-     * @param mixed $ip
+     * @param string $ip
+     * @throws InvalidArgumentException
      */
     public function setIpValue($ip = null)
     {
@@ -52,26 +55,5 @@ class IpTraceableListener extends TimestampableListener
     protected function getNamespace()
     {
         return __NAMESPACE__;
-    }
-
-    /**
-     * Updates a field
-     *
-     * @param $object
-     * @param $ea
-     * @param $meta
-     * @param $field
-     */
-    protected function updateField($object, $ea, $meta, $field)
-    {
-        $property = $meta->getReflectionProperty($field);
-        $oldValue = $property->getValue($object);
-        $newValue = $this->getIpValue($meta, $field);
-
-        $property->setValue($object, $newValue);
-        if ($object instanceof NotifyPropertyChanged) {
-            $uow = $ea->getObjectManager()->getUnitOfWork();
-            $uow->propertyChanged($object, $field, $oldValue, $newValue);
-        }
     }
 }

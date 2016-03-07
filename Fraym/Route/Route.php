@@ -644,7 +644,7 @@ class Route
      * @return string
      */
     private function getDefaultMenuItemTemplate() {
-        return '<html><head><block type="css" sequence="outputFilter" consolidate="false"></block><block type="js" sequence="outputFilter" consolidate="false"></block></head><body>Please add a template to the root menu item</body></html>';
+        return '<html><head><block type="css" sequence="outputFilter" consolidate="false"></block><block type="js" sequence="outputFilter" consolidate="false"></block></head><body>Add a template to the menu item</body></html>';
     }
 
     /**
@@ -877,18 +877,20 @@ class Route
         return $url;
     }
 
+
     /**
      * Converts a string to a URI string
      *
-     * @param  $uri
+     * @param $uri
      * @param string $separator
+     * @param bool $keepAnchor
      * @return string
      */
-    public function createSlug($uri, $separator = '-')
+    public function createSlug($uri, $separator = '-', $keepAnchor = false)
     {
         $uri = str_replace(',', '-', $uri);
         // Remove all characters that are not the separator, letters, numbers, or whitespace
-        $uri = preg_replace('![^' . preg_quote($separator) . '\pL\pN\s]+!u', '', mb_strtolower($uri, 'UTF-8'));
+        $uri = preg_replace('![^' . ($keepAnchor === true ? preg_quote('#', '!') : '') . '' . preg_quote($separator, '!') . '\pL\pN\s]+!u', '', mb_strtolower($uri, 'UTF-8'));
         // Replace all separator characters and whitespace by a single separator
         $uri = preg_replace('![' . preg_quote($separator) . '\s]+!u', $separator, $uri);
         // Trim separators from the beginning and end

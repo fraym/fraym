@@ -64,10 +64,11 @@ class ORM implements AdapterInterface
      */
     public function __call($method, $args)
     {
-        if (is_null($this->args)) {
+        if (null === $this->args) {
             throw new RuntimeException("Event args must be set before calling its methods");
         }
         $method = str_replace('Object', $this->getDomainObjectName(), $method);
+
         return call_user_func_array(array($this->args, $method), $args);
     }
 
@@ -86,10 +87,19 @@ class ORM implements AdapterInterface
      */
     public function getObjectManager()
     {
-        if (!is_null($this->em)) {
+        if (null !== $this->em) {
             return $this->em;
         }
+
         return $this->__call('getEntityManager', array());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getObjectState($uow, $object)
+    {
+        return $uow->getEntityState($object);
     }
 
     /**
@@ -159,8 +169,9 @@ class ORM implements AdapterInterface
     /**
      * Creates a ORM specific LifecycleEventArgs.
      *
-     * @param $document
+     * @param object                                $document
      * @param \Doctrine\ODM\MongoDB\DocumentManager $documentManager
+     *
      * @return \Doctrine\ODM\MongoDB\Event\LifecycleEventArgs
      */
     public function createLifecycleEventArgsInstance($document, $documentManager)

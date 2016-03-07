@@ -2,9 +2,9 @@
 
 namespace Gedmo\Translatable\Mapping\Driver;
 
-use Gedmo\Mapping\Driver\File,
-    Gedmo\Mapping\Driver,
-    Gedmo\Exception\InvalidMappingException;
+use Gedmo\Mapping\Driver\File;
+use Gedmo\Mapping\Driver;
+use Gedmo\Exception\InvalidMappingException;
 
 /**
  * This is a yaml mapping driver for Translatable
@@ -34,10 +34,10 @@ class Yaml extends File implements Driver
             $classMapping = $mapping['gedmo'];
             if (isset($classMapping['translation']['entity'])) {
                 $translationEntity = $classMapping['translation']['entity'];
-                if (!class_exists($translationEntity)) {
+                if (!$cl = $this->getRelatedClassName($meta, $translationEntity)) {
                     throw new InvalidMappingException("Translation entity class: {$translationEntity} does not exist.");
                 }
-                $config['translationClass'] = $translationEntity;
+                $config['translationClass'] = $cl;
             }
             if (isset($classMapping['translation']['locale'])) {
                 $config['locale'] = $classMapping['translation']['locale'];
@@ -71,6 +71,6 @@ class Yaml extends File implements Driver
      */
     protected function _loadMappingFile($file)
     {
-        return \Symfony\Component\Yaml\Yaml::parse($file);
+        return \Symfony\Component\Yaml\Yaml::parse(file_get_contents($file));
     }
 }

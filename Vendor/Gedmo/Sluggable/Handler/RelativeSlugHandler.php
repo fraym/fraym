@@ -102,7 +102,8 @@ class RelativeSlugHandler implements SlugHandlerInterface
      * {@inheritDoc}
      */
     public function onSlugCompletion(SluggableAdapter $ea, array &$config, $object, &$slug)
-    {}
+    {
+    }
 
     /**
      * Transliterates the slug and prefixes the slug
@@ -111,6 +112,7 @@ class RelativeSlugHandler implements SlugHandlerInterface
      * @param string $text
      * @param string $separator
      * @param object $object
+     *
      * @return string
      */
     public function transliterate($text, $separator, $object)
@@ -124,9 +126,18 @@ class RelativeSlugHandler implements SlugHandlerInterface
         if ($relation) {
             $wrappedRelation = AbstractWrapper::wrap($relation, $this->om);
             $slug = $wrappedRelation->getPropertyValue($this->usedOptions['relationSlugField']);
-            $result = $slug . $this->usedOptions['separator'] . $result;
+
+            if (isset($this->usedOptions['urilize']) && $this->usedOptions['urilize']) {
+                $slug = call_user_func_array(
+                    $this->originalTransliterator,
+                    array($slug, $separator, $object)
+                );
+            }
+
+            $result = $slug.$this->usedOptions['separator'].$result;
         }
         $this->sluggable->setTransliterator($this->originalTransliterator);
+
         return $result;
     }
 

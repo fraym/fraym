@@ -157,11 +157,15 @@ class BlockController extends \Fraym\Core
         $contentId = $this->blockParser->getXMLAttr($xml, 'id');
         $cssClass = $this->blockParser->getXMLAttr($xml, 'class');
         $editStyle = $this->blockParser->getXMLAttr($xml, 'editStyle');
+        $actionBarStyle = $this->blockParser->getXMLAttr($xml, 'actionBarStyle');
+        $description = $this->blockParser->getXMLAttr($xml, 'description');
 
         $renderElement = $this->blockParser->getXMLAttr($xml, 'renderElement') === false ? false : true;
         $htmlElement = $this->blockParser->getXMLAttr($xml, 'element') ? : 'div';
         $unique = $this->blockParser->getXMLAttr($xml, 'unique') === true ? true : false;
 
+        $this->view->assign('description', $description);
+        $this->view->assign('actionBarStyle', $actionBarStyle);
         $this->view->assign('editStyle', $editStyle);
         $this->view->assign('unique', $unique);
         $this->view->assign('cssClass', $cssClass);

@@ -38,7 +38,7 @@ class EventManager
      *
      * @var array
      */
-    private $_listeners = array();
+    private $_listeners = [];
 
     /**
      * Dispatches an event to all registered listeners.
@@ -127,7 +127,7 @@ class EventManager
     }
 
     /**
-     * Adds an EventSubscriber. The subscriber is asked for all the events he is
+     * Adds an EventSubscriber. The subscriber is asked for all the events it is
      * interested in and added as a listener for these events.
      *
      * @param \Doctrine\Common\EventSubscriber $subscriber The subscriber.

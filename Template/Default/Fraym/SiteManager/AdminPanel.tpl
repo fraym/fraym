@@ -1,6 +1,6 @@
-{css('fraym/main.css')}
-{css('fraym/jquery.contextMenu.css')}
-{css('fraym/font-awesome.min.css')}
+{css('fraym/main.css', 'default', 'fraym-main')}
+{css('fraym/jquery.contextMenu.css', 'default', 'contextMenu')}
+{css('fraym/font-awesome.min.css', 'default', 'font-awesome')}
 {js('fraym/libs/jquery.min.js', 'default', 'jquery')}
 {js('fraym/libs/jquery.noty.packaged.min.js', 'default', 'noty')}
 {js('fraym/libs/jquery-ui.min.js', 'default', 'jqueryui')}
@@ -13,12 +13,12 @@
 {js('fraym/libs/jquery.touchSwipe.min.js', 'default', 'touchSwipe')}
 {js('fraym/libs/jquery.slimscroll.min.js', 'default', 'slimscroll')}
 {js('fraym/libs/jquery.cookie.js', 'default', 'cookie')}
+{js('fraym/libs/bootstrap.min.js', 'default', 'bootstrap')}
 {js('fraym/main.js')}
 {js('fraym/core/block.js')}
 {js('fraym/core/menu.js')}
 {js('fraym/core/admin.js')}
 {js('fraym/selector_config.js')}
-
 
 <div id="blockConfigMenu">
     <iframe seamless allowtransparency="true" frameborder="0" src="//{i('Fraym\Route\Route')->getSiteBaseURI(false)}{i('Fraym\Route\Route')->getVirtualRoute('adminPanel')->route}?locale={i('Fraym\Registry\Config')->get('ADMIN_LOCALE_ID')->value}"></iframe>

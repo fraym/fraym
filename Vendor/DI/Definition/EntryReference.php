@@ -1,11 +1,4 @@
 <?php
-/**
- * PHP-DI
- *
- * @link      http://mnapoli.github.io/PHP-DI/
- * @copyright Matthieu Napoli (http://mnapoli.fr/)
- * @license   http://www.opensource.org/licenses/mit-license.php MIT (see the LICENSE file)
- */
 
 namespace DI\Definition;
 
@@ -14,12 +7,14 @@ use DI\Definition\Helper\DefinitionHelper;
 /**
  * Represents a reference to a container entry.
  *
+ * TODO should EntryReference and AliasDefinition be merged into a ReferenceDefinition?
+ *
  * @author Matthieu Napoli <matthieu@mnapoli.fr>
  */
 class EntryReference implements DefinitionHelper
 {
     /**
-     * Entry name
+     * Entry name.
      * @var string
      */
     private $name;

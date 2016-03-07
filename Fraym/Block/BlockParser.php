@@ -980,7 +980,7 @@ class BlockParser
         }
 
         $fileConfigHash = md5(serialize($configArr));
-        $savePath = $this->getImageSavePath($fileConfigHash, $configArr['phwidth'], $configArr['phheight']);
+        $savePath = $this->getImageSavePath($fileConfigHash);
 
         if (is_file($savePath)) {
             return $savePath;
@@ -1013,7 +1013,7 @@ class BlockParser
     }
 
 
-    private function getImageSavePath($filename, $width, $height, $ext = 'png')
+    private function getImageSavePath($filename, $ext = 'png')
     {
         $convertedImageFileName = trim($this->config->get('IMAGE_PATH')->value, '/');
 
@@ -1021,7 +1021,7 @@ class BlockParser
             mkdir('Public' . DIRECTORY_SEPARATOR . $convertedImageFileName, 0755, true);
         }
 
-        $convertedImageFileName .= DIRECTORY_SEPARATOR . $filename . '_' . $width . 'x' . $height . '.' . $ext;
+        $convertedImageFileName .= DIRECTORY_SEPARATOR . $filename . '.' . $ext;
 
         return 'Public' . DIRECTORY_SEPARATOR . trim($this->fileManager->convertDirSeparator($convertedImageFileName), '/');
     }
@@ -1056,6 +1056,8 @@ class BlockParser
             'phfontsize' => $this->getXMLAttr($xml, 'phfontsize'),
         );
 
+        $srcOnly = $this->getXMLAttr($xml, 'srcOnly') === true ? true : false;
+
         $src = $this->getXMLAttr($xml, 'src');
         $src = str_replace(array('\\', '/'), DIRECTORY_SEPARATOR, $src);
 
@@ -1076,58 +1078,62 @@ class BlockParser
         }
 
         $imagine = $this->serviceLocator->get('Imagine');
-        $image = $imagine->open($srcFilePath);
         $pathInfo = pathinfo($srcFilePath);
 
         $allowedMethods = array('thumbnail', 'resize', 'crop', '');
         // methods fit / resize / none
-        $imageQuality = intval($this->getXMLAttr($xml, 'quality') ? : '80');
+        $imageQuality = intval($this->getXMLAttr($xml, 'quality') ? : ($this->config->get('IMAGE_QUALITY')->value ? : '80'));
         $method = $this->getXMLAttr($xml, 'method') ? : '';
         $mode = $this->getXMLAttr($xml, 'mode') ? : 'outbound';
+        $crop = $this->getXMLAttr($xml, 'crop') ? explode(',', $this->getXMLAttr($xml, 'crop')) : null;
 
         if (!in_array($method, $allowedMethods)) {
             throw new \Exception("Image method '{$method}' is not allowed.");
         }
 
-        if (!empty($method)) {
+        $imagePath = $this->getImageSavePath($pathInfo['filename'] . '-' . md5(md5_file($srcFilePath).$xml->asXML()), $pathInfo['extension']);
 
+        if (!is_file($imagePath)) {
+            $image = $imagine->open($srcFilePath);
             $imageBox = $this->getImageBox($imageTags, $image);
-            $imagePath = $this->getImageSavePath($pathInfo['filename'] . '_' . md5_file($srcFilePath) , $imageBox->getWidth(), $imageBox->getHeight(), $pathInfo['extension']);
 
-            if (!is_file($imagePath)) {
+            if ($method == 'resize') {
+                $image->resize($imageBox);
+            } elseif ($method == 'thumbnail') {
 
-                if ($method == 'resize') {
-                    $image->resize($imageBox);
-                } elseif($method == 'crop') {
-                    $image->crop(new \Imagine\Image\Point(0, 0), new \Imagine\Image\Box($imageTags['width'], $imageTags['height']));
+                $imageTags['width'] = $imageTags['width'] ? : $image->getSize()->getWidth();
+                $imageTags['height'] = $imageTags['height'] ? : $image->getSize()->getHeight();
+
+                if ($mode == 'outbound') {
+                    $mode = \Imagine\Image\ImageInterface::THUMBNAIL_OUTBOUND;
                 } else {
-                    if ($mode == 'outbound') {
-                        $mode = \Imagine\Image\ImageInterface::THUMBNAIL_OUTBOUND;
-                    } else {
-                        $mode = \Imagine\Image\ImageInterface::THUMBNAIL_INSET;
-                    }
-                    $image = $image->thumbnail(
-                        new \Imagine\Image\Box($imageTags['width'], $imageTags['height']),
-                        $mode
-                    ); // new Box($imageTags['width'], $imageTags['height']));
+                    $mode = \Imagine\Image\ImageInterface::THUMBNAIL_INSET;
                 }
 
-                $image->save($imagePath, array('quality' => $imageQuality));
-                $imageTags['width'] = $image->getSize()->getWidth();
-                $imageTags['height'] = $image->getSize()->getHeight();
+                $image = $image->thumbnail(
+                    new \Imagine\Image\Box($imageTags['width'], $imageTags['height']),
+                    $mode
+                );
             } else {
-                $image = $imagine->open($imagePath);
+                $imageTags['width'] = $imageTags['width'] ? : $image->getSize()->getWidth();
+                $imageTags['height'] = $imageTags['height'] ? : $image->getSize()->getHeight();
+            }
+
+            if($crop) {
+                $image->crop(new \Imagine\Image\Point($crop[0], $crop[1]), new \Imagine\Image\Box($crop[2], $crop[3]));
                 $imageTags['width'] = $image->getSize()->getWidth();
                 $imageTags['height'] = $image->getSize()->getHeight();
             }
-            // remove Public folder
-            $convertedImageFileName = substr($imagePath, strpos($imagePath, DIRECTORY_SEPARATOR)+1);
-        } else {
-            $convertedImageFileName = ltrim(str_replace('\\', '/', str_replace(realpath($_SERVER['DOCUMENT_ROOT']), '', realpath($src))), '/');
 
-            $imageTags['width'] = $image->getSize()->getWidth();
-            $imageTags['height'] = $image->getSize()->getHeight();
+            $image->save($imagePath, array('quality' => $imageQuality));
+        } else {
+            list($width, $height) = getimagesize($imagePath);
+            $imageTags['width'] = $width;
+            $imageTags['height'] = $height;
         }
+
+        // remove Public folder
+        $convertedImageFileName = substr($imagePath, strpos($imagePath, DIRECTORY_SEPARATOR)+1);
 
         if ($this->getXMLAttr($xml, 'autosize')) {
             unset($imageTags['width']);
@@ -1145,7 +1151,8 @@ class BlockParser
             unlink($srcFilePath);
         }
 
-        return '<img src="/' . str_replace(array('\\', '/'), '/', $convertedImageFileName) . '" ' . $attributes . ' />';
+        $imagePath = '/' . str_replace(array('\\', '/'), '/', $convertedImageFileName);
+        return $srcOnly ? $imagePath : '<img src="' . $imagePath . '" ' . $attributes . ' />';
     }
 
     /**
@@ -1192,20 +1199,25 @@ class BlockParser
     {
         $html = '';
         foreach ($xml->children() as $child) {
+            $placeholder = (string)$child->children()->placeholder;
             $contentId = $this->getContentId($child);
 
             $blocks = $this->getDataFromBlocksByContentId($contentId);
 
             // In Editmode we want to render all views to insert content
-            if ((empty($blocks) && $this->getXMLAttr($child, 'hideEmpty') !== false) && $this->block->inEditMode() === false) {
+            if ((empty($blocks) && $this->getXMLAttr($child, 'hideEmpty') !== false && empty($placeholder)) && $this->block->inEditMode() === false) {
                 continue;
+            }
+
+            if((empty($blocks) && !empty($placeholder)) && $this->block->inEditMode() === false) {
+                $blocks = $placeholder;
             }
 
             $result = $this->contentChildViews($child);
             if (count($result) > 0) {
                 $content = (isset($result['beforeContent']) ? $result['beforeContent'] : '') . $this->core->includeScript(
-                    $blocks
-                ) . (isset($result['afterContent']) ? $result['afterContent'] : '');
+                        $blocks
+                    ) . (isset($result['afterContent']) ? $result['afterContent'] : '');
             } else {
                 $content = $this->core->includeScript($this->parse($blocks));
             }
@@ -1229,9 +1241,14 @@ class BlockParser
             $blocks = $this->getDataFromBlocksByContentId($contentId);
 
             // In Editmode we want to render all views to insert content
-            if ((empty($blocks) && $this->getXMLAttr($child, 'hideEmpty') !== false) && $this->block->inEditMode() === false) {
+            if ((empty($blocks) && $this->getXMLAttr($child, 'hideEmpty') !== false && empty($placeholder)) && $this->block->inEditMode() === false) {
                 continue;
             }
+
+            if((empty($blocks) && !empty($placeholder)) && $this->block->inEditMode() === false) {
+                $blocks = $this->blockController->createEditViewContentDIV($child, $placeholder);
+            }
+
             // result returns an array
             $result = $this->contentChildViews($child);
             $addContent = $this->getXMLAttr($child, 'add') ? : 'afterContent';
@@ -1242,19 +1259,10 @@ class BlockParser
 
             if (count($result) > 0) {
                 $blockhtml = (isset($result['beforeContent']) ? $result['beforeContent'] : '') .
-                    $this->core->includeScript(
-                        $blocks
-                    ) .
+                    $this->core->includeScript($blocks) .
                     (isset($result['afterContent']) ? $result['afterContent'] : '');
 
-                if (($this->getXMLAttr($child, 'hideEmpty') === null ||
-                        $this->getXMLAttr(
-                            $child,
-                            'hideEmpty'
-                        ) === true) &&
-                    $this->block->inEditMode() === false &&
-                    trim($blockhtml) == ''
-                ) {
+                if (trim($blockhtml) === '') {
                     $childsHtml[$addContent] .= (isset($childsHtml[$addContent]) ? $childsHtml[$addContent] : '');
                 } else {
                     $childsHtml[$addContent] .= (isset($childsHtml[$addContent]) ? $childsHtml[$addContent] : '') .
@@ -1266,14 +1274,7 @@ class BlockParser
             } else {
                 $blockhtml = $this->core->includeScript($blocks);
 
-                if (($this->getXMLAttr($child, 'hideEmpty') === null ||
-                        $this->getXMLAttr(
-                            $child,
-                            'hideEmpty'
-                        ) === true) &&
-                    $this->block->inEditMode() === false &&
-                    trim($blockhtml) == ''
-                ) {
+                if (trim($blockhtml) === '') {
                     $childsHtml[$addContent] .= '';
                 } else {
                     $childsHtml[$addContent] .= $this->blockController->createEditViewContentDIV($child, $blockhtml);

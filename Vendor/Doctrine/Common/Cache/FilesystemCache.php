@@ -32,7 +32,10 @@ class FilesystemCache extends FileCache
     /**
      * {@inheritdoc}
      */
-    protected $extension = self::EXTENSION;
+    public function __construct($directory, $extension = self::EXTENSION, $umask = 0002)
+    {
+        parent::__construct($directory, $extension, $umask);
+    }
 
     /**
      * {@inheritdoc}
@@ -50,7 +53,7 @@ class FilesystemCache extends FileCache
         $resource = fopen($filename, "r");
 
         if (false !== ($line = fgets($resource))) {
-            $lifetime = (integer) $line;
+            $lifetime = (int) $line;
         }
 
         if ($lifetime !== 0 && $lifetime < time()) {
@@ -83,7 +86,7 @@ class FilesystemCache extends FileCache
         $resource = fopen($filename, "r");
 
         if (false !== ($line = fgets($resource))) {
-            $lifetime = (integer) $line;
+            $lifetime = (int) $line;
         }
 
         fclose($resource);
@@ -100,14 +103,9 @@ class FilesystemCache extends FileCache
             $lifeTime = time() + $lifeTime;
         }
 
-        $data       = serialize($data);
-        $filename   = $this->getFilename($id);
-        $filepath   = pathinfo($filename, PATHINFO_DIRNAME);
+        $data      = serialize($data);
+        $filename  = $this->getFilename($id);
 
-        if ( ! is_dir($filepath)) {
-            mkdir($filepath, 0777, true);
-        }
-
-        return file_put_contents($filename, $lifeTime . PHP_EOL . $data) !== false;
+        return $this->writeFile($filename, $lifeTime . PHP_EOL . $data);
     }
 }

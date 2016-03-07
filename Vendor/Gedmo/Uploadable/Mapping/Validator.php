@@ -2,11 +2,10 @@
 
 namespace Gedmo\Uploadable\Mapping;
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Gedmo\Exception\InvalidMappingException;
 use Gedmo\Exception\UploadableCantWriteException;
 use Gedmo\Exception\UploadableInvalidPathException;
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 
 /**
  * This class is used to validate mapping information
@@ -40,7 +39,7 @@ class Validator
      * @var array
      */
     public static $validFileMimeTypeTypes = array(
-        'string'
+        'string',
     );
 
     /**
@@ -49,7 +48,7 @@ class Validator
      * @var array
      */
     public static $validFileNameTypes = array(
-        'string'
+        'string',
     );
 
     /**
@@ -58,16 +57,25 @@ class Validator
      * @var array
      */
     public static $validFilePathTypes = array(
-        'string'
+        'string',
     );
 
     /**
-     * List of types which are valid for UploadableFileSize field
+     * List of types which are valid for UploadableFileSize field for ORM
      *
      * @var array
      */
     public static $validFileSizeTypes = array(
-        'decimal'
+        'decimal',
+    );
+
+    /**
+     * List of types which are valid for UploadableFileSize field for ODM
+     *
+     * @var array
+     */
+    public static $validFileSizeTypesODM = array(
+        'float',
     );
 
     /**
@@ -78,25 +86,28 @@ class Validator
      */
     public static $validateWritableDirectory = true;
 
-
-    public static function validateFileNameField(ClassMetadataInfo $meta, $field)
+    public static function validateFileNameField(ClassMetadata $meta, $field)
     {
         self::validateField($meta, $field, self::UPLOADABLE_FILE_NAME, self::$validFileNameTypes);
     }
 
-    public static function validateFileMimeTypeField(ClassMetadataInfo $meta, $field)
+    public static function validateFileMimeTypeField(ClassMetadata $meta, $field)
     {
         self::validateField($meta, $field, self::UPLOADABLE_FILE_MIME_TYPE, self::$validFileMimeTypeTypes);
     }
 
-    public static function validateFilePathField(ClassMetadataInfo $meta, $field)
+    public static function validateFilePathField(ClassMetadata $meta, $field)
     {
         self::validateField($meta, $field, self::UPLOADABLE_FILE_PATH, self::$validFilePathTypes);
     }
 
-    public static function validateFileSizeField(ClassMetadataInfo $meta, $field)
+    public static function validateFileSizeField(ClassMetadata $meta, $field)
     {
-        self::validateField($meta, $field, self::UPLOADABLE_FILE_SIZE, self::$validFileSizeTypes);
+        if ($meta instanceof \Doctrine\ODM\MongoDB\Mapping\ClassMetadataInfo) {
+            self::validateField($meta, $field, self::UPLOADABLE_FILE_SIZE, self::$validFileSizeTypesODM);
+        } else {
+            self::validateField($meta, $field, self::UPLOADABLE_FILE_SIZE, self::$validFileSizeTypes);
+        }
     }
 
     public static function validateField($meta, $field, $uploadableField, $validFieldTypes)

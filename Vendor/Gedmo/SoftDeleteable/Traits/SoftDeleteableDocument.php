@@ -2,6 +2,8 @@
 
 namespace Gedmo\SoftDeleteable\Traits;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 /**
  * SoftDeletable Trait, usable with PHP >= 5.4
  *
@@ -11,6 +13,7 @@ namespace Gedmo\SoftDeleteable\Traits;
 trait SoftDeleteableDocument
 {
     /**
+     * @var \DateTime
      * @ODM\Date
      */
     protected $deletedAt;
