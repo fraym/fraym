@@ -62,22 +62,16 @@
 
         <div class="form-group">
             <label>{_('Date')}</label>
-            <input id="dynamicTemplateDate" type="text" class="form-control" name="config[date]" value="{$config.date}"/>
+            <input id="dynamicTemplateDate" type="text" class="form-control" data-datepicker="yy-mm-dd" name="config[date]" value="{$config.date}"/>
         </div>
         <div class="form-group">
             <label>{_('Date and time')}</label>
-            <input id="dynamicTemplateDateTime" type="text" class="form-control" name="config[datetime]" value="{$config.datetime}" />
+            <input id="dynamicTemplateDateTime" type="text" class="form-control" data-datetimepicker="yy-mm-dd" name="config[datetime]" value="{$config.datetime}" />
         </div>
         <div class="form-group">
             <label>{_('Image')}</label>
             <input type="text" class="form-control" name="config[image]" value="{$config.image}" data-absolutepath="false" data-filepath="true" data-singlefileselect="1" data-filefilter="*.jpg,*.png" />
         </div>
-
-        <script type="text/javascript">
-            $('#dynamicTemplateDate').datepicker({ dateFormat:'yy-mm-dd' });
-            $('#dynamicTemplateDateTime').datetimepicker({ dateFormat:'yy-mm-dd' });
-        </script>
-
         ]]>
     </template>
 </block>

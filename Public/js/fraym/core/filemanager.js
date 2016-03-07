@@ -56,6 +56,7 @@ var FileManager = {
 	dynatreeConfig: {
 		fx: { height: "toggle", duration: 200 },
 		autoFocus: false,
+		clickFolderMode: 1,
 		keyPathSeparator: "",
 		debugLevel: 0,
 		persist: true,

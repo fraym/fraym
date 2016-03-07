@@ -34,7 +34,7 @@ h5{
 p{
 	font-family: 'Open Sans', sans-serif;
 }
-p.intro{
+#tf-about p {
 	font-size: 16px;
 	margin: 12px 0 0;
 	line-height: 24px;
@@ -167,14 +167,14 @@ a.fa.fa-angle-down:hover{
 #tf-about{
 	padding: 80px 0;
 }
-ul.about-list{ margin: 30px 0 0 ;}
-ul.about-list li{
+#tf-about ul { margin: 30px 0 0 ;}
+#tf-about ul li{
 	display: block;
 	font-size: 16px;
 	line-height: 30px;
 	font-family: 'Open Sans', sans-serif;
 }
-ul.about-list li span{ 
+#tf-about ul li span{
 	margin-right: 10px;
 }
 

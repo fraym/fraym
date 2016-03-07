@@ -44,6 +44,9 @@
                       <strong>PHP version:</strong> {phpversion()}<br/>
                       <strong>Mod ReWrite enabled:</strong> {if function_exists('apache_get_modules')}{if in_array('mod_rewrite', apache_get_modules())}Yes{else}No{/if}{else}Can't detect{/if}<br/>
                       <strong>ZipArchive enabled:</strong> {if class_exists('ZipArchive')}Yes{else}'No{/if}
+                      <strong>Open basedir enabled:</strong> {if ini_get('open_basedir')}Yes{else}'No{/if}
+                      <p><strong>Note:</strong> open_basedir must be <strong>disabled</strong></p>
+                      <p>If you use PHP <strong>OPcache</strong> opcache.load_comments must be set to 1 in your php.ini</p>
                   </div>
 
                   {if $error}

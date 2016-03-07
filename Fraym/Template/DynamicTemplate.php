@@ -148,8 +148,7 @@ class DynamicTemplate
         if(!empty($config->value)) {
             $path = $config->value;
         } else {
-            $path = $this->template->getTemplateDir() . DIRECTORY_SEPARATOR . $this->template->getDefaultDir() .
-                DIRECTORY_SEPARATOR . 'Fraym' . DIRECTORY_SEPARATOR . 'Template' . DIRECTORY_SEPARATOR . 'DynamicTemplate';
+            $path = $this->template->getTemplateDir() . DIRECTORY_SEPARATOR . 'Dynamic';
         }
         return $path;
     }

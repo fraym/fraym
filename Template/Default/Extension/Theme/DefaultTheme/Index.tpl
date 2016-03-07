@@ -91,7 +91,7 @@
         <div class="overlay">
           <div class="content">
             <h1>Welcome on <strong><span class="color">your website</span></strong></h1>
-            <p class="lead">We are a digital agency with <strong>years of experience</strong> and with <strong>extraordinary people</strong></p>
+            <p class="lead">Lorem ipsum dolor sit amet <strong>ipsum dolor sit</strong> ipsum dolor sit <strong>ipsum dolor sit</strong></p>
             <a href="#tf-about" class="fa fa-angle-down page-scroll"></a>
           </div>
         </div>
@@ -104,40 +104,48 @@
 
 <!-- About Us Page
 ==========================================-->
-<div id="tf-about">
-  <div class="container">
-    <div class="row">
-      <div class="col-md-6">
-        <img src="/images/default_theme/02.png" class="img-responsive">
-      </div>
-      <div class="col-md-6">
-        <div class="about-text">
-          <div class="section-title">
-            <h4>About us</h4>
-            <h2>Some words <strong>about us</strong></h2>
-            <hr>
-            <div class="clearfix"></div>
+<block type="content">
+  <view id="tf-about-wrapper" renderElement="false" description="{_('Add about text element here.')}">
+    <placeholder>
+      <![CDATA[
+      <div id="tf-about">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-6">
+              <img src="/images/default_theme/02.png" class="img-responsive">
+            </div>
+            <div class="col-md-6">
+              <div class="about-text">
+                <div class="section-title">
+                  <h4>About us</h4>
+                  <h2>Some words <strong>about us</strong></h2>
+                  <hr>
+                  <div class="clearfix"></div>
+                </div>
+                <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat.</p>
+                <ul>
+                  <li>
+                    <span class="fa fa-dot-circle-o"></span>
+                    <strong>Lorem ipsum</strong> - <em>Lorem ipsum dolor sit amet</em>
+                  </li>
+                  <li>
+                    <span class="fa fa-dot-circle-o"></span>
+                    <strong>Lorem ipsum</strong> - <em>Lorem ipsum dolor sit amet</em>
+                  </li>
+                  <li>
+                    <span class="fa fa-dot-circle-o"></span>
+                    <strong>Lorem ipsum</strong> - <em>Lorem ipsum dolor sit amet</em>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
-          <p class="intro">We love building and rebuilding brands through our  specific skills. Using colour, fonts, and illustration, we brand companies in a way they will never forget.</p>
-          <ul class="about-list">
-            <li>
-              <span class="fa fa-dot-circle-o"></span>
-              <strong>Mission</strong> - <em>We deliver uniqueness and quality</em>
-            </li>
-            <li>
-              <span class="fa fa-dot-circle-o"></span>
-              <strong>Skills</strong> - <em>Delivering fast and excellent results</em>
-            </li>
-            <li>
-              <span class="fa fa-dot-circle-o"></span>
-              <strong>Clients</strong> - <em>Satisfied clients thanks to our experience</em>
-            </li>
-          </ul>
         </div>
       </div>
-    </div>
-  </div>
-</div>
+      ]]>
+    </placeholder>
+  </view>
+</block>
 
 <!-- Team Page
 ==========================================-->
@@ -575,7 +583,7 @@
 <nav id="footer">
   <div class="container">
     <div class="pull-left fnav">
-      <p>ALL RIGHTS RESERVED. COPYRIGHT © 2014. Designed by <a href="https://dribbble.com/shots/1817781--FREEBIE-Spirit8-Digital-agency-one-page-template">Robert Berki</a> and Coded by <a href="https://dribbble.com/jennpereira">Jenn Pereira</a></p>
+      <p>COPYRIGHT © {date('Y')}.</p>
     </div>
     <div class="pull-right fnav">
       <ul class="footer-social">

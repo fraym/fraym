@@ -253,15 +253,15 @@ html {
     right: 0;
     top: 1px;
 }
-/*.block-container-actionbar:hover,*/
-/*.block-container-content:hover > .block-container-actionbar {*/
-    /*!*display: block;*!*/
-/*}*/
 
 .edit-view-content,
 .block-container {
     min-height: 50px;
     min-width: 50px;
+}
+
+#dynamicTemplateConfigForm .panel {
+    display: none;
 }
 
 .edit-view-content {

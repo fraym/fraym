@@ -1059,6 +1059,10 @@ class BlockParser
         $srcOnly = $this->getXMLAttr($xml, 'srcOnly') === true ? true : false;
 
         $src = $this->getXMLAttr($xml, 'src');
+        if($src === '') {
+            return '';
+        }
+
         $src = str_replace(array('\\', '/'), DIRECTORY_SEPARATOR, $src);
 
         if (empty($src)) {
