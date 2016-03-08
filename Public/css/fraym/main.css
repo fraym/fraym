@@ -521,6 +521,10 @@ ul.sortable {
     overflow: hidden;
 }
 
+.block-holder.ui-sortable-helper {
+    z-index: 999999;
+}
+
 .menu-item-list.ui-sortable-disabled li > div {
     cursor: default;
 }

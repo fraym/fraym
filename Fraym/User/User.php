@@ -109,14 +109,16 @@ class User
      */
     public function __construct(\Fraym\Database\Database $db, \Fraym\Session\Session $session)
     {
-        // call connect on caching
-        $this->db = $db->connect();
         $this->session = $session;
         $userId = $this->session->get('userId', false);
+        if($userId) {
+            // call connect on caching
+            $this->db = $db->connect();
 
-        if ($this->user === false && $userId !== false) {
-            $this->setUserId($userId);
-            $this->session->addOnDestroyCallback(array(&$this, 'setUserAsOffline'));
+            if ($this->user === false && $userId !== false) {
+                $this->setUserId($userId);
+                $this->session->addOnDestroyCallback(array(&$this, 'setUserAsOffline'));
+            }
         }
     }
 

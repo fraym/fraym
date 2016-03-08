@@ -351,11 +351,11 @@ var FileManager = {
 		};
 
 		var shortcuts = function(e){
-			e.preventDefault();
 			e.stopPropagation();
 			var keyCode = (e.which ? e.which : e.keyCode);
 			if(keyCode == '65' && (e.metaKey || e.ctrlKey)) {
 				$(FileManager.selectors.fileItem).addClass('selected');
+				e.preventDefault();
 			} else if(keyCode == '67' && (e.metaKey || e.ctrlKey)) {
 				FileManager.File.copy();
 			} else if(keyCode == '86' && (e.metaKey || e.ctrlKey)) {

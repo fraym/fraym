@@ -580,7 +580,7 @@ class Template
         $this->addParserLog('Closing tags: ' . $content);
 
         // replace template functions with open function tag
-        $content = preg_replace('/\{((function)([^\}]*))\}/is', '<?php $1 { ?>', $content, -1, $cc);
+        $content = preg_replace('/\{((function)\s+([^\}]*)\([^\}]*\)([^\}]*))\}/is', '<?php $1 { ?>', $content, -1, $cc);
         $this->addParserLog('Template functions open: ' . $content);
 
         // replace function close tag

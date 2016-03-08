@@ -27,6 +27,12 @@ class DynamicTemplateController extends \Fraym\Core
     protected $blockParser;
 
     /**
+     * @Inject
+     * @var \Fraym\Block\Block
+     */
+    protected $block;
+
+    /**
      * @param null $blockConfig
      */
     public function getBlockConfig($selectOptions, $blockConfig = null)
@@ -51,6 +57,7 @@ class DynamicTemplateController extends \Fraym\Core
      */
     public function render($template, $variables)
     {
+        $this->view->assign('refreshElement', $this->block->inEditMode() && $this->request->isXmlHttpRequest());
         $this->view->assign('config', $variables);
         if(!empty($template)) {
             $this->view->setTemplate($template);

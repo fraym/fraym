@@ -571,6 +571,9 @@ class BlockParser
             case 'image':
                 $blockHtml = $this->execBlockOfTypeImage($xml);
                 break;
+            case 'javascript':
+                $blockHtml = $this->execBlockOfTypeJavascript($xml);
+                break;
             case 'dcontent':
                 $blockHtml = $this->execBlockOfTypeDynamicContent($xml);
                 break;
@@ -797,10 +800,7 @@ class BlockParser
     private function disableBlockCaching($xml)
     {
         unset($xml['cache']);
-        /**
-         * Auskommentiert da im bearbeitungs modus die blockinfo nicht richtig geladen wird
-         */
-//        unset($xml['id']);
+
         $xml['cached'] = true;
         $block = $this->removeXmlHeader($xml->asXml());
         return $block;
@@ -1024,6 +1024,15 @@ class BlockParser
         $convertedImageFileName .= DIRECTORY_SEPARATOR . $filename . '.' . $ext;
 
         return 'Public' . DIRECTORY_SEPARATOR . trim($this->fileManager->convertDirSeparator($convertedImageFileName), '/');
+    }
+
+    /**
+     * @param $xml
+     * @return string
+     */
+    public function execBlockOfTypeJavascript($xml) {
+        $this->template->addFootData('<script type="text/javascript">' . (string)$xml . '</script>');
+        return '';
     }
 
     /**

@@ -212,8 +212,6 @@ Core.Block = {
 			$(Core.$.BLOCK_VIEW_INFO_CONTAINER).css({opacity: '1'});
 		}
 
-
-
 		$('body').on('dblclick', Core.$.BLOCK_INFO, function () {
 			Core.Block.showBlockDialog($(this).parents(Core.$.BLOCK_VIEW_CONTAINER).attr('id'), $(this).parent().data('id'));
 		});
@@ -345,7 +343,6 @@ Core.Block = {
 			handle: Core.$.BLOCK_INFO,
 			tolerance:"pointer",
 			cursorAt: { top:0, left: 0 },
-			delay: 150,
 			start: function (ev, ui) {
 				start = true;
 				ev.stopPropagation();

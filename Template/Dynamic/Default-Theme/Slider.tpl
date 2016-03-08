@@ -1,0 +1,157 @@
+<block type="config">
+    <template>
+        <![CDATA[
+        <div class="form-group">
+            <label>Headline</label>
+            <input type="text" class="form-control" name="config[headline]" value="{$config.headline}" />
+        </div>
+        <div class="row form-group">
+            <div class="col-xs-4">
+                <label>Desktop: Items per slide</label>
+                <input type="number" class="form-control" name="config[desktopItems]" min="1" value="{$config.desktopItems}" />
+            </div>
+            <div class="col-xs-4">
+                <label>Tablet: Items per slide</label>
+                <input type="number" class="form-control" name="config[tabletItems]" min="1" value="{$config.tabletItems}" />
+            </div>
+            <div class="col-xs-4">
+                <label>Mobile: Items per slide</label>
+                <input type="number" class="form-control" name="config[mobileItems]" min="1" value="{$config.mobileItems}" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Background image</label>
+            <input type="text" class="form-control" name="config[backgroundImage]" value="{$config.backgroundImage}" data-absolutepath="false" data-filepath="true" data-singlefileselect="1" data-filefilter="*.jpg,*.png" />
+        </div>
+        {function createSlideItem($k, $item = null)}
+            <div class="slide-item">
+                <div class="pull-right">
+                    <i class="remove-slide fa fa-times"></i>
+                </div>
+                <h4>Item <span>{$k}</span></h4>
+                <div class="form-group">
+                    <label>
+                        Text
+                    </label>
+                    <textarea name="config[items][{$k}][rte]" class="form-control" data-rte="{ toolbar: [{ name: 'document', groups: ['mode', 'document', 'doctools'], items: ['Source', '-', 'Save', 'NewPage', 'Preview', 'Print', '-', 'Templates'] }, { name: 'clipboard', groups: ['clipboard', 'undo'], items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] }, { name: 'editing', groups: ['find', 'selection', 'spellchecker'], items: ['Find', 'Replace', '-', 'SelectAll', '-', 'Scayt'] }, { name: 'tools', items: ['Maximize', 'ShowBlocks']}, '/', { name: 'insert', items: ['Image', 'Flash', 'Table', 'HorizontalRule', 'SpecialChar', 'Iframe'] }, { name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align', 'bidi'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl'] }, { name: 'links', items: ['Link', 'Unlink', 'Anchor'] }, { name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] }, { name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize'] }, { name: 'colors', items: ['TextColor', 'BGColor'] }] }">{$item.rte}</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Image</label>
+                    <input type="text" class="form-control" name="config[items][{$k}][image]" value="{$item.image}" data-absolutepath="false" data-filepath="true" data-singlefileselect="1" data-filefilter="*.jpg,*.png" />
+                </div>
+                <div class="row form-group">
+                    <div class="col-xs-4">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="config[items][{$k}][roundImage]" value="1"{if $item.roundImage} checked{/if}/>
+                                Round image
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <hr/>
+            </div>
+        {/function}
+
+        <div class="pull-right">
+            <button id="add-slide" class="btn btn-default">{_('Add slide item')}</button>
+        </div>
+
+        <script>
+            $('#add-slide').click(function(){
+                var $slideItem = $('.slide-item:last');
+                var item = parseInt($slideItem.find('h4 span').text())+1;
+                var $clone = $slideItem.clone();
+                $clone.find('div.cke').remove();
+                $clone.find('textarea').removeAttr('id').css({ display: '', visibility: '' });
+
+                $clone.find('h4 span').html(item);
+                $.each($clone.find('input[type=text],textarea'), function(){
+                    $(this).val('');
+                    $(this).attr('name', $(this).attr('name').replace('[' + (item-1) + ']', '[' + (item) + ']'));
+                });
+
+                $clone.insertAfter($slideItem);
+                DynamicTemplate.initElements();
+            });
+            $('body').on('click', '.remove-slide', function(){
+                $(this).parents('.slide-item').remove();
+            });
+        </script>
+
+        {if count((array)$config.items)}
+            {foreach $config.items as $k => $item}
+                {createSlideItem($k, $item)}
+            {/foreach}
+        {else}
+            {createSlideItem(1, null)}
+        {/if}
+
+        ]]>
+    </template>
+</block>
+
+<div class="text-center slider-wrapper"{if $config.backgroundImage} style="background-image:url('<block type="image" width="1200" srcOnly="true" method="resize" src="{$config.backgroundImage}"></block>')" {/if}>
+    <div class="overlay">
+        <div class="container">
+            <div class="section-title center">
+                <h2>{$config.headline}</h2>
+                <div class="line">
+                    <hr>
+                </div>
+            </div>
+            {@$id = uniqid()}
+            <div id="slider-{$id}" class="owl-carousel owl-theme row">
+                {foreach $config.items as $k => $item}
+                    <div class="item">
+                        <div class="thumbnail">
+                            <block type="image" autosize="1" src="{$item.image}"{if $item.roundImage} class="img-circle team-img"{/if}></block>
+                            <div class="caption">
+                                {{$item.rte}}
+                            </div>
+                        </div>
+                    </div>
+                {/foreach}
+            </div>
+        </div>
+    </div>
+</div>
+{if $refreshElement}
+<!-- Init the slider js after save -->
+<script>
+    $("#slider-{$id}").owlCarousel({
+        navigation : false,
+        autoHeight : true,
+        slideSpeed : 300,
+        paginationSpeed : 400,
+        itemsCustom : [
+            [0, {$config.mobileItems}],
+            [450, {$config.mobileItems}],
+            [600, {$config.mobileItems}],
+            [700, {$config.tabletItems}],
+            [1000, {$config.tabletItems}],
+            [1200, {$config.desktopItems}],
+            [1400, {$config.desktopItems}],
+            [1600, {$config.desktopItems}]
+        ]
+    });
+</script>
+{/if}
+<block type="javascript">
+    $("#slider-{$id}").owlCarousel({
+        navigation : false,
+        autoHeight : true,
+        slideSpeed : 300,
+        paginationSpeed : 400,
+        itemsCustom : [
+            [0, {$config.mobileItems}],
+            [450, {$config.mobileItems}],
+            [600, {$config.mobileItems}],
+            [700, {$config.tabletItems}],
+            [1000, {$config.tabletItems}],
+            [1200, {$config.desktopItems}],
+            [1400, {$config.desktopItems}],
+            [1600, {$config.desktopItems}]
+        ]
+    });
+</block>

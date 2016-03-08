@@ -16,7 +16,7 @@ h1 strong{
 }
 h2{
 	text-transform: uppercase;
-	line-height: 20px;
+	line-height: 30px;
 	margin:  0;
 }
 h3{
@@ -54,6 +54,25 @@ a:focus{
 	float: left;
 	clear: both;
 }
+
+.slider-wrapper {
+	background-size: cover;
+	background-position: center;
+	background-attachment: fixed;
+	background-repeat: no-repeat;
+	color: #ffffff;
+}
+
+.slider-wrapper .thumbnail .caption {
+	padding: 9px;
+	color: #F2F2F2;
+}
+
+.slider-wrapper .thumbnail {
+	background: transparent;
+	border: 0;
+}
+
 .clearfix:after {
      visibility: hidden;
      display: block;

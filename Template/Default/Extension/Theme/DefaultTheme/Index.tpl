@@ -149,109 +149,119 @@
 
 <!-- Team Page
 ==========================================-->
-<div id="tf-team" class="text-center">
-  <div class="overlay">
-    <div class="container">
-      <div class="section-title center">
-        <h2>Meet <strong>our team</strong></h2>
-        <div class="line">
-          <hr>
+
+<block type="content">
+  <view id="tf-slider-wrapper" renderElement="false" description="{_('Add a slider here.')}">
+    <placeholder>
+      <![CDATA[
+      <div class="text-center">
+        <div class="overlay">
+          <div class="container">
+            <div class="section-title center">
+              <h2>Meet <strong>our team</strong></h2>
+              <div class="line">
+                <hr>
+              </div>
+            </div>
+
+            <div id="team" class="owl-carousel owl-theme row">
+
+              <div class="item">
+                <div class="thumbnail">
+                  <img src="/images/default_theme/team/01.jpg" alt="..." class="img-circle team-img">
+                  <div class="caption">
+                    <h3>Jenn Gwapa</h3>
+                    <p>CEO / Founder</p>
+                    <p>Do not seek to change what has come before. Seek to create that which has not.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="item">
+                <div class="thumbnail">
+                  <img src="/images/default_theme/team/02.jpg" alt="..." class="img-circle team-img">
+                  <div class="caption">
+                    <h3>Jenn Gwapa</h3>
+                    <p>CEO / Founder</p>
+                    <p>Do not seek to change what has come before. Seek to create that which has not.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="item">
+                <div class="thumbnail">
+                  <img src="/images/default_theme/team/03.jpg" alt="..." class="img-circle team-img">
+                  <div class="caption">
+                    <h3>Jenn Gwapa</h3>
+                    <p>CEO / Founder</p>
+                    <p>Do not seek to change what has come before. Seek to create that which has not.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="item">
+                <div class="thumbnail">
+                  <img src="/images/default_theme/team/04.jpg" alt="..." class="img-circle team-img">
+                  <div class="caption">
+                    <h3>Jenn Gwapa</h3>
+                    <p>CEO / Founder</p>
+                    <p>Do not seek to change what has come before. Seek to create that which has not.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="item">
+                <div class="thumbnail">
+                  <img src="/images/default_theme/team/04.jpg" alt="..." class="img-circle team-img">
+                  <div class="caption">
+                    <h3>Jenn Gwapa</h3>
+                    <p>CEO / Founder</p>
+                    <p>Do not seek to change what has come before. Seek to create that which has not.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="item">
+                <div class="thumbnail">
+                  <img src="/images/default_theme/team/01.jpg" alt="..." class="img-circle team-img">
+                  <div class="caption">
+                    <h3>Jenn Gwapa</h3>
+                    <p>CEO / Founder</p>
+                    <p>Do not seek to change what has come before. Seek to create that which has not.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="item">
+                <div class="thumbnail">
+                  <img src="/images/default_theme/team/02.jpg" alt="..." class="img-circle team-img">
+                  <div class="caption">
+                    <h3>Jenn Gwapa</h3>
+                    <p>CEO / Founder</p>
+                    <p>Do not seek to change what has come before. Seek to create that which has not.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="item">
+                <div class="thumbnail">
+                  <img src="/images/default_theme/team/03.jpg" alt="..." class="img-circle team-img">
+                  <div class="caption">
+                    <h3>Jenn Gwapa</h3>
+                    <p>CEO / Founder</p>
+                    <p>Do not seek to change what has come before. Seek to create that which has not.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
         </div>
       </div>
-
-      <div id="team" class="owl-carousel owl-theme row">
-        <div class="item">
-          <div class="thumbnail">
-            <img src="/images/default_theme/team/01.jpg" alt="..." class="img-circle team-img">
-            <div class="caption">
-              <h3>Jenn Gwapa</h3>
-              <p>CEO / Founder</p>
-              <p>Do not seek to change what has come before. Seek to create that which has not.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="item">
-          <div class="thumbnail">
-            <img src="/images/default_theme/team/02.jpg" alt="..." class="img-circle team-img">
-            <div class="caption">
-              <h3>Jenn Gwapa</h3>
-              <p>CEO / Founder</p>
-              <p>Do not seek to change what has come before. Seek to create that which has not.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="item">
-          <div class="thumbnail">
-            <img src="/images/default_theme/team/03.jpg" alt="..." class="img-circle team-img">
-            <div class="caption">
-              <h3>Jenn Gwapa</h3>
-              <p>CEO / Founder</p>
-              <p>Do not seek to change what has come before. Seek to create that which has not.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="item">
-          <div class="thumbnail">
-            <img src="/images/default_theme/team/04.jpg" alt="..." class="img-circle team-img">
-            <div class="caption">
-              <h3>Jenn Gwapa</h3>
-              <p>CEO / Founder</p>
-              <p>Do not seek to change what has come before. Seek to create that which has not.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="item">
-          <div class="thumbnail">
-            <img src="/images/default_theme/team/04.jpg" alt="..." class="img-circle team-img">
-            <div class="caption">
-              <h3>Jenn Gwapa</h3>
-              <p>CEO / Founder</p>
-              <p>Do not seek to change what has come before. Seek to create that which has not.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="item">
-          <div class="thumbnail">
-            <img src="/images/default_theme/team/01.jpg" alt="..." class="img-circle team-img">
-            <div class="caption">
-              <h3>Jenn Gwapa</h3>
-              <p>CEO / Founder</p>
-              <p>Do not seek to change what has come before. Seek to create that which has not.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="item">
-          <div class="thumbnail">
-            <img src="/images/default_theme/team/02.jpg" alt="..." class="img-circle team-img">
-            <div class="caption">
-              <h3>Jenn Gwapa</h3>
-              <p>CEO / Founder</p>
-              <p>Do not seek to change what has come before. Seek to create that which has not.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="item">
-          <div class="thumbnail">
-            <img src="/images/default_theme/team/03.jpg" alt="..." class="img-circle team-img">
-            <div class="caption">
-              <h3>Jenn Gwapa</h3>
-              <p>CEO / Founder</p>
-              <p>Do not seek to change what has come before. Seek to create that which has not.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</div>
+      ]]>
+    </placeholder>
+  </view>
+</block>
 
 <!-- Services Section
 ==========================================-->

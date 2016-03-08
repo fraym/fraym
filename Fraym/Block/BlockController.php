@@ -207,12 +207,6 @@ class BlockController extends \Fraym\Core
         return false;
     }
 
-
-    private function getTemplateConfig()
-    {
-
-    }
-
     /**
      *
      */
