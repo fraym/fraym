@@ -105,6 +105,9 @@ class DynamicTemplate
         $configXml = null;
         if ($blockId) {
             $block = $this->db->getRepository('\Fraym\Block\Entity\Block')->findOneById($blockId);
+            if($block->changeSets->count()) {
+                $block = $block->changeSets->last();
+            }
             $configXml = $this->blockParser->getXMLObjectFromString($this->blockParser->wrapBlockConfig($block));
         }
 

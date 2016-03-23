@@ -67,7 +67,6 @@
               <li><a href="#tf-about" class="page-scroll">About</a></li>
               <li><a href="#tf-team" class="page-scroll">Team</a></li>
               <li><a href="#tf-services" class="page-scroll">Services</a></li>
-              <li><a href="#tf-works" class="page-scroll">Portfolio</a></li>
               <li><a href="#tf-testimonials" class="page-scroll">Testimonials</a></li>
               <li><a href="#tf-contact" class="page-scroll">Contact</a></li>
             </ul>
@@ -149,12 +148,11 @@
 
 <!-- Team Page
 ==========================================-->
-
 <block type="content">
   <view id="tf-slider-wrapper" renderElement="false" description="{_('Add a slider here.')}">
     <placeholder>
       <![CDATA[
-      <div class="text-center">
+      <div id="tf-team" class="text-center">
         <div class="overlay">
           <div class="container">
             <div class="section-title center">
@@ -164,7 +162,7 @@
               </div>
             </div>
 
-            <div id="team" class="owl-carousel owl-theme row">
+            <div id="team" class="owl-carousel owl-theme">
 
               <div class="item">
                 <div class="thumbnail">
@@ -258,6 +256,9 @@
           </div>
         </div>
       </div>
+      <script>
+
+      </script>
       ]]>
     </placeholder>
   </view>
@@ -265,8 +266,6 @@
 
 <!-- Services Section
 ==========================================-->
-
-
 <block type="content">
   <view id="tf-services-wrapper" renderElement="false" description="{_('Add a services here.')}">
     <placeholder>
@@ -314,292 +313,94 @@
   </view>
 </block>
 
-
-<!-- Clients Section
-==========================================-->
-<div id="tf-clients" class="text-center">
-  <div class="overlay">
-    <div class="container">
-
-      <div class="section-title center">
-        <h2>Some of <strong>our Clients</strong></h2>
-        <div class="line">
-          <hr>
-        </div>
-      </div>
-      <div id="clients" class="owl-carousel owl-theme">
-        <div class="item">
-          <img src="/images/default_theme/client/01.png">
-        </div>
-        <div class="item">
-          <img src="/images/default_theme/client/02.png">
-        </div>
-        <div class="item">
-          <img src="/images/default_theme/client/03.png">
-        </div>
-        <div class="item">
-          <img src="/images/default_theme/client/04.png">
-        </div>
-        <div class="item">
-          <img src="/images/default_theme/client/05.png">
-        </div>
-        <div class="item">
-          <img src="/images/default_theme/client/06.png">
-        </div>
-        <div class="item">
-          <img src="/images/default_theme/client/07.png">
-        </div>
-      </div>
-
-    </div>
-  </div>
-</div>
-
-<!-- Portfolio Section
-==========================================-->
-<div id="tf-works">
-  <div class="container"> <!-- Container -->
-    <div class="section-title text-center center">
-      <h2>Take a look at <strong>our services</strong></h2>
-      <div class="line">
-        <hr>
-      </div>
-      <div class="clearfix"></div>
-      <small><em>Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.</em></small>
-    </div>
-    <div class="space"></div>
-
-    <div class="categories">
-
-      <ul class="cat">
-        <li class="pull-left"><h4>Filter by Type:</h4></li>
-        <li class="pull-right">
-          <ol class="type">
-            <li><a href="#" data-filter="*" class="active">All</a></li>
-            <li><a href="#" data-filter=".web">Web Design</a></li>
-            <li><a href="#" data-filter=".photography">Photography</a></li>
-            <li><a href="#" data-filter=".app" >Mobile App</a></li>
-            <li><a href="#" data-filter=".branding" >Branding</a></li>
-          </ol>
-        </li>
-      </ul>
-      <div class="clearfix"></div>
-    </div>
-
-    <div id="lightbox" class="row">
-
-      <div class="col-sm-6 col-md-3 col-lg-3 branding">
-        <div class="portfolio-item">
-          <div class="hover-bg">
-            <a href="#">
-              <div class="hover-text">
-                <h4>Logo Design</h4>
-                <small>Branding</small>
-                <div class="clearfix"></div>
-                <i class="fa fa-plus"></i>
-              </div>
-              <img src="/images/default_theme/portfolio/01.jpg" class="img-responsive" alt="...">
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-sm-6 col-md-3 col-lg-3 photography app">
-        <div class="portfolio-item">
-          <div class="hover-bg">
-            <a href="#">
-              <div class="hover-text">
-                <h4>Logo Design</h4>
-                <small>Branding</small>
-                <div class="clearfix"></div>
-                <i class="fa fa-plus"></i>
-              </div>
-              <img src="/images/default_theme/portfolio/02.jpg" class="img-responsive" alt="...">
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-sm-6 col-md-3 col-lg-3 branding">
-        <div class="portfolio-item">
-          <div class="hover-bg">
-            <a href="#">
-              <div class="hover-text">
-                <h4>Logo Design</h4>
-                <small>Branding</small>
-                <div class="clearfix"></div>
-                <i class="fa fa-plus"></i>
-              </div>
-              <img src="/images/default_theme/portfolio/03.jpg" class="img-responsive" alt="...">
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-sm-6 col-md-3 col-lg-3 branding">
-        <div class="portfolio-item">
-          <div class="hover-bg">
-            <a href="#">
-              <div class="hover-text">
-                <h4>Logo Design</h4>
-                <small>Branding</small>
-                <div class="clearfix"></div>
-                <i class="fa fa-plus"></i>
-              </div>
-              <img src="/images/default_theme/portfolio/04.jpg" class="img-responsive" alt="...">
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-sm-6 col-md-3 col-lg-3 web">
-        <div class="portfolio-item">
-          <div class="hover-bg">
-            <a href="#">
-              <div class="hover-text">
-                <h4>Logo Design</h4>
-                <small>Branding</small>
-                <div class="clearfix"></div>
-                <i class="fa fa-plus"></i>
-              </div>
-              <img src="/images/default_theme/portfolio/05.jpg" class="img-responsive" alt="...">
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-sm-6 col-md-3 col-lg-3 app">
-        <div class="portfolio-item">
-          <div class="hover-bg">
-            <a href="#">
-              <div class="hover-text">
-                <h4>Logo Design</h4>
-                <small>Branding</small>
-                <div class="clearfix"></div>
-                <i class="fa fa-plus"></i>
-              </div>
-              <img src="/images/default_theme/portfolio/06.jpg" class="img-responsive" alt="...">
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-sm-6 col-md-3 col-lg-3 photography web">
-        <div class="portfolio-item">
-          <div class="hover-bg">
-            <a href="#">
-              <div class="hover-text">
-                <h4>Logo Design</h4>
-                <small>Branding</small>
-                <div class="clearfix"></div>
-                <i class="fa fa-plus"></i>
-              </div>
-              <img src="/images/default_theme/portfolio/07.jpg" class="img-responsive" alt="...">
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-sm-6 col-md-3 col-lg-3 web">
-        <div class="portfolio-item">
-          <div class="hover-bg">
-            <a href="#">
-              <div class="hover-text">
-                <h4>Logo Design</h4>
-                <small>Branding</small>
-                <div class="clearfix"></div>
-                <i class="fa fa-plus"></i>
-              </div>
-              <img src="/images/default_theme/portfolio/08.jpg" class="img-responsive" alt="...">
-            </a>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</div>
-
 <!-- Testimonials Section
 ==========================================-->
-<div id="tf-testimonials" class="text-center">
-  <div class="overlay">
-    <div class="container">
-      <div class="section-title center">
-        <h2><strong>Our clients’</strong> testimonials</h2>
-        <div class="line">
-          <hr>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-8 col-md-offset-2">
-          <div id="testimonial" class="owl-carousel owl-theme">
-            <div class="item">
-              <h5>This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.</h5>
-              <p><strong>Dean Martin</strong>, CEO Acme Inc.</p>
+<block type="content">
+  <view id="tf-testimonials-wrapper" renderElement="false" description="{_('Add a testimonials here.')}">
+    <placeholder>
+      <![CDATA[
+      <div id="tf-testimonials" class="text-center">
+        <div class="overlay">
+          <div class="container">
+            <div class="section-title center">
+              <h2><strong>Our clients’</strong> testimonials</h2>
+              <div class="line">
+                <hr>
+              </div>
             </div>
+            <div class="row">
+              <div class="col-md-8 col-md-offset-2">
+                <div id="testimonial" class="owl-carousel owl-theme">
+                  <div class="item">
+                    <h5>This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.</h5>
+                    <p><strong>Dean Martin</strong>, CEO Acme Inc.</p>
+                  </div>
 
-            <div class="item">
-              <h5>This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.</h5>
-              <p><strong>Dean Martin</strong>, CEO Acme Inc.</p>
-            </div>
+                  <div class="item">
+                    <h5>This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.</h5>
+                    <p><strong>Dean Martin</strong>, CEO Acme Inc.</p>
+                  </div>
 
-            <div class="item">
-              <h5>This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.</h5>
-              <p><strong>Dean Martin</strong>, CEO Acme Inc.</p>
+                  <div class="item">
+                    <h5>This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.</h5>
+                    <p><strong>Dean Martin</strong>, CEO Acme Inc.</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
-</div>
+      ]]>
+    </placeholder>
+  </view>
+</block>
 
-<!-- Contact Section
-==========================================-->
-<div id="tf-contact" class="text-center">
-  <div class="container">
 
-    <div class="row">
-      <div class="col-md-8 col-md-offset-2">
+<block type="content">
+  <view id="tf-contact-wrapper" renderElement="false" description="{_('Add a contact form here.')}">
+    <placeholder>
+      <![CDATA[
+      <div id="tf-contact" class="text-center">
+        <div class="container">
 
-        <div class="section-title center">
-          <h2>Feel free to <strong>contact us</strong></h2>
-          <div class="line">
-            <hr>
-          </div>
-          <div class="clearfix"></div>
-          <small><em>Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.</em></small>
-        </div>
-
-        <form>
           <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="exampleInputEmail1">Email address</label>
-                <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
+            <div class="col-md-8 col-md-offset-2">
+
+              <div class="section-title center">
+                <h2>Feel free to <strong>contact us</strong></h2>
+                <div class="line">
+                  <hr>
+                </div>
+                <div class="clearfix"></div>
               </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="exampleInputPassword1">Password</label>
-                <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-              </div>
+
+              <form>
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label for="exampleInputEmail1">Email address</label>
+                      <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="exampleInputEmail1">Message</label>
+                  <textarea class="form-control" rows="3"></textarea>
+                </div>
+
+                <button type="submit" class="btn tf-btn btn-default">Submit</button>
+              </form>
+
             </div>
           </div>
-          <div class="form-group">
-            <label for="exampleInputEmail1">Message</label>
-            <textarea class="form-control" rows="3"></textarea>
-          </div>
 
-          <button type="submit" class="btn tf-btn btn-default">Submit</button>
-        </form>
-
+        </div>
       </div>
-    </div>
-
-  </div>
-</div>
+      ]]>
+    </placeholder>
+  </view>
+</block>
 
 <nav id="footer">
   <div class="container">

@@ -111,7 +111,7 @@
                 </div>
             </div>
             {@$id = uniqid()}
-            <div id="slider-{$id}" class="owl-carousel owl-theme row">
+            <div id="slider-{$id}" class="owl-carousel owl-theme">
                 {foreach $config.items as $k => $item}
                     <div class="item">
                         <div class="thumbnail">

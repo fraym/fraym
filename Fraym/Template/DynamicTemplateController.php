@@ -33,6 +33,7 @@ class DynamicTemplateController extends \Fraym\Core
     protected $block;
 
     /**
+     * @param $selectOptions
      * @param null $blockConfig
      */
     public function getBlockConfig($selectOptions, $blockConfig = null)
@@ -44,6 +45,7 @@ class DynamicTemplateController extends \Fraym\Core
 
     /**
      * @param $html
+     * @param $variables
      */
     public function renderConfig($html, $variables)
     {
