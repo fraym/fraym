@@ -15,10 +15,10 @@ namespace Fraym;
  */
 class Core
 {
-    const VERSION = '0.9.1';
+    const VERSION = '1.0.0';
     const NAME = 'Fraym';
     const AUTHOR = 'Dominik Weber';
-    const PUBLISHED = '2014';
+    const PUBLISHED = '2016';
     const WEBSITE = 'http://fraym.org';
 
     const ENV_PRODUCTION = 'production';

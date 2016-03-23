@@ -1,17 +1,16 @@
-Fraym 0.9.2, 2016xx-xx
+Fraym 1.0.0, 2016-04-xx
 ----------------------
 - Added image link
 - Added dynamic template configurations
-- *TODO* Fix flexslider configs
 - Set production mode as default on installation
-- *TODO* Imagine version update
+- Imagine version update
 - Image placeholder fix
 - Change editmode styles
 - Remove eval
 - File manager fixes
 - Entity manager fixes
 - Update vendors
-
+- Change set manager added
 
 Fraym 0.9.1, 2014-04-29
 ----------------------
