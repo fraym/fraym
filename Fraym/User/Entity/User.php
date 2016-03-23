@@ -157,10 +157,16 @@ class User extends \Fraym\Entity\BaseEntity
     protected $identifier;
 
     /**
-     * @ORM\OneToMany(targetEntity="\Fraym\Block\Entity\BlockHistory", mappedBy="user", cascade={"all"}, fetch="EXTRA_LAZY")
-     * @ORM\OrderBy({"date" = "DESC"})
+     * @ORM\OneToMany(targetEntity="\Fraym\Block\Entity\Block", mappedBy="user", cascade={"all"}, fetch="EXTRA_LAZY")
+     * @ORM\OrderBy({"created" = "DESC"})
      */
-    protected $blockHistory;
+    protected $blocks;
+
+    /**
+     * @ORM\OneToMany(targetEntity="\Fraym\Block\Entity\ChangeSet", mappedBy="user", cascade={"all"}, fetch="EXTRA_LAZY")
+     * @ORM\OrderBy({"created" = "DESC"})
+     */
+    protected $changeSets;
 
     /**
      * @param $identifier
@@ -202,6 +208,8 @@ class User extends \Fraym\Entity\BaseEntity
         $this->lastLogin = new \DateTime('NOW');
         $this->salt = md5(microtime());
         $this->active = true;
+        $this->blocks = new ArrayCollection();
+        $this->changeSets = new ArrayCollection();
         $this->groups = new ArrayCollection();
         $this->isOnline = false;
     }

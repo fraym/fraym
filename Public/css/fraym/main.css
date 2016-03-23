@@ -68,12 +68,62 @@ html {
     font-size: 13px;
 }
 
+.changeset .block-info {
+    background-color: #ffa500;
+}
+
+.badge.green i {
+    color:#fff;
+}
+
+.badge.orange i {
+    color:#fff;
+}
+
+.badge.green {
+    background-color: #008000;
+}
+
+.badge.orange {
+    background-color: #ffa500;
+}
+
 .datatable tfoot td {
     text-align: right;
 }
 
 .entitymanager {
     padding-top: 20px;
+}
+
+#block-change-set-manager .list-group-item > div > a {
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+#block-change-set-manager .nav-pills {
+    margin: 0 -10px 20px;
+}
+
+#block-change-set-manager {
+    padding: 15px 0;
+}
+
+#block-change-set-manager li {
+    list-style-type: none;
+    padding: 5px 10px;
+}
+
+#block-change-set-manager .tab-content .tab-content li {
+    padding: 5px 0px;
+}
+
+.block-info > i {
+    display: none;
+}
+
+.by-ref > .block-info > i {
+    display: inline-block;
 }
 
 .notification {
@@ -544,16 +594,20 @@ ul.sortable {
     border-radius: 0;
 }
 
+.row {
+    margin-bottom: 15px;
+}
+
+.row .chosen-container {
+    width: 100% !important;
+}
+
 #tabs.ui-tabs {
     border: 0;
     background: none;
     background-color: transparent;
 }
 
-#tabs .ui-tabs-panel {
-    border: 1px solid #cccccc;
-    background-color: #EAF8FB;
-}
 
 #tabs .ui-state-active, #tabs .ui-widget-content .ui-state-active, #tabs .ui-widget-header .ui-state-active {
     background: none #EAF8FB;
@@ -786,7 +840,7 @@ table td.right, table th.right {
 }
 
 .ui-tabs-panel {
-    border: 1px solid #DDD !important;
+    border: 0 !important;
 }
 
 #block-tabs .save-buttons {
@@ -796,9 +850,17 @@ table td.right, table th.right {
     z-index: 100;
 }
 
+.margin {
+    margin-bottom: 15px;
+}
+
 #fraym-iframe #block-add-edit-form {
     margin: 0;
-    background-color: #F7F2F2;
+    background-color: #fff;
+}
+
+#fraym-iframe #block-add-edit-form .control-label {
+
 }
 
 .menu-item-list-block .title {

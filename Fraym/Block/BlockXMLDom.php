@@ -8,10 +8,10 @@
 namespace Fraym\Block;
 
 /**
- * Class BlockXMLDom
+ * Class BlockXmlDom
  * @package Fraym\Block
  */
-class BlockXMLDom extends \DomDocument
+class BlockXmlDom extends \DomDocument
 {
     /**
      * @return string

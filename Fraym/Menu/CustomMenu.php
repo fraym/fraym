@@ -40,10 +40,10 @@ class CustomMenu
 
     /**
      * @param $blockId
-     * @param \Fraym\Block\BlockXML $blockXML
-     * @return \Fraym\Block\BlockXML
+     * @param \Fraym\Block\BlockXml $blockXML
+     * @return \Fraym\Block\BlockXml
      */
-    public function saveSiteMenu($blockId, \Fraym\Block\BlockXML $blockXML)
+    public function saveSiteMenu($blockId, \Fraym\Block\BlockXml $blockXML)
     {
         $blockConfig = $this->request->getGPAsObject();
         $newMenuItems = json_decode($blockConfig->customMenu);
@@ -65,7 +65,7 @@ class CustomMenu
         };
 
         if (count($newMenuItems)) {
-            $customDom = new \Fraym\Block\BlockXMLDom();
+            $customDom = new \Fraym\Block\BlockXmlDom();
             $element = $customDom->createElement('menuItems');
             $element->setAttribute('site', $blockConfig->site);
             $childs = $iteration($customDom, $newMenuItems);

@@ -8,8 +8,8 @@
                 <div>
                     <select name="site" id="site" onchange="Core.Menu.getSiteMenu();">
                         <option value="">{_("Choose")}</option>
-                        {foreach $sites as $site}
-                            <option value="{$site.id}">{$site.name}</option>
+                        {foreach $sites as $k => $site}
+                            <option value="{$site.id}"{if $k == 0} selected{/if}>{$site.name}</option>
                         {/foreach}
                     </select>
                 </div>

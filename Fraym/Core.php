@@ -56,15 +56,15 @@ class Core
 
     /**
      * @Inject
-     * @var \Fraym\Route\Route
+     * @var \Fraym\Template\Template
      */
-    public $route;
+    private $template;
 
     /**
      * @Inject
-     * @var \Fraym\Template\Template
+     * @var \Fraym\Route\Route
      */
-    public $template;
+    public $route;
 
     /**
      * @Inject
@@ -94,7 +94,7 @@ class Core
      * @Inject
      * @var \Fraym\Cache\Cache
      */
-    protected $cache;
+    public $cache;
 
     /**
      * @param $code

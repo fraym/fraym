@@ -111,28 +111,28 @@ class BlockController extends \Fraym\Core
 
         $this->view->assign('renderTime', $renderTime);
         $this->view->assign('type', $this->blockParser->getXMLAttr($xml, 'type'));
-        $this->view->assign('id', $this->blockParser->getXMLAttr($xml, 'id'));
+        $this->view->assign('id', $block && $block->block ? $block->block->id : $this->blockParser->getXMLAttr($xml, 'id'));
         $this->view->assign('block', $block);
-        $this->view->assign('moudleName', $block ? $block->extension->name : '');
+        $this->view->assign('moduleName', $block ? $block->extension->name : '');
         $this->view->assign('content', $html);
-        return $this->template->fetch('BlockInfo.tpl');
+        return $this->view->fetch('BlockInfo.tpl');
     }
 
     /**
      * Block config
      *
-     * @Fraym\Annotation\Route("/fraym/admin/block", name="block", permission={"GROUP:Administrator"})
+     * @Fraym\Annotation\Route("/fraym/admin/block", name="block", permission={"\Fraym\User\User"="isAdmin"})
      * @return mixed
      */
     public function renderBlock()
     {
         $contentId = $this->request->gp('contentId');
 
-        $blockTemplates = $this->db->getRepository('\Fraym\Block\Entity\BlockTemplate')->findBy(
+        $blockTemplates = $this->db->getRepository('\Fraym\Block\Entity\Template')->findBy(
             array(),
             array('name' => 'asc')
         );
-        $extensions = $this->db->getRepository('\Fraym\Block\Entity\BlockExtension')->findBy(
+        $extensions = $this->db->getRepository('\Fraym\Block\Entity\Extension')->findBy(
             array(),
             array('name' => 'asc')
         );
@@ -144,7 +144,7 @@ class BlockController extends \Fraym\Core
         $this->view->assign('extensions', $extensions);
         $this->view->assign('contentId', $contentId);
 
-        return $this->siteManagerController->getIframeContent($this->template->fetch('BlockIframeContent.tpl'));
+        return $this->siteManagerController->getIframeContent($this->view->fetch('BlockIframeContent.tpl'));
     }
 
     /**
@@ -174,7 +174,7 @@ class BlockController extends \Fraym\Core
         $this->view->assign('contentId', $contentId);
         $this->view->assign('inEditMode', $this->block->inEditMode());
         $this->view->assign('content', $content);
-        return $this->template->fetch('EditViewBar.tpl');
+        return $this->view->fetch('EditViewBar.tpl');
     }
 
     /**
@@ -229,7 +229,6 @@ class BlockController extends \Fraym\Core
      */
     public function saveBlockConfig()
     {
-
         $blockConfigGP = $this->request->getGPAsObject();
         $validate = $this->validation->setData($blockConfigGP);
         $validate->addRule('id', 'numeric')
@@ -241,7 +240,7 @@ class BlockController extends \Fraym\Core
 
         if (($result = $validate->check()) === true) {
 
-            $extension = $this->db->getRepository('\Fraym\Block\Entity\BlockExtension')->findOneById(
+            $extension = $this->db->getRepository('\Fraym\Block\Entity\Extension')->findOneById(
                 $blockConfigGP->id
             );
 
@@ -259,10 +258,10 @@ class BlockController extends \Fraym\Core
 
             if ($extension) {
                 if ($block) {
-                    $newBlock = new BlockXML();
+                    $newBlock = new BlockXml();
                     $newBlock->init($block->config);
                 } else {
-                    $newBlock = new BlockXML();
+                    $newBlock = new BlockXml();
                 }
 
                 if (isset($blockConfigGP->excludedDevices)) {
@@ -300,22 +299,26 @@ class BlockController extends \Fraym\Core
                 $saveMethod = $extension->saveMethod;
                 $instance = $this->serviceLocator->get($extension->class);
 
-                if (empty($block)) {
-                    $block = new \Fraym\Block\Entity\Block();
+                $changeSet = new \Fraym\Block\Entity\ChangeSet();
+                $changeSet->contentId = $blockConfigGP->contentId;
+                $changeSet->name = $blockConfigGP->name;
+                $changeSet->position = $block ? $block->position : 0;
+                $changeSet->byRef = $block ? $block->byRef : null;
+                $changeSet->menuItem = isset($blockConfigGP->menu) && $blockConfigGP->menu == '1' ? null : $menu;
+                $changeSet->site = $menu->site;
+                $changeSet->menuItemTranslation = $blockConfigGP->menuTranslation === 'current' ? $menuItemTranslation : null;
+                $changeSet->extension = $extension;
+                $changeSet->block = $block;
+                $changeSet->user = $this->user->getUserEntity();
+
+                if ($block) {
+                    $changeSet->type = \Fraym\Block\Entity\ChangeSet::EDITED;
+                } else {
+                    $changeSet->type = \Fraym\Block\Entity\ChangeSet::ADDED;
+                    $block = $changeSet;
                 }
 
-                $blockCount = count($this->db->getRepository('\Fraym\Block\Entity\Block')->findByContentId(
-                    $blockConfigGP->contentId
-                ));
-
-                $block->contentId = $blockConfigGP->contentId;
-                $block->position = $block->position ? $block->position : $blockCount;
-                $block->menuItem = isset($blockConfigGP->menu) && $blockConfigGP->menu == '1' ? null : $menu;
-                $block->site = $menu->site;
-                $block->menuItemTranslation = $blockConfigGP->menuTranslation === 'current' ? $menuItemTranslation : null;
-                $block->extension = $extension;
-
-                $this->db->persist($block);
+                $this->db->persist($changeSet);
                 $this->db->flush();
 
                 /**
@@ -333,19 +336,17 @@ class BlockController extends \Fraym\Core
                 }
 
                 $blockConfig = $this->blockParser->getBlockConfig((string)$newBlock);
-                $block->config = $blockConfig;
-                $this->db->flush();
-
-                /**
-                 * Save block in history
-                 */
-                if (isset($blockConfigGP->currentBlockId)) {
-                    $this->block->saveHistory($block, 'edited');
+                if($changeSet->byRef === null) {
+                    $changeSet->config = $blockConfig;
                 } else {
-                    $this->block->saveHistory($block, 'added');
+                    $changeRefBlock = clone $changeSet->byRef;
+                    $changeRefBlock->config = $blockConfig;
+                    $this->createChangeSet($changeRefBlock, $changeSet->byRef, \Fraym\Block\Entity\ChangeSet::EDITED);
                 }
 
-                $data = $this->prepareBlockOutput($block);
+                $this->db->flush();
+
+                $data = $this->prepareBlockOutput($changeSet);
                 $this->response->sendAsJson(array('data' => $data, 'blockId' => $block->id));
             }
         }
@@ -399,13 +400,6 @@ class BlockController extends \Fraym\Core
     }
 
     /**
-     *
-     */
-    public function getConfigurableTplBlockConfig() {
-
-    }
-
-    /**
      * Loading the block xml configuration. Response JSON.
      *
      * @return bool
@@ -419,18 +413,23 @@ class BlockController extends \Fraym\Core
         $result = new \stdClass();
 
         if ($extensionId) {
-            $extension = $this->db->getRepository('\Fraym\Block\Entity\BlockExtension')->findOneById($extensionId);
+            $extension = $this->db->getRepository('\Fraym\Block\Entity\Extension')->findOneById($extensionId);
             $result = $extension->toArray(1);
         } elseif ($id) {
             $block = $this->db->getRepository('\Fraym\Block\Entity\Block')->findOneById($id);
 
             if ($block) {
+                if($block->changeSets->count()) {
+                    $block = $block->changeSets->last();
+                }
                 $extension = $block->extension;
                 $arrayFromXml = $this->blockParser->xmlToArray(
                     $this->blockParser->getXMLObjectFromString($this->blockParser->wrapBlockConfig($block))
                 );
+
                 $result->xml = $arrayFromXml['block'];
                 $result = (object)array_merge($block->toArray(2), $block->extension->toArray(1), (array)$result);
+                $result->blockName = $block->name;
             }
         }
 
@@ -446,7 +445,7 @@ class BlockController extends \Fraym\Core
         $blockId = $this->request->gp('blockId', null);
 
         if ($id) {
-            $extension = $this->db->getRepository('\Fraym\Block\Entity\BlockExtension')->findOneById($id);
+            $extension = $this->db->getRepository('\Fraym\Block\Entity\Extension')->findOneById($id);
 
             if ($extension) {
                 $instance = $this->serviceLocator->get($extension->class);
@@ -470,9 +469,15 @@ class BlockController extends \Fraym\Core
             if(isset($block['blockId'])) {
                 $movedblock = $this->db->getRepository('\Fraym\Block\Entity\Block')->findOneById($block['blockId']);
                 if ($movedblock) {
-                    $movedblock->contentId = $block['contentId'];
-                    $movedblock->position = intval($k);
-                    $this->db->flush();
+                    if($movedblock->changeSets->count()) {
+                        $changedBlock = clone $movedblock->changeSets->last();
+                    } else {
+                        $changedBlock = clone $movedblock;
+                    }
+
+                    $changedBlock->contentId = $block['contentId'];
+                    $changedBlock->position = intval($k);
+                    $this->createChangeSet($changedBlock, $movedblock, \Fraym\Block\Entity\ChangeSet::MOVED);
                 } else {
                     $this->response->sendAsJson(array('success' => false));
                 }
@@ -492,17 +497,42 @@ class BlockController extends \Fraym\Core
     {
         $blockId = $this->request->gp('blockId', false);
         if ($blockId && ($block = $this->db->getRepository('\Fraym\Block\Entity\Block')->findOneById($blockId))) {
-            $this->block->saveHistory($block, 'deleted');
-
-            foreach ($block->refBlocks as $refBlock) {
-                $this->db->remove($refBlock);
+            if($block->changeSets->count()) {
+                $changedBlock = $block->changeSets->last();
+            } else {
+                $changedBlock = $block;
             }
-
-            $this->db->remove($block);
-            $this->db->flush();
-
+            $this->createChangeSet($changedBlock, $block, \Fraym\Block\Entity\ChangeSet::DELETED);
             $this->response->sendAsJson(array('success' => true));
         }
+    }
+
+    /**
+     * @param $changedBlock
+     * @param $parentBlock
+     * @param $type
+     * @return Entity\ChangeSet
+     */
+    private function createChangeSet($changedBlock, $parentBlock, $type) {
+        $changeSet = new \Fraym\Block\Entity\ChangeSet();
+        $changeSet->contentId = $changedBlock->contentId;
+        $changeSet->position = $changedBlock->position;
+        $changeSet->menuItem = $changedBlock->menuItem;
+        $changeSet->site = $changedBlock->site;
+        $changeSet->menuItemTranslation = $changedBlock->menuItemTranslation;
+        $changeSet->extension = $changedBlock->extension;
+        $changeSet->user = $this->user->getUserEntity();
+        $changeSet->byRef = $changedBlock->byRef;
+        $changeSet->block = $parentBlock;
+        $changeSet->type = $type;
+
+        if(!$changedBlock->byRef) {
+            $changeSet->config = $changedBlock->config;
+        }
+
+        $this->db->persist($changeSet);
+        $this->db->flush();
+        return $changeSet;
     }
 
     /**
@@ -520,13 +550,27 @@ class BlockController extends \Fraym\Core
             $blockId
         ))
         ) {
+
+            $menuItem = $this->db->getRepository('\Fraym\Menu\Entity\MenuItem')->findOneById($menuId);
+
+
+            $blocks = $this->db->getRepository('\Fraym\Block\Entity\Block')->findBy(
+                array('menuItem' => $menuItem, 'contentId' => $contentId),
+                array('position' => 'asc')
+            );
+            // Re-Order other blocks
+            foreach($blocks as $k => $b) {
+                $b->position = $k+1;
+            }
+
             if ($op === 'copy') {
                 $copiedBlock = clone $block;
+
                 $copiedBlock->id = null;
+                $copiedBlock->position = 0;
                 $copiedBlock->contentId = $contentId;
-                $copiedBlock->menuItem = $this->db->getRepository('\Fraym\Menu\Entity\MenuItem')->findOneById(
-                    $menuId
-                );
+                $copiedBlock->menuItem = $menuItem;
+
                 if ($byRef === true) {
                     $copiedBlock->config = null;
                     if ($block->byRef) {
@@ -535,17 +579,22 @@ class BlockController extends \Fraym\Core
                     }
                     $copiedBlock->byRef = $block;
                 }
-                $this->db->persist($copiedBlock);
-                $block = $copiedBlock;
+
+                $changedBlock = $this->createChangeSet($copiedBlock, null, \Fraym\Block\Entity\ChangeSet::ADDED);
             } else {
-                $block->menuItem = $this->db->getRepository('\Fraym\Menu\Entity\MenuItem')->findOneById($menuId);
-                $block->contentId = $contentId;
-                $this->db->persist($block);
+                if($block->changeSets->count()) {
+                    $changedBlock = clone $block->changeSets->last();
+                } else {
+                    $changedBlock = clone $block;
+                }
+
+                $changedBlock->position = 0;
+                $changedBlock->menuItem = $menuItem;
+                $changedBlock->contentId = $contentId;
+                $this->createChangeSet($changedBlock, $block, \Fraym\Block\Entity\ChangeSet::MOVED);
             }
-
             $this->db->flush();
-
-            $this->response->sendAsJson(array('success' => true, 'data' => $this->prepareBlockOutput($block)));
+            $this->response->sendAsJson(array('success' => true, 'data' => $this->prepareBlockOutput($changedBlock)));
         }
         $this->response->sendAsJson(
             array('success' => false, 'message' => $this->translation->getTranslation('Paste error, please copy again'))
@@ -567,6 +616,6 @@ class BlockController extends \Fraym\Core
     public function getBlockContainerConfig($blockConfig = null)
     {
         $this->view->assign('blockConfig', $blockConfig);
-        $this->view->render('BlockContainerConfig.tpl');
+        $this->view->render('BlockContainerConfig');
     }
 }

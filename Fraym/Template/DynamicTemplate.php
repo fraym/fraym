@@ -6,7 +6,7 @@
  * @license   http://www.opensource.org/licenses/gpl-license.php GNU General Public License, version 2 or later (see the LICENSE file)
  */
 namespace Fraym\Template;
-use \Fraym\Block\BlockXML as BlockXML;
+use \Fraym\Block\BlockXml as BlockXml;
 
 /**
  * @Injectable(lazy=true)
@@ -63,14 +63,14 @@ class DynamicTemplate
 
     /**
      * @param $blockId
-     * @param BlockXML $blockXML
-     * @return BlockXML
+     * @param BlockXml $blockXML
+     * @return BlockXml
      */
-    public function saveBlockConfig($blockId, \Fraym\Block\BlockXML $blockXML)
+    public function saveBlockConfig($blockId, \Fraym\Block\BlockXml $blockXML)
     {
         $blockConfig = $this->request->getGPAsObject();
 
-        $customProperties = new \Fraym\Block\BlockXMLDom();
+        $customProperties = new \Fraym\Block\BlockXmlDom();
         $element = $customProperties->createElement('dynamicTemplateConfig');
         $element->appendChild($customProperties->createCDATASection(serialize($blockConfig->config)));
         $customProperties->appendChild($element);
@@ -162,7 +162,7 @@ class DynamicTemplate
     }
 
     /**
-     * @Fraym\Annotation\Route("/load-dynamic-template-config", name="dynamicTemplateConfig", permission={"GROUP:Administrator"})
+     * @Fraym\Annotation\Route("/fraym/load-dynamic-template-config", name="dynamicTemplateConfig", permission={"\Fraym\User\User"="isAdmin"})
      */
     public function loadDynamicTemplateConfig()
     {
@@ -172,6 +172,9 @@ class DynamicTemplate
 
         if($blockId) {
             $block = $this->db->getRepository('\Fraym\Block\Entity\Block')->findOneById($blockId);
+            if($block->changeSets->count()) {
+                $block = $block->changeSets->last();
+            }
             $xml = $this->blockParser->getXMLObjectFromString($this->blockParser->wrapBlockConfig($block));
             $variables = unserialize((string)$xml->dynamicTemplateConfig);
         }

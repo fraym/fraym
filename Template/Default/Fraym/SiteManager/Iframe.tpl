@@ -62,6 +62,8 @@
     {js('fraym/libs/modernizr.min.js')}
     {js('fraym/libs/dynatree/jquery.dynatree.js')}
     {js('fraym/core/filemanager.js')}
+    {js('fraym/core/dynamictemplate.js')}
+    {js('fraym/core/changesetmanager.js')}
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 

@@ -26,7 +26,6 @@ date_default_timezone_set(TIMEZONE);
 define('APC_ENABLED', extension_loaded('apc') && ini_get('apc.enabled'));
 define('CACHE_DI_PATH', 'Cache/DI');
 define('CACHE_DOCTRINE_PROXY_PATH', 'Cache/DoctrineProxies');
-define('CACHE_DOCTRINE_MODULE_FILE', 'Cache/doctrine_module_dir.cache');
 
 $builder = new \DI\ContainerBuilder();
 $builder->useAnnotations(true);

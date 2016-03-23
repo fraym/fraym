@@ -19,7 +19,7 @@ use Fraym\Annotation\Registry;
  * website="http://fraym.org",
  * repositoryKey="FRAYM_EXT_BREADCRUMB",
  * entity={
- *      "\Fraym\Block\Entity\BlockExtension"={
+ *      "\Fraym\Block\Entity\Extension"={
  *          {
  *           "name"="Breadcrumb",
  *           "description"="Create a simple breadcrumb navigation.",

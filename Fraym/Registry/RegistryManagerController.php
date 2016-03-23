@@ -68,7 +68,7 @@ class RegistryManagerController extends \Fraym\Core
         $this->view->assign('unregisteredExtensions', $unregisteredExtensions);
         $this->view->assign('extensions', $extensions);
         $this->view->assign('extensionUpdates', $extensionUpdates);
-        return $this->siteManagerController->getIframeContent($this->template->fetch('Extension'));
+        return $this->siteManagerController->getIframeContent($this->view->fetch('Extension'));
     }
 
     /**
@@ -133,7 +133,7 @@ class RegistryManagerController extends \Fraym\Core
     }
 
     /**
-     * @Fraym\Annotation\Route("/fraym/registry/download", name="registryManagerDownload", permission={"GROUP:Administrator"})
+     * @Fraym\Annotation\Route("/fraym/registry/download", name="registryManagerDownload", permission={"\Fraym\User\User"="isAdmin"})
      */
     public function downloadPackage()
     {
@@ -179,6 +179,6 @@ class RegistryManagerController extends \Fraym\Core
 
         $this->view->assign('availableExtensions', $availableExtensions);
         $this->view->assign('extensions', $extensions ? : array());
-        return $this->template->fetch('RepositorySearch');
+        return $this->view->fetch('RepositorySearch');
     }
 }

@@ -57,7 +57,7 @@ class DynamicTemplateController extends \Fraym\Core
      */
     public function render($template, $variables)
     {
-        $this->view->assign('refreshElement', $this->block->inEditMode() && $this->request->isXmlHttpRequest());
+        $this->view->assign('refreshBlock', $this->block->inEditMode() && $this->request->isXmlHttpRequest());
         $this->view->assign('config', $variables);
         if(!empty($template)) {
             $this->view->setTemplate($template);

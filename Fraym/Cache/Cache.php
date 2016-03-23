@@ -234,7 +234,6 @@ class Cache
         $this->blockParser->setParseCached(true);
         echo $this->blockParser->parse($source, false);
 
-
         return false;
     }
 
@@ -319,7 +318,7 @@ class Cache
     public function getDataCache($key)
     {
         $cacheFilename = self::DIR_CUSTOM_DATA . md5($key) . '.cache';
-        if (is_file($cacheFilename)) {
+        if (is_file($cacheFilename) && filesize($cacheFilename) > 0) {
             $data = file_get_contents($cacheFilename);
             if ($unSerializedData = unserialize($data)) {
                 $data = $unSerializedData;
@@ -327,6 +326,16 @@ class Cache
             return $data;
         }
         return false;
+    }
+
+    /**
+     * @param $key
+     * @return bool|mixed|string
+     */
+    public function dataCacheExists($key)
+    {
+        $cacheFilename = self::DIR_CUSTOM_DATA . md5($key) . '.cache';
+        return is_file($cacheFilename) && filesize($cacheFilename) > 0;
     }
 
     /**
@@ -362,10 +371,6 @@ class Cache
         }
         if(defined('CACHE_DOCTRINE_PROXY_PATH')) {
             $this->fileManager->deleteFolder(CACHE_DOCTRINE_PROXY_PATH);
-        }
-
-        if(is_file(CACHE_DOCTRINE_MODULE_FILE)) {
-            unlink(CACHE_DOCTRINE_MODULE_FILE);
         }
 
         $this->fileManager->deleteFolder(self::DIR_PAGES);

@@ -7,7 +7,7 @@
  */
 namespace Extension\LanguageMenu;
 
-use \Fraym\Block\BlockXML as BlockXML;
+use \Fraym\Block\BlockXml as BlockXml;
 use Fraym\Annotation\Registry;
 
 /**
@@ -20,7 +20,7 @@ use Fraym\Annotation\Registry;
  * website="http://www.fraym.org",
  * repositoryKey="FRAYM_EXT_LANGMENU",
  * entity={
- *      "\Fraym\Block\Entity\BlockExtension"={
+ *      "\Fraym\Block\Entity\Extension"={
  *          {
  *           "name"="Language Menu",
  *           "description"="Create a language menu.",

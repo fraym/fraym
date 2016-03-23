@@ -35,11 +35,13 @@ class User
     private $isAdmin = null;
 
     /**
+     * @Inject
      * @var \Fraym\Database\Database
      */
     protected $db;
 
     /**
+     * @Inject
      * @var \Fraym\Session\Session
      */
     protected $session;
@@ -158,7 +160,6 @@ class User
      * @return bool
      */
     public function login($email, $password, $staySignedIn = false) {
-
         $user = $this->db->getRepository('\Fraym\User\Entity\User')->findOneBy(array('email' => $email));
         if ($user && $user->verifyPassword($password)) {
             $this->setUserId($user->id);
@@ -223,13 +224,13 @@ class User
 
     /**
      * @param $blockId
-     * @param \Fraym\Block\BlockXML $blockXML
-     * @return \Fraym\Block\BlockXML
+     * @param \Fraym\Block\BlockXml $blockXML
+     * @return \Fraym\Block\BlockXml
      */
-    public function saveBlockConfig($blockId, \Fraym\Block\BlockXML $blockXML)
+    public function saveBlockConfig($blockId, \Fraym\Block\BlockXml $blockXML)
     {
         $blockConfig = $this->request->getGPAsObject();
-        $customProperties = new \Fraym\Block\BlockXMLDom();
+        $customProperties = new \Fraym\Block\BlockXmlDom();
         $element = $customProperties->createElement('view');
         $element->appendChild($customProperties->createCDATASection($blockConfig->view));
         $customProperties->appendChild($element);

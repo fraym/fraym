@@ -7,7 +7,7 @@
  */
 namespace Extension\FlexSlider;
 
-use \Fraym\Block\BlockXML as BlockXML;
+use \Fraym\Block\BlockXml as BlockXml;
 use Fraym\Annotation\Registry;
 
 /**
@@ -20,7 +20,7 @@ use Fraym\Annotation\Registry;
  * website="http://fraym.org",
  * repositoryKey="FRAYM_EXT_FLEXSLIDER",
  * entity={
- *      "\Fraym\Block\Entity\BlockExtension"={
+ *      "\Fraym\Block\Entity\Extension"={
  *          {
  *           "name"="Flex Slider",
  *           "description"="Create a responsive image slider.",
@@ -72,13 +72,13 @@ class FlexSlider
 
     /**
      * @param $blockId
-     * @param BlockXML $blockXML
-     * @return BlockXML
+     * @param BlockXml $blockXML
+     * @return BlockXml
      */
-    public function saveBlockConfig($blockId, \Fraym\Block\BlockXML $blockXML)
+    public function saveBlockConfig($blockId, \Fraym\Block\BlockXml $blockXML)
     {
         $blockConfig = $this->request->getGPAsArray();
-        $customProperties = new \Fraym\Block\BlockXMLDom();
+        $customProperties = new \Fraym\Block\BlockXmlDom();
         $config = $customProperties->createElement('sliderConfig');
         foreach ($blockConfig['sliderConfig'] as $field => $value) {
             $element = $customProperties->createElement($field);

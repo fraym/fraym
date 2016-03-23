@@ -22,12 +22,6 @@ class SiteManagerController extends \Fraym\Core
 
     /**
      * @Inject
-     * @var \Fraym\Cache\Cache
-     */
-    protected $cache;
-
-    /**
-     * @Inject
      * @var \Fraym\Locale\Locale
      */
     protected $locale;
@@ -77,7 +71,7 @@ class SiteManagerController extends \Fraym\Core
     }
 
     /**
-     * @Fraym\Annotation\Route("/fraym/admin/adminpanel", name="adminPanel", permission={"GROUP:Administrator"})
+     * @Fraym\Annotation\Route("/fraym/admin/adminpanel", name="adminPanel", permission={"\Fraym\User\User"="isAdmin"})
      * @return mixed
      */
     public function getAdminPanel()

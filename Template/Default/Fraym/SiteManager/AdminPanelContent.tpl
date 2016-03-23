@@ -34,7 +34,7 @@
                     <a title="{$extension.name}" href="#"
                        data-url="//{i('Fraym\Route\Route').getSiteBaseURI(false)}{i('Fraym\Route\Route').getVirtualRoute('siteManagerExt_'.$id).route}?locale={i('Fraym\Registry\Config').get('ADMIN_LOCALE_ID').value}">
                         <i class="{$extension.iconCssClass}"><span
-                                    class="overlay-label green"></span></i><span class="title">{$extension.name}</span>
+                                    class="overlay-label green"></span></i><span class="title">{_($extension.name)}</span>
                     </a>
                 </li>
             {/foreach}

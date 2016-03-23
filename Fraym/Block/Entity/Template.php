@@ -11,12 +11,12 @@ use \Doctrine\ORM\Mapping as ORM;
 use Fraym\Annotation\FormField;
 
 /**
- * Class BlockTemplate
+ * Class Template
  * @package Fraym\Block\Entity
  * @ORM\Table(name="block_templates")
  * @ORM\Entity
  */
-class BlockTemplate extends \Fraym\Entity\BaseEntity
+class Template extends \Fraym\Entity\BaseEntity
 {
 
     /**

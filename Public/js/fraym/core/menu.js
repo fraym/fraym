@@ -69,6 +69,7 @@ Core.Menu = {
 	    });
 
         $('body').on('mousedown', 'select[data-menuselection]', inputEvent);
+        Core.Menu.getSiteMenu();
     },
 
     openSelectMenuDialog: function(callback) {
@@ -222,6 +223,9 @@ Core.Menu = {
 
     CustomMenu: {
         initCustomMenuTree: function (customMenuUl) {
+            if($('#custom-menu-item-list').length === 0) {
+                return;
+            }
             try {
                 $("#custom-menu-item-list").dynatree("destroy");
             } catch(e) {}

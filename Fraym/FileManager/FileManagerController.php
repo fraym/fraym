@@ -57,7 +57,7 @@ class FileManagerController extends \Fraym\Core
     protected $serviceLocator;
 
     /**
-     * @Fraym\Annotation\Route("/fraym/admin/filemanager", name="fileManager", permission={"GROUP:Administrator"})
+     * @Fraym\Annotation\Route("/fraym/admin/filemanager", name="fileManager", permission={"\Fraym\User\User"="isAdmin"})
      * @return mixed
      */
     public function getContent()
@@ -236,7 +236,7 @@ class FileManagerController extends \Fraym\Core
     }
 
     /**
-     * @Fraym\Annotation\Route("/fraym/admin/fileViewer", name="fileViewer", permission={"GROUP:Administrator"})
+     * @Fraym\Annotation\Route("/fraym/admin/fileViewer", name="fileViewer", permission={"\Fraym\User\User"="isAdmin"})
      * @return mixed
      */
     public function fileViewer()

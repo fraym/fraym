@@ -8,7 +8,7 @@ $(Core.Block).bind('blockConfigLoaded', function (e, json) {
     $('#dynamicTemplate').change(function () {
         if($(this).val() != '') {
             $.ajax({
-                url: '/load-dynamic-template-config',
+                url: '/fraym/load-dynamic-template-config',
                 dataType: 'html',
                 data: {template: $(this).val(), blockId: Core.getBaseWindow().Core.Block.dialogBlockId},
                 type: 'post',

@@ -13,8 +13,6 @@ namespace Fraym\Session;
  */
 class Session
 {
-    const SAVE_PATH = 'Cache/Sessions';
-
     /**
      * @var array
      */
@@ -33,12 +31,6 @@ class Session
     public function __construct()
     {
         $this->name('fraym_s');
-
-        if(!is_dir(self::SAVE_PATH)) {
-            mkdir(self::SAVE_PATH, 0755);
-        }
-
-        session_save_path(realpath(self::SAVE_PATH));
 
         session_set_save_handler(
             array($this, "handlerOpen"),
@@ -121,7 +113,7 @@ class Session
         }
         $path = $this->savePath;
         foreach (glob("$path/sess_*") as $filename) {
-            if (filemtime($filename) + $maxlifetime < time()) {
+            if ((filemtime($filename) + $maxlifetime) < time()) {
                 @unlink($filename);
             }
         }

@@ -370,6 +370,7 @@ class BlockParser
             ->from('\Fraym\Block\Entity\Block', 'block')
             ->leftJoin('block.byRef', 'byRef')
             ->where("block.menuItem IS NULL OR block.menuItem = :menuId")
+            ->andWhere('block INSTANCE OF \Fraym\Block\Entity\Block OR block.block IS NULL')
             ->andWhere("block.menuItemTranslation IS NULL OR block.menuItemTranslation = :menuTranslationId")
             ->setParameter('menuId', $this->route->getCurrentMenuItem()->id)
             ->setParameter('menuTranslationId', $this->route->getCurrentMenuItemTranslation()->id)
@@ -377,6 +378,14 @@ class BlockParser
             ->getResult();
 
         foreach ($blocks as $block) {
+            if(!$this->user->isAdmin() && get_class($block) === 'Fraym\Block\Entity\ChangeSet') {
+                continue;
+            }
+
+            if($this->user->isAdmin() && $block->changeSets->count() > 0) {
+                $block = $block->changeSets->last();
+            }
+
             $xml = $this->getXMLObjectFromString($this->wrapBlockConfig($block));
             if ($this->isBlockEnable($xml) === false) {
                 continue;
@@ -596,7 +605,7 @@ class BlockParser
      */
     private function execBlockOfTypeExtension($xml)
     {
-        $ext = $this->db->getRepository('\Fraym\Block\Entity\BlockExtension')->findOneBy(
+        $ext = $this->db->getRepository('\Fraym\Block\Entity\Extension')->findOneBy(
             array('class' => $xml->class, 'execMethod' => $xml->method)
         );
         $blockHtml = '';
@@ -747,7 +756,7 @@ class BlockParser
         if ($attr == 'string') {
             return $template;
         } elseif (is_numeric($attr)) {
-            $blockTemplate = $this->db->getRepository('\Fraym\Block\Entity\BlockTemplate')->findOneById($attr);
+            $blockTemplate = $this->db->getRepository('\Fraym\Block\Entity\Template')->findOneById($attr);
             if ($blockTemplate && is_readable($blockTemplate->template)) {
                 return file_get_contents($blockTemplate->template);
             } else {
@@ -813,23 +822,47 @@ class BlockParser
      */
     public function findBlocks($menuId, $contentId)
     {
-        $result = $this->db->createQueryBuilder()
+        $result = $this->db->createQueryBuilder();
+        $blocks = array();
+
+        $results = $result
             ->select("block, byRef")
             ->from('\Fraym\Block\Entity\Block', 'block')
             ->leftJoin('block.byRef', 'byRef')
-            ->orderBy('block.position', 'asc')
-            ->where("block.contentId = :contentId")
+            ->andWhere('block INSTANCE OF \Fraym\Block\Entity\Block OR block.block IS NULL')
             ->andWhere("block.menuItem IS NULL OR block.menuItem = :menuId")
             ->andWhere("block.site = :site")
             ->andWhere("block.menuItemTranslation IS NULL OR block.menuItemTranslation = :menuTranslationId")
             ->setParameter('menuId', $menuId)
             ->setParameter('menuTranslationId', $this->route->getCurrentMenuItemTranslation()->id)
             ->setParameter('site', $this->route->getCurrentMenuItem()->site->id)
-            ->setParameter('contentId', $contentId)
+            ->addOrderBy('block.position', 'asc')
+            ->addOrderBy('block.id', 'desc')
             ->getQuery()
             ->getResult();
 
-        return $result;
+        foreach($results as $result) {
+            if($this->user->isAdmin() && $result->changeSets->count() > 0) {
+                $lastChange = $result->changeSets->last();
+                if($contentId === $lastChange->contentId && $lastChange->type !== Entity\ChangeSet::DELETED) {
+                    $lastChange = clone $lastChange;
+                    $lastChange->id = $result->id;
+                    $blocks[$result->id] = $lastChange;
+                }
+            } elseif($contentId === $result->contentId && $this->user->isAdmin() && get_class($result) === 'Fraym\Block\Entity\ChangeSet') {
+                $blocks[$result->id] = $result;
+            } elseif($contentId === $result->contentId && get_class($result) === 'Fraym\Block\Entity\Block') {
+                $blocks[$result->id] = $result;
+            }
+        }
+
+        if($this->user->isAdmin()) {
+            uasort($blocks, function($a, $b) {
+               return $a->position > $b->position ? 1 : -1;
+            });
+        }
+
+        return $blocks;
     }
 
 
@@ -906,7 +939,7 @@ class BlockParser
      */
     public function wrapBlockConfig($block)
     {
-        $blockConfigXml = $block->config;
+        $blockConfigXml = $block->getConfig($this->user->isAdmin());
 
         $dom = new \DOMDocument;
         $blockElement = $dom->createElement("block");
@@ -942,6 +975,10 @@ class BlockParser
         return $xmlHtmlString;
     }
 
+    /**
+     * @param $configArr
+     * @return string
+     */
     private function createImagePlaceholder($configArr)
     {
         if ($configArr['phfont'] === null) {
@@ -1012,7 +1049,11 @@ class BlockParser
         return $savePath;
     }
 
-
+    /**
+     * @param $filename
+     * @param string $ext
+     * @return string
+     */
     private function getImageSavePath($filename, $ext = 'png')
     {
         $convertedImageFileName = trim($this->config->get('IMAGE_PATH')->value, '/');
@@ -1072,27 +1113,39 @@ class BlockParser
             return '';
         }
 
-        $src = str_replace(array('\\', '/'), DIRECTORY_SEPARATOR, $src);
+        if(filter_var($src, FILTER_VALIDATE_URL)) {
+            $info = getimagesize($src);
+            $fname = parse_url($src, PHP_URL_PATH);
+            $fname = basename($fname);
+            $fname = substr($fname, 0, strripos($fname, '.'));
 
-        if (empty($src)) {
-            $srcFilePath = $src = $this->createImagePlaceholder($placeHolderConfig);
+            $pathInfo = array(
+                'extension' => trim(image_type_to_extension($info[2]), '.'),
+                'filename' => $fname,
+            );
+            $srcFilePath = $src;
         } else {
-            if (substr($src, 0, 1) === '/' || strpos($src, ':') !== false) {
-                // absolute path
-                $srcFilePath = $src;
-            } else {
-                // relative path
-                $srcFilePath = $this->core->getApplicationDir() . DIRECTORY_SEPARATOR . ltrim($src, '/');
-            }
+            $src = str_replace(array('\\', '/'), DIRECTORY_SEPARATOR, $src);
 
-            if (is_file($srcFilePath) === false) {
-                return '';
+            if (empty($src)) {
+                $srcFilePath = $src = $this->createImagePlaceholder($placeHolderConfig);
+            } else {
+                if (substr($src, 0, 1) === '/' || strpos($src, ':') !== false) {
+                    // absolute path
+                    $srcFilePath = $src;
+                } else {
+                    // relative path
+                    $srcFilePath = $this->core->getApplicationDir() . DIRECTORY_SEPARATOR . ltrim($src, '/');
+                }
+
+                if (is_file($srcFilePath) === false) {
+                    return '';
+                }
             }
+            $pathInfo = pathinfo($srcFilePath);
         }
 
         $imagine = $this->serviceLocator->get('Imagine');
-        $pathInfo = pathinfo($srcFilePath);
-
         $allowedMethods = array('thumbnail', 'resize', 'crop', '');
         // methods fit / resize / none
         $imageQuality = intval($this->getXMLAttr($xml, 'quality') ? : ($this->config->get('IMAGE_QUALITY')->value ? : '80'));

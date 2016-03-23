@@ -10,12 +10,12 @@ namespace Fraym\Block\Entity;
 use \Doctrine\ORM\Mapping as ORM;
 
 /**
- * Class BlockExtension
+ * Class Extension
  * @package Fraym\Block\Entity
  * @ORM\Table(name="block_extensions")
  * @ORM\Entity
  */
-class BlockExtension extends \Fraym\Entity\BaseEntity
+class Extension extends \Fraym\Entity\BaseEntity
 {
     /**
      * @var integer $extensionId

@@ -99,43 +99,6 @@ class Block
     }
 
     /**
-     * @param $block
-     * @param $historyType
-     */
-    public function saveHistory($block, $historyType)
-    {
-        $blockHistory = new \Fraym\Block\Entity\BlockHistory();
-        $blockHistory = $block->copyEntityTo($blockHistory);
-        $blockHistory->user = $this->user->getUserEntity();
-        $blockHistory->type = $historyType;
-        $blockHistory = $this->setHistoryFrom($blockHistory, $block, $historyType);
-
-        $this->db->persist($block);
-        $this->db->persist($blockHistory);
-        $this->db->flush();
-    }
-
-    /**
-     * @param $blockHistory
-     * @param $block
-     * @param $historyType
-     * @return mixed
-     */
-    public function setHistoryFrom($blockHistory, $block, $historyType)
-    {
-        if ($historyType != 'deleted') {
-            $blockHistory->from = $block;
-        } else {
-            foreach ($block->histories as $historyBlock) {
-                $historyBlock->from = null;
-                $this->db->persist($historyBlock);
-            }
-            $this->db->flush();
-        }
-        return $blockHistory;
-    }
-
-    /**
      * Exec content element template
      *
      * @param $xml

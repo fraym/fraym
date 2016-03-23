@@ -154,7 +154,7 @@ class InstallController extends \Fraym\Core
                 )
             );
 
-            @unlink($this->db->getModuleDirCacheFile());
+            $this->cache->clearAll();
 
             $this->db->connect()->getSchemaTool()->dropDatabase();
             $this->db->createSchema();

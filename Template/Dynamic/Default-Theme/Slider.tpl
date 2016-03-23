@@ -1,11 +1,13 @@
 <block type="config">
     <template>
         <![CDATA[
-        <div class="form-group">
-            <label>Headline</label>
-            <input type="text" class="form-control" name="config[headline]" value="{$config.headline}" />
+        <div class="row">
+            <div class="col-xs-12">
+                <label>Headline</label>
+                <input type="text" class="form-control" name="config[headline]" value="{$config.headline}" />
+            </div>
         </div>
-        <div class="row form-group">
+        <div class="row">
             <div class="col-xs-4">
                 <label>Desktop: Items per slide</label>
                 <input type="number" class="form-control" name="config[desktopItems]" min="1" value="{$config.desktopItems}" />
@@ -19,43 +21,47 @@
                 <input type="number" class="form-control" name="config[mobileItems]" min="1" value="{$config.mobileItems}" />
             </div>
         </div>
-        <div class="form-group">
-            <label>Background image</label>
-            <input type="text" class="form-control" name="config[backgroundImage]" value="{$config.backgroundImage}" data-absolutepath="false" data-filepath="true" data-singlefileselect="1" data-filefilter="*.jpg,*.png" />
+        <div class="row">
+            <div class="col-xs-12">
+                <label>Background image</label>
+                <input type="text" class="form-control" name="config[backgroundImage]" value="{$config.backgroundImage}" data-absolutepath="false" data-filepath="true" data-singlefileselect="1" data-filefilter="*.jpg,*.png" />
+            </div>
         </div>
         {function createSlideItem($k, $item = null)}
-            <div class="slide-item">
-                <div class="pull-right">
-                    <i class="remove-slide fa fa-times"></i>
-                </div>
-                <h4>Item <span>{$k}</span></h4>
-                <div class="form-group">
-                    <label>
-                        Text
-                    </label>
-                    <textarea name="config[items][{$k}][rte]" class="form-control" data-rte="{ toolbar: [{ name: 'document', groups: ['mode', 'document', 'doctools'], items: ['Source', '-', 'Save', 'NewPage', 'Preview', 'Print', '-', 'Templates'] }, { name: 'clipboard', groups: ['clipboard', 'undo'], items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] }, { name: 'editing', groups: ['find', 'selection', 'spellchecker'], items: ['Find', 'Replace', '-', 'SelectAll', '-', 'Scayt'] }, { name: 'tools', items: ['Maximize', 'ShowBlocks']}, '/', { name: 'insert', items: ['Image', 'Flash', 'Table', 'HorizontalRule', 'SpecialChar', 'Iframe'] }, { name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align', 'bidi'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl'] }, { name: 'links', items: ['Link', 'Unlink', 'Anchor'] }, { name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] }, { name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize'] }, { name: 'colors', items: ['TextColor', 'BGColor'] }] }">{$item.rte}</textarea>
-                </div>
-                <div class="form-group">
-                    <label>Image</label>
-                    <input type="text" class="form-control" name="config[items][{$k}][image]" value="{$item.image}" data-absolutepath="false" data-filepath="true" data-singlefileselect="1" data-filefilter="*.jpg,*.png" />
-                </div>
-                <div class="row form-group">
-                    <div class="col-xs-4">
-                        <div class="checkbox">
+            <div class="slide-item row">
+                <div class="col-xs-12">
+                    <div class="pull-right">
+                        <i class="remove-slide fa fa-times"></i>
+                    </div>
+                    <h4>Item <span>{$k}</span></h4>
+                    <div class="row">
+                        <div class="col-xs-12">
                             <label>
-                                <input type="checkbox" name="config[items][{$k}][roundImage]" value="1"{if $item.roundImage} checked{/if}/>
-                                Round image
+                                Text
                             </label>
+                            <textarea name="config[items][{$k}][rte]" class="form-control" data-rte="{ toolbar: [{ name: 'document', groups: ['mode', 'document', 'doctools'], items: ['Source', '-', 'Save', 'NewPage', 'Preview', 'Print', '-', 'Templates'] }, { name: 'clipboard', groups: ['clipboard', 'undo'], items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] }, { name: 'editing', groups: ['find', 'selection', 'spellchecker'], items: ['Find', 'Replace', '-', 'SelectAll', '-', 'Scayt'] }, { name: 'tools', items: ['Maximize', 'ShowBlocks']}, '/', { name: 'insert', items: ['Image', 'Flash', 'Table', 'HorizontalRule', 'SpecialChar', 'Iframe'] }, { name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align', 'bidi'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl'] }, { name: 'links', items: ['Link', 'Unlink', 'Anchor'] }, { name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] }, { name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize'] }, { name: 'colors', items: ['TextColor', 'BGColor'] }] }">{$item.rte}</textarea>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <label>Image</label>
+                            <input type="text" class="form-control" name="config[items][{$k}][image]" value="{$item.image}" data-absolutepath="false" data-filepath="true" data-singlefileselect="1" data-filefilter="*.jpg,*.png" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="config[items][{$k}][roundImage]" value="1"{if $item.roundImage} checked{/if}/>
+                                    Round image
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <hr/>
                 </div>
-                <hr/>
             </div>
         {/function}
-
-        <div class="pull-right">
-            <button id="add-slide" class="btn btn-default">{_('Add slide item')}</button>
-        </div>
 
         <script>
             $('#add-slide').click(function(){
@@ -87,6 +93,10 @@
             {createSlideItem(1, null)}
         {/if}
 
+        <div class="pull-right clearfix">
+            <button id="add-slide" class="btn btn-default">{_('Add slide item')}</button>
+        </div>
+
         ]]>
     </template>
 </block>
@@ -116,7 +126,7 @@
         </div>
     </div>
 </div>
-{if $refreshElement}
+{if $refreshBlock}
 <!-- Init the slider js after save -->
 <script>
     $("#slider-{$id}").owlCarousel({

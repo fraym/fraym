@@ -110,17 +110,12 @@ class Database
     }
 
     /**
-     * @param bool $deleteCacheFile
      * @return $this
      */
-    public function createModuleDirCache($deleteCacheFile = false)
+    public function createModuleDirCache()
     {
-        if ($deleteCacheFile && is_file($this->moduleDirCacheFile)) {
-            unlink($this->moduleDirCacheFile);
-        }
-        if (!is_file($this->moduleDirCacheFile)) {
-            $modelDirs = $this->getModelDirs();
-            file_put_contents($this->moduleDirCacheFile, json_encode($modelDirs));
+        if ($this->core->cache->dataCacheExists('CACHE_DOCTRINE_MODULE_FILE') === false) {
+            $this->core->cache->setDataCache('CACHE_DOCTRINE_MODULE_FILE', $this->getModelDirs());
         }
         return $this;
     }
@@ -130,23 +125,7 @@ class Database
      */
     public function getModuleDirCache()
     {
-        if (is_file($this->moduleDirCacheFile)) {
-            return json_decode(file_get_contents($this->moduleDirCacheFile));
-        }
-        return array();
-    }
-
-    /**
-     * @return bool|string
-     */
-    public function getModuleDirCacheFile()
-    {
-        if ($this->moduleDirCacheFile === false) {
-            $applicationDir = $this->core->getApplicationDir();
-
-            $this->moduleDirCacheFile = $applicationDir . DIRECTORY_SEPARATOR . CACHE_DOCTRINE_MODULE_FILE;
-        }
-        return $this->moduleDirCacheFile;
+        return $this->core->cache->getDataCache('CACHE_DOCTRINE_MODULE_FILE') ? : array();
     }
 
     /**
@@ -160,8 +139,6 @@ class Database
         }
 
         $applicationDir = $this->core->getApplicationDir();
-
-        $this->moduleDirCacheFile = $applicationDir . DIRECTORY_SEPARATOR . CACHE_DOCTRINE_MODULE_FILE;
 
         $this->createModuleDirCache();
 
@@ -346,6 +323,9 @@ class Database
      */
     public function getAnnotationReader()
     {
+        if (!$this->cachedAnnotationReader) {
+            $this->connect();
+        }
         return $this->cachedAnnotationReader;
     }
 
@@ -354,6 +334,9 @@ class Database
      */
     public function getEntityManager()
     {
+        if (!$this->entityManager) {
+            $this->connect();
+        }
         return $this->entityManager;
     }
 
@@ -492,7 +475,7 @@ class Database
      */
     public function createSchema($outputPathAndFilename = null)
     {
-        $this->createModuleDirCache(true);
+        $this->core->cache->clearAll();
         if ($outputPathAndFilename === null) {
             $this->getSchemaTool()->createSchema($this->entityManager->getMetadataFactory()->getAllMetadata());
         } else {
@@ -519,7 +502,7 @@ class Database
      */
     public function updateSchema($safeMode = true, $outputPathAndFilename = null)
     {
-        $this->createModuleDirCache(true);
+        $this->core->cache->clearAll();
         if ($outputPathAndFilename === null) {
             return $this->getSchemaTool()->updateSchema(
                 $this->entityManager->getMetadataFactory()->getAllMetadata(),

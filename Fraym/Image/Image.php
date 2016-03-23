@@ -40,15 +40,15 @@ class Image
 
     /**
      * @param $blockId
-     * @param \Fraym\Block\BlockXML $blockXML
-     * @return \Fraym\Block\BlockXML
+     * @param \Fraym\Block\BlockXml $blockXML
+     * @return \Fraym\Block\BlockXml
      */
-    public function saveBlockConfig($blockId, \Fraym\Block\BlockXML $blockXML)
+    public function saveBlockConfig($blockId, \Fraym\Block\BlockXml $blockXML)
     {
         $data = $this->request->post('image');
         $data['auto_size'] = isset($data['auto_size']) && $data['auto_size'] == '1' ? true : false;
 
-        $customProperties = new \Fraym\Block\BlockXMLDom();
+        $customProperties = new \Fraym\Block\BlockXmlDom();
 
         foreach ($data as $prop => $val) {
             if (!empty($val)) {

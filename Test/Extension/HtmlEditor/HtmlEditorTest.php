@@ -1,4 +1,4 @@
-<?
+<?php
 /**
  * @link      http://fraym.org
  * @author    Dominik Weber <info@fraym.org>
@@ -7,7 +7,6 @@
  */
 
 namespace Test\HtmlEditor;
-require_once('PHPUnit/Framework/TestCase.php');
 
 class HtmlEditorTest extends \PHPUnit_Framework_TestCase
 {

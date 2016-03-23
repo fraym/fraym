@@ -131,7 +131,7 @@ class EntityManagerController extends \Fraym\Core
         $this->view->assign('groupedModels', $groupedModels);
         $this->view->assign('model', $model);
         $this->view->assign('formFields', $formFields);
-        return $this->siteManagerController->getIframeContent($this->template->fetch('EntityView'));
+        return $this->siteManagerController->getIframeContent($this->view->fetch('EntityView'));
     }
 
     /**

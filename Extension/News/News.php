@@ -20,7 +20,7 @@ use Fraym\Block\BlockMetadata;
  * website="http://www.fraym.org",
  * repositoryKey="FRAYM_EXT_NEWS",
  * entity={
- *      "\Fraym\Block\Entity\BlockExtension"={
+ *      "\Fraym\Block\Entity\Extension"={
  *          {
  *           "name"="News",
  *           "description"="Create news articles on your website.",
@@ -110,13 +110,13 @@ class News
 
     /**
      * @param $blockId
-     * @param \Fraym\Block\BlockXML $blockXML
-     * @return \Fraym\Block\BlockXML
+     * @param \Fraym\Block\BlockXml $blockXML
+     * @return \Fraym\Block\BlockXml
      */
-    public function saveBlockConfig($blockId, \Fraym\Block\BlockXML $blockXML)
+    public function saveBlockConfig($blockId, \Fraym\Block\BlockXml $blockXML)
     {
         $blockConfig = $this->request->getGPAsObject();
-        $customProperties = new \Fraym\Block\BlockXMLDom();
+        $customProperties = new \Fraym\Block\BlockXmlDom();
         $element = $customProperties->createElement('view');
         $element->appendChild($customProperties->createCDATASection($blockConfig->newsView));
         $customProperties->appendChild($element);

@@ -40,12 +40,6 @@ class MenuController extends \Fraym\Core
 
     /**
      * @Inject
-     * @var \Fraym\Cache\Cache
-     */
-    protected $cache;
-
-    /**
-     * @Inject
      * @var \Fraym\Translation\Translation
      */
     protected $translation;
@@ -116,10 +110,10 @@ class MenuController extends \Fraym\Core
 
     /**
      * @param $blockId
-     * @param \Fraym\Block\BlockXML $blockXML
-     * @return \Fraym\Block\BlockXML
+     * @param \Fraym\Block\BlockXml $blockXML
+     * @return \Fraym\Block\BlockXml
      */
-    public function saveBlockConfig($blockId, \Fraym\Block\BlockXML $blockXML)
+    public function saveBlockConfig($blockId, \Fraym\Block\BlockXml $blockXML)
     {
         return $this->customMenu->saveSiteMenu($blockId, $blockXML);
     }
@@ -144,7 +138,7 @@ class MenuController extends \Fraym\Core
     }
 
     /**
-     * @Fraym\Annotation\Route("/fraym/admin/menu/selection", name="menuSelection", permission={"GROUP:Administrator"})
+     * @Fraym\Annotation\Route("/fraym/admin/menu/selection", name="menuSelection", permission={"\Fraym\User\User"="isAdmin"})
      * @return bool|mixed
      */
     public function getContent()
@@ -319,7 +313,7 @@ class MenuController extends \Fraym\Core
     }
 
     /**
-     * @Fraym\Annotation\Route("/fraym/admin/menu/ajax", name="menuControllerAjax", permission={"GROUP:Administrator"})
+     * @Fraym\Annotation\Route("/fraym/admin/menu/ajax", name="menuControllerAjax", permission={"\Fraym\User\User"="isAdmin"})
      * @return bool
      */
     public function ajaxHandler()

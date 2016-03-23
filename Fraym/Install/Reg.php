@@ -32,32 +32,45 @@ return array(
                 'class' => '\Fraym\Menu\MenuController',
                 'method' => 'getContent',
                 'active' => '1',
-                'description' => 'EXT_EXTENSION_SITEMENUEDITOR_DESC',
-                'iconCssClass' => 'fa fa-sitemap'
+                'description' => 'EXT_SITEMENUEDITOR_DESC',
+                'iconCssClass' => 'fa fa-sitemap',
+                'sorter' => 0
             ),
             array(
                 'name' => 'Data Manager',
                 'class' => '\Fraym\EntityManager\EntityManagerController',
                 'method' => 'getContent',
                 'active' => '1',
-                'description' => 'EXT_EXTENSION_ENTITYMANAGER_DESC',
-                'iconCssClass' => 'fa fa-briefcase'
+                'description' => 'EXT_ENTITYMANAGER_DESC',
+                'iconCssClass' => 'fa fa-briefcase',
+                'sorter' => 10
             ),
             array(
                 'name' => 'File Manager',
                 'class' => '\Fraym\FileManager\FileManagerController',
                 'method' => 'getContent',
                 'active' => '1',
-                'description' => 'EXT_EXTENSION_FILEMANAGER_DESC',
-                'iconCssClass' => 'fa fa-hdd-o'
+                'description' => 'EXT_FILEMANAGER_DESC',
+                'iconCssClass' => 'fa fa-hdd-o',
+                'sorter' => 20
             ),
             array(
                 'name' => 'Package Manager',
                 'class' => '\Fraym\Registry\RegistryManagerController',
                 'method' => 'getContent',
                 'active' => '1',
-                'description' => 'EXT_EXTENSION_PACKAGEMANAGER_DESC',
-                'iconCssClass' => 'fa fa-archive'
+                'description' => 'EXT_PACKAGEMANAGER_DESC',
+                'iconCssClass' => 'fa fa-archive',
+                'sorter' => 30
+            ),
+            array(
+                'name' => 'Change Set Manager',
+                'class' => '\Fraym\Block\BlockChangeSetManagerController',
+                'method' => 'getContent',
+                'active' => '1',
+                'description' => 'EXT_CHANGE_SET_MANAGER_DESC',
+                'iconCssClass' => 'fa fa-tasks',
+                'sorter' => 40
             ),
         ),
         '\Fraym\EntityManager\Entity\Entity' => array(
@@ -89,7 +102,7 @@ return array(
                 ),
             ),
             array(
-                'className' => '\Fraym\Block\Entity\BlockTemplate',
+                'className' => '\Fraym\Block\Entity\Template',
                 'name' => 'Block template entry',
                 'group' => array(
                     '\Fraym\EntityManager\Entity\Group' => array(
@@ -143,7 +156,7 @@ return array(
                 ),
             )
         ),
-        '\Fraym\Block\Entity\BlockExtension' => array(
+        '\Fraym\Block\Entity\Extension' => array(
             array(
                 'name' => 'Menu',
                 'description' => 'Add a website menu to your site.',

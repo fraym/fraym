@@ -8,7 +8,7 @@
 namespace Extension\HtmlEditor;
 
 use Fraym\Block\BlockMetadata;
-use \Fraym\Block\BlockXML as BlockXML;
+use \Fraym\Block\BlockXml as BlockXml;
 use Fraym\Annotation\Registry;
 
 /**
@@ -21,7 +21,7 @@ use Fraym\Annotation\Registry;
  * website="http://www.fraym.org",
  * repositoryKey="FRAYM_EXT_HTML",
  * entity={
- *      "\Fraym\Block\Entity\BlockExtension"={
+ *      "\Fraym\Block\Entity\Extension"={
  *          {
  *           "name"="Html Editor",
  *           "description"="Create formated text elements with a WYSIWYG Editor.",
@@ -83,14 +83,14 @@ class HtmlEditor
 
     /**
      * @param $blockId
-     * @param BlockXML $blockXML
-     * @return BlockXML
+     * @param BlockXml $blockXML
+     * @return BlockXml
      */
-    public function saveBlockConfig($blockId, \Fraym\Block\BlockXML $blockXML)
+    public function saveBlockConfig($blockId, \Fraym\Block\BlockXml $blockXML)
     {
         $blockConfig = $this->request->getGPAsObject();
 
-        $customProperties = new \Fraym\Block\BlockXMLDom();
+        $customProperties = new \Fraym\Block\BlockXmlDom();
         foreach ($blockConfig->html as $localeId => $content) {
             $element = $customProperties->createElement('html');
             $domAttribute = $customProperties->createAttribute('locale');

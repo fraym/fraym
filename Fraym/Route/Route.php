@@ -459,16 +459,11 @@ class Route
             ) {
 
                 $allowAccess = false;
-                if(count($data->permission) && $this->user->isLoggedIn()) {
-                    $user = $this->user->getUserEntity();
-                    $identifiers = $user->getIdentifiersFromGroups();
-                    $identifiers[] = $user->identifier;
-                    foreach($identifiers as  $identifier) {
-                        if(in_array($identifier, $data->permission)) {
-                            $allowAccess = true;
-                            break;
-                        }
-                    }
+                if(count($data->permission)) {
+                    $className = key($data->permission);
+                    $methodName = reset($data->permission);
+                    $obj = $this->serviceLocator->get($className);
+                    $allowAccess = $obj->$methodName();
                 }
 
                 if(count($data->permission) === 0 || $allowAccess) {

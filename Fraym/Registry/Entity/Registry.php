@@ -83,7 +83,7 @@ class Registry extends \Fraym\Entity\BaseEntity
     protected $configurations;
 
     /**
-     * @ORM\OneToMany(targetEntity="\Fraym\Block\Entity\BlockExtension", mappedBy="registry", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="\Fraym\Block\Entity\Extension", mappedBy="registry", orphanRemoval=true)
      * @ORM\OrderBy({"name" = "ASC"})
      */
     protected $blockExtensions;

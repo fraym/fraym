@@ -105,6 +105,10 @@ color: #fff;
 font-weight: 900;
 }
 
+.navbar-fixed-top.on #nav-block-container-actionbar {
+ display: none;
+}
+
 #tf-menu.navbar-default .navbar-nav > li > a {
 	text-transform: uppercase;
 	color: #FFF;

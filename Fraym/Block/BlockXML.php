@@ -8,10 +8,10 @@
 namespace Fraym\Block;
 
 /**
- * Class BlockXML
+ * Class BlockXml
  * @package Fraym\Block
  */
-class BlockXML
+class BlockXml
 {
     /**
      * @var array
@@ -95,12 +95,12 @@ class BlockXML
 
     /**
      * @param string $blockString
-     * @return BlockXMLDom
+     * @return BlockXmlDom
      */
     public function init($blockString = '')
     {
         $this->dom = $blockString;
-        $dom = new BlockXMLDom();
+        $dom = new BlockXmlDom();
         if ($blockString === '') {
             // load empty block
             $dom->loadXML('<?xml version="1.0" encoding="utf-8"?><block>' . $this->customProperty . '</block>');
@@ -167,9 +167,9 @@ class BlockXML
     }
 
     /**
-     * @param BlockXMLDom $data
+     * @param BlockXmlDom $data
      */
-    public function setCustomProperty(\Fraym\Block\BlockXMLDom $data)
+    public function setCustomProperty(\Fraym\Block\BlockXmlDom $data)
     {
         $this->customProperty = $data;
     }

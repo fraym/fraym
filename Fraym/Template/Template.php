@@ -204,8 +204,14 @@ class Template
         $this->addPseudoFunctionName('et', array(&$this->entityManager, 'getEntityTranslation'));
     }
 
-    public function formatCurrency($number, $symbols = '€') {
-        return trim(number_format($number,2,',','.') . ' ' . $symbols);
+    /**
+     * @param $number
+     * @param string $symbol
+     * @return mixed
+     */
+    public function formatCurrency($number, $symbol = '') {
+        $fmt = new NumberFormatter($this->locale->getLocale()->locale, NumberFormatter::CURRENCY);
+        return $fmt->formatCurrency($number, $symbol);
     }
 
     /**
@@ -318,11 +324,12 @@ class Template
      *
      * @param  $templateVar
      * @param  $value
+     * @param  $toObject
      * @return Tpl
      */
-    public function assign($templateVar, $value)
+    public function assign($templateVar, $value, $toObject = true)
     {
-        $this->templateVars[$templateVar] = $this->arrayToObject($value);
+        $this->templateVars[$templateVar] = $toObject ? $this->arrayToObject($value) : $value;
         return $this;
     }
 
@@ -389,7 +396,7 @@ class Template
         foreach ($var as $name => $value) {
             if (is_object($value) || is_callable($value)) {
                 $object->{$name} = $value;
-            } else {
+            } else if(!empty($name)) {
                 $object->{$name} = $this->arrayToObject($value);
             }
         }
@@ -579,12 +586,12 @@ class Template
         );
         $this->addParserLog('Closing tags: ' . $content);
 
-        // replace template functions with open function tag
-        $content = preg_replace('/\{((function)\s+([^\}]*)\([^\}]*\)([^\}]*))\}/is', '<?php $1 { ?>', $content, -1, $cc);
+        // replace template functions with open function tag - Add function_exists to prevent double assign of template functions
+        $content = preg_replace('/\{((function)\s+([^\}]*)\([^\}]*\)([^\}]*))\}/is', '<?php if(function_exists($3) === false) { $1 { ?>', $content, -1, $cc);
         $this->addParserLog('Template functions open: ' . $content);
 
         // replace function close tag
-        $content = preg_replace('/{endfunction}/is', '<?php } ?>', $content);
+        $content = preg_replace('/{endfunction}/is', '<?php } } ?>', $content);
         $this->addParserLog('Template functions close: ' . $content);
 
         // check for valid objects

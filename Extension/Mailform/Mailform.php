@@ -7,7 +7,7 @@
  */
 namespace Extension\Mailform;
 
-use \Fraym\Block\BlockXML as BlockXML;
+use \Fraym\Block\BlockXml as BlockXml;
 use Fraym\Annotation\Registry;
 
 /**
@@ -20,7 +20,7 @@ use Fraym\Annotation\Registry;
  * website="http://www.fraym.org",
  * repositoryKey="FRAYM_EXT_MAILFORM",
  * entity={
- *      "\Fraym\Block\Entity\BlockExtension"={
+ *      "\Fraym\Block\Entity\Extension"={
  *          {
  *           "name"="Mailform",
  *           "description"="Create a mail formular.",
