@@ -2,7 +2,7 @@
 
 return array(
     'name' => 'Fraym Core',
-    'version' => '0.9.2',
+    'version' => '1.0.0',
     'author' => 'Fraym.org',
     'website' => 'http://www.fraym.org',
     'updateEntity' => array(
