@@ -1,8 +1,15 @@
 body#install {
     margin: 0 auto;
-    color: #A3A3A3;
+    color: #E6E6E6;
     background: url(/images/fraym/fraym-bg.jpg);
     background-size: cover;
+}
+
+.green {
+    color: #007500;
+}
+.red {
+    color: #ff0000;
 }
 
 #wrapper {

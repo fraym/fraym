@@ -546,18 +546,15 @@ class BlockController extends \Fraym\Core
         $menuId = $this->request->gp('menuId', false);
         $contentId = $this->request->gp('contentId', false);
 
-        if ($contentId && $blockId && ($block = $this->db->getRepository('\Fraym\Block\Entity\Block')->findOneById(
-            $blockId
-        ))
-        ) {
+        if ($contentId && $blockId &&
+            ($block = $this->db->getRepository('\Fraym\Block\Entity\Block')->findOneById($blockId))) {
 
             $menuItem = $this->db->getRepository('\Fraym\Menu\Entity\MenuItem')->findOneById($menuId);
-
-
             $blocks = $this->db->getRepository('\Fraym\Block\Entity\Block')->findBy(
                 array('menuItem' => $menuItem, 'contentId' => $contentId),
                 array('position' => 'asc')
             );
+
             // Re-Order other blocks
             foreach($blocks as $k => $b) {
                 $b->position = $k+1;
