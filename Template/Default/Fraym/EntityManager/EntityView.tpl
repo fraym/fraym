@@ -70,7 +70,7 @@
         $('#entityForm select:not([multiple])').attr('data-placeholder', '{_('- Please select -', 'FRAYM_PLEASE_SELECT_PLACEHOLDER')}').chosen({ width:'100%', allow_single_deselect:true });
 
         {if $model.id && is_array($errors)}
-            Core.Notification.show('error', '{_('Error - The entry was not saved!', 'FRAYM_ERROR_ENTRY_NOT_SAVED')}', '{_('Please check the marked fields.', 'FRAYM_CHECK_MARKED_FIELDS')}');
+            Core.Notification.show('error', '{_('The entry was not saved - Please check the marked fields.', 'FRAYM_CHECK_MARKED_FIELDS')}');
         {/if}
     });
 </script>

@@ -67,7 +67,7 @@ class SiteManagerController extends \Fraym\Core
     {
         $this->view->assign('options', $options);
         $this->view->assign('content', $content);
-        return $this->view->fetch('Iframe.tpl');
+        return $this->view->fetch('Iframe');
     }
 
     /**
@@ -117,7 +117,7 @@ class SiteManagerController extends \Fraym\Core
      */
     public function getSiteManagerExtension()
     {
-        return $this->getIframeContent($this->view->fetch('siteManagerExtensionOverview.tpl'));
+        return $this->getIframeContent($this->view->fetch('siteManagerExtensionOverview'));
     }
 
     /**

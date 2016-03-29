@@ -45,7 +45,7 @@ class HtmlEditorController extends \Fraym\Core
         $this->view->assign('blockConfig', $htmlData);
         $this->view->assign('menuItems', json_encode($this->htmlEditor->buildMenuItemArray()));
         $this->view->assign('locales', $locales);
-        $this->view->render('BlockConfig.tpl');
+        $this->view->render('BlockConfig');
     }
 
     /**

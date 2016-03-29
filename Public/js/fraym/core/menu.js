@@ -109,6 +109,42 @@ Core.Menu = {
         } catch (e) {}
 
         Core.Menu.CustomMenu.initCustomMenuTree();
+
+        if ($("#menu-item-list").hasClass('no-self-drop')) {
+            dnd = {
+                onDragStart: function (node) {
+                    return true;
+                },
+                onDragStop: function (node) {
+                }
+            };
+        }
+
+        $('#menu-add-item').click(function(){
+            console.log('dsf');
+            if($("#menu-item-list").dynatree("getActiveNode")) {
+                Core.Menu.addMenuItemToParent($("#menu-item-list").dynatree("getActiveNode").data.key);
+            } else {
+                Core.Notification.show('error', Core.Translation.Menu.NoItemSelected);
+            }
+        });
+
+        $('#menu-del-item').click(function(){
+            if($("#menu-item-list").dynatree("getActiveNode")) {
+                Core.Menu.delMenuItem($("#menu-item-list").dynatree("getActiveNode").data.key);
+            } else {
+                Core.Notification.show('error', Core.Translation.Menu.NoItemSelected);
+            }
+        });
+
+        $('#menu-edit-item').click(function(){
+            if($("#menu-item-list").dynatree("getActiveNode")) {
+                Core.Menu.editMenuItem($("#menu-item-list").dynatree("getActiveNode").data.key);
+            } else {
+                Core.Notification.show('error', Core.Translation.Menu.NoItemSelected);
+            }
+        });
+
         if (parseInt(site_id) > 0) {
             $.ajax({
                 url: '/fraym/admin/menu/ajax',
@@ -120,10 +156,10 @@ Core.Menu = {
                     var dnd = {
                         preventVoidMoves: true,
                         onDragStart: function (node) {
-                            return node.data.parent == false ? false : true;
+                            return true;
                         },
                         onDragEnter: function (node, sourceNode) {
-                            return node.data.parent == false ? false : true;
+                            return false;
                         },
                         onDrop: function (node, sourceNode, hitMode, ui, draggable) {
                             sourceNode.move(node, hitMode);
@@ -142,42 +178,34 @@ Core.Menu = {
                             });
                         }
                     };
-                    if ($("#menu-item-list").hasClass('no-self-drop')) {
-                        dnd = {
-                            onDragStart: function (node) {
-                                return true;
-                            },
-                            onDragStop: function (node) {
-                            }
-                        };
-                    }
 
                     $("#menu-item-list").dynatree({
                         dnd: dnd,
                         onCreate: function (node, span) {
-
-                            $(span).parent().contextMenu({
-                                selector: 'span',
-                                callback: function (key, options) {
-                                    var node = $.ui.dynatree.getNode(this);
-                                    switch (key) {
-                                        case 'add':
-                                            Core.Menu.addMenuItemToParent(node.data.key);
-                                            break;
-                                        case 'del':
-                                            Core.Menu.delMenuItem(node);
-                                            break;
-                                        case 'edit':
-                                            Core.Menu.editMenuItem(node.data.key);
-                                            break;
+                            if($(span).parents('#custom-menu').length === 0) {
+                                $(span).parent().contextMenu({
+                                    selector: 'span',
+                                    callback: function (key, options) {
+                                        var node = $.ui.dynatree.getNode(this);
+                                        switch (key) {
+                                            case 'add':
+                                                Core.Menu.addMenuItemToParent(node.data.key);
+                                                break;
+                                            case 'del':
+                                                Core.Menu.delMenuItem(node);
+                                                break;
+                                            case 'edit':
+                                                Core.Menu.editMenuItem(node.data.key);
+                                                break;
+                                        }
+                                    },
+                                    items: {
+                                        "add": { icon: "add", name: Core.Translation.Menu.AddItem },
+                                        "del": { icon: "delete", name: Core.Translation.Menu.DelItem },
+                                        "edit": { icon: "edit", name: Core.Translation.Menu.EditItem }
                                     }
-                                },
-                                items: {
-                                    "add": { name: "Add item" },
-                                    "del": { name: "Del item" },
-                                    "edit": { name: "Edit item" }
-                                }
-                            });
+                                });
+                            }
                         },
                         children: data
                     });
@@ -244,7 +272,7 @@ Core.Menu = {
                     autoExpandMS: 1000,
                     preventVoidMoves: true, // Prevent dropping nodes 'before self', etc.
                     onDragStart: function (node) {
-                        return node.data.parent == false ? false : true;
+                        return true;
                     },
                     onDragEnter: function (node, sourceNode) {
                         var rootNode = Core.Menu.getRootFromNode(node);
@@ -325,7 +353,7 @@ Core.Menu = {
                     $('input[name=customMenu]').val($.toJSON(tree[0].children));
                 }
             });
-
+            Core.Menu.init();
         }
     }
 };

@@ -98,7 +98,7 @@ class MenuController extends \Fraym\Core
         $this->view->assign('menuItems', json_encode($menuItems));
         $this->view->assign('options', $options);
         $this->view->assign('content', $content);
-        return $this->view->fetch('Iframe.tpl');
+        return $this->view->fetch('Iframe');
     }
 
     public function getBlockConfig()

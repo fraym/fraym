@@ -165,6 +165,5 @@ $(function () {
     } else {
 	    Core.Admin.iFrameInit();
     }
-	Core.Menu.init();
     Core.Admin.init();
 });

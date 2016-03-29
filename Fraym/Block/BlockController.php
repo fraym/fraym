@@ -115,7 +115,7 @@ class BlockController extends \Fraym\Core
         $this->view->assign('block', $block);
         $this->view->assign('moduleName', $block ? $block->extension->name : '');
         $this->view->assign('content', $html);
-        return $this->view->fetch('BlockInfo.tpl');
+        return $this->view->fetch('BlockInfo');
     }
 
     /**
@@ -144,7 +144,7 @@ class BlockController extends \Fraym\Core
         $this->view->assign('extensions', $extensions);
         $this->view->assign('contentId', $contentId);
 
-        return $this->siteManagerController->getIframeContent($this->view->fetch('BlockIframeContent.tpl'));
+        return $this->siteManagerController->getIframeContent($this->view->fetch('BlockIframeContent'));
     }
 
     /**
@@ -174,7 +174,7 @@ class BlockController extends \Fraym\Core
         $this->view->assign('contentId', $contentId);
         $this->view->assign('inEditMode', $this->block->inEditMode());
         $this->view->assign('content', $content);
-        return $this->view->fetch('EditViewBar.tpl');
+        return $this->view->fetch('EditViewBar');
     }
 
     /**

@@ -36,7 +36,7 @@ class ImageController extends \Fraym\Core
         }
         $this->view->assign('imageLink', $imageLink);
         $this->view->assign('blockConfig', $blockConfig);
-        $this->view->render('BlockConfig.tpl');
+        $this->view->render('BlockConfig');
     }
 
     /**

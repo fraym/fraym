@@ -13,6 +13,11 @@
                         {/foreach}
                     </select>
                 </div>
+                <div class="btn-group" role="group">
+                    <button type="button" id="menu-add-item" class="btn btn-default"><i class="fa fa-plus"></i> {_('Add item')}</button>
+                    <button type="button" id="menu-del-item" class="btn btn-default"><i class="fa fa-trash-o"></i> {_('Del item')}</button>
+                    <button type="button" id="menu-edit-item" class="btn btn-default"><i class="fa fa-pencil"></i> {_('Edit item')}</button>
+                </div>
             </fieldset>
 
             <fieldset>
@@ -28,4 +33,11 @@
 </div>
 <script type="text/javascript">
     Core.Menu.mode = '{if $mode}{$mode}{/if}';
+    Core.Translation.Menu = {
+      AddItem: '{_('Add item')}',
+      DelItem: '{_('Del item')}',
+      EditItem: '{_('Edit item')}',
+      NoItemSelected: '{_('No menu item selected!')}'
+    };
+    Core.Menu.init();
 </script>

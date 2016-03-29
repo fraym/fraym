@@ -38,9 +38,9 @@ class DynamicTemplateController extends \Fraym\Core
      */
     public function getBlockConfig($selectOptions, $blockConfig = null)
     {
-        $this->view->assign('selectOptions', $selectOptions);
+        $this->view->assign('selectOptions', $selectOptions, false);
         $this->view->assign('blockConfig', $blockConfig);
-        $this->view->render('BlockConfig.tpl');
+        $this->view->render('BlockConfig');
     }
 
     /**

@@ -113,7 +113,6 @@ class DynamicTemplate
 
         $files = $this->getTemplateFiles();
         $selectOptions = $this->buildSelectOptions($files);
-
         $this->dynamicTemplateController->getBlockConfig($selectOptions, $configXml);
     }
 

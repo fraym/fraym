@@ -881,6 +881,21 @@ table td.right, table th.right {
     margin-right: 20px;
 }
 
+#custom-menu fieldset {
+    margin-bottom: 20px;
+}
+
+
+#menu-item-list li a,
+#custom-menu ul.dynatree-container a {
+    border: 0;
+    outline: none;
+}
+
+#custom-menu ul.dynatree-container {
+    background-color: transparent;
+}
+
 #custom-menu #menu-item-list {
     float: left;
     width: 50%
