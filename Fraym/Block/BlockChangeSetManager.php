@@ -50,19 +50,22 @@ class BlockChangeSetManager extends \Fraym\Core
             if(!isset($changeSets[$block->site->id])) {
                 $changeSets[$block->site->id] = array();
             }
-            if(!isset($changeSets[$block->site->id][$block->menuItem->id])) {
-                $changeSets[$block->site->id][$block->menuItem->id] = array();
+
+            $menuItemId = $block->menuItem ? $block->menuItem->id : 0;
+
+            if(!isset($changeSets[$block->site->id][$menuItemId])) {
+                $changeSets[$block->site->id][$menuItemId] = array();
             }
             $translationId = $block->menuItemTranslation ? $block->menuItemTranslation->id : 0;
-            if(!isset($changeSets[$block->site->id][$block->menuItem->id][$translationId])) {
-                $changeSets[$block->site->id][$block->menuItem->id][$translationId] = array(
+            if(!isset($changeSets[$block->site->id][$menuItemId][$translationId])) {
+                $changeSets[$block->site->id][$menuItemId][$translationId] = array(
                     'menuItem' => $block->menuItem,
                     'menuItemTranslation' => $block->menuItemTranslation,
                     'blocks' => array(),
                 );
             }
             $lastChange = $block->changeSets->count() ? $block->changeSets->last() : $block;
-            $changeSets[$block->site->id][$block->menuItem->id][$translationId]['blocks'][$block->id] = $lastChange;
+            $changeSets[$block->site->id][$menuItemId][$translationId]['blocks'][$block->id] = $lastChange;
         }
         return $changeSets;
     }
