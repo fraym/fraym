@@ -80,13 +80,6 @@
                                         </label>
                                     </div>
                                 </div>
-                                <div class="col-xs-3">
-                                    <div class="checkbox">
-                                        <label>
-                                            <input name="menu[translations][{$locale.id}][anchor]" type="checkbox" value="1"{if $menuItem && $localeMenuItem.anchor == true} checked="checked"{/if}/> {_("Is anchor")}?
-                                        </label>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     {/foreach}

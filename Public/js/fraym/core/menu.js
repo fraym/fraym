@@ -25,12 +25,9 @@ Core.Menu = {
         }
     },
 
-    init: function () {
-        $('#del-menu-item-popup .no-del').click(function () {
-            $('#del-menu-item-popup').data("overlay").close();
-        });
+    initInputFields: function () {
 
-	    var inputEvent = function (e) {
+        var inputEvent = function (e) {
             e.preventDefault();
             var $this = $(this);
 
@@ -38,37 +35,45 @@ Core.Menu = {
                 if($this.is('select')) {
                     $this.html($('<option></option>').val(node.data.key).html(node.data.title));
                 } else {
-	                $this.siblings('input:not([type=hidden])').attr('disabled', 'disabled').val(node.data.title);
+                    $this.siblings('input:not([type=hidden])').attr('disabled', 'disabled').val(node.data.title);
                     $this.siblings('input[type=hidden]').removeAttr('disabled').val(node.data.key);
                 }
             });
         };
 
-	    $.each($('input[data-menuselection]'), function(){
-		    var $this = $(this).clone(true);
-		    var $hiddenClone = $(this).clone(true).attr('type', 'hidden').attr('disabled', 'disabled');
-		    if($this.attr('data-value') != '') {
-			    $hiddenClone.val($this.val());
-			    $this.val($this.attr('data-value'));
-			    $this.attr('disabled', 'disabled');
-		    }
+        $.each($('input[data-menuselection]'), function(){
+            var $this = $(this).clone(true);
+            var $hiddenClone = $(this).clone(true).attr('type', 'hidden').attr('disabled', 'disabled');
+            if($this.attr('data-value') != '') {
+                $hiddenClone.val($this.val());
+                $this.val($this.attr('data-value'));
+                $this.attr('disabled', 'disabled');
+            }
             $this.addClass('fraym-menu-select');
-		    var $selectFileBtn = $('<i class="fa fa-sitemap"></i>');
-	        var $wrapper = $('<div class="fraym-menu-input-wrapper"></div>');
-	        $wrapper.append($this);
-	        $wrapper.append($hiddenClone);
-	        $wrapper.append($selectFileBtn);
-	        $(this).replaceWith($wrapper);
-		    $wrapper.click(function(){
-			    if($this.is(':disabled')) {
-				    $this.val('').removeAttr('disabled').focus();
-				    $hiddenClone.attr('disabled', 'disabled');
-			    }
-		    });
-		    $selectFileBtn.click(inputEvent);
-	    });
+            var $selectFileBtn = $('<i class="fa fa-sitemap"></i>');
+            var $wrapper = $('<div class="fraym-menu-input-wrapper"></div>');
+            $wrapper.append($this);
+            $wrapper.append($hiddenClone);
+            $wrapper.append($selectFileBtn);
+            $(this).replaceWith($wrapper);
+            $wrapper.click(function(){
+                if($this.is(':disabled')) {
+                    $this.val('').removeAttr('disabled').focus();
+                    $hiddenClone.attr('disabled', 'disabled');
+                }
+            });
+            $selectFileBtn.click(inputEvent);
+        });
 
         $('body').on('mousedown', 'select[data-menuselection]', inputEvent);
+    },
+
+    init: function () {
+        $('#del-menu-item-popup .no-del').click(function () {
+            $('#del-menu-item-popup').data("overlay").close();
+        });
+
+        Core.Menu.initInputFields();
         Core.Menu.getSiteMenu();
     },
 
@@ -121,7 +126,6 @@ Core.Menu = {
         }
 
         $('#menu-add-item').click(function(){
-            console.log('dsf');
             if($("#menu-item-list").dynatree("getActiveNode")) {
                 Core.Menu.addMenuItemToParent($("#menu-item-list").dynatree("getActiveNode").data.key);
             } else {
@@ -213,11 +217,6 @@ Core.Menu = {
             });
 
         }
-    },
-
-    editMenuContent: function (element) {
-        var menuid = $(element).attr('menuid');
-        Core.location('function/edit-content/menu_id/' + menuid);
     },
 
     editMenuItem: function (menuid) {

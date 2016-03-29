@@ -30,5 +30,6 @@
     </div>
     <script type="text/javascript">
         Core.Menu.CustomMenu.init();
+        Core.Menu.init();
     </script>
 </div>

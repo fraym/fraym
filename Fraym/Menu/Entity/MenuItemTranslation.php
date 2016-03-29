@@ -63,13 +63,6 @@ class MenuItemTranslation extends \Fraym\Entity\BaseEntity
     protected $externalUrl = false;
 
     /**
-     * @var string $anchor
-     *
-     * @ORM\Column(name="anchor", type="boolean", nullable=false)
-     */
-    protected $anchor = false;
-
-    /**
      * @var string $shortDesc
      *
      * @ORM\Column(name="short_desc", type="string", length=1000, nullable=true)
@@ -143,7 +136,7 @@ class MenuItemTranslation extends \Fraym\Entity\BaseEntity
             $parts = explode('/', $url);
 
             foreach ($parts as &$part) {
-                $part = $route->createSlug($part, '-', $this->anchor);
+                $part = $route->createSlug($part, '-', true);
             }
 
             $this->url = '/' . trim(implode('/', $parts), '/');
@@ -160,6 +153,5 @@ class MenuItemTranslation extends \Fraym\Entity\BaseEntity
         $locale = $this->getServiceLocator()->get('Fraym\Locale\Locale');
         $this->locale = $locale->getDefaultLocale();
         $this->externalUrl = false;
-        $this->anchor = false;
     }
 }
