@@ -186,6 +186,39 @@ var FileManager = {
 			}
 		},
 
+		copyPath: function () {
+			if (!$(FileManager.selectors.selectedItems).hasClass('folder')) {
+				var file = FileManager.File.getFileInfo($(FileManager.selectors.selectedItems));
+
+				var target = document.createElement("textarea");
+				target.style.position = "absolute";
+				target.style.left = "-9999px";
+				target.style.top = "0";
+				target.id = '_hiddenCopyText_';
+				document.body.appendChild(target);
+
+				target.textContent = file.publicPath;
+				var currentFocus = document.activeElement;
+				target.focus();
+				target.setSelectionRange(0, target.value.length);
+
+				var succeed;
+
+				try {
+					succeed = document.execCommand("copy");
+				} catch(e) {
+					window.prompt("Copy to clipboard: Ctrl+C, Enter", file.publicPath);
+				}
+
+				// restore original focus
+				if (currentFocus && typeof currentFocus.focus === "function") {
+					currentFocus.focus();
+				}
+
+				$(target).remove();
+			}
+		},
+
 		copy: function () {
 			FileManager.File.itemsCut = false;
 			FileManager.File.itemsCopied = FileManager.File.getSelectedItems();
@@ -470,6 +503,17 @@ var FileManager = {
 			return $(FileManager.selectors.tree).dynatree("getActiveNode") == null;
 		};
 
+		var isDisabledCopyPath = function () {
+			if(FileManager.File.getSelectedItems().length === 0 || FileManager.File.getSelectedItems().length > 1) {
+				return true;
+			}
+
+			if(FileManager.File.getSelectedItems()[0].isDir) {
+				return true;
+			}
+			return false;
+		};
+
 		var items = {
 			"open": { name: "Open", icon: "open", disabled: isDisabledRenameOpen },
 			"sep1": "---------",
@@ -478,9 +522,11 @@ var FileManager = {
 			"copy": { name: "Copy", icon: "copy", disabled: isDisabled },
 			"paste": { name: "Paste", icon: "paste", disabled: isDisabledPaste },
 			"delete": { name: "Delete", icon: "delete", disabled: isDisabled },
-			"sep1": "---------",
+			"sep2": "---------",
 			"newFolder": { name: "New folder", icon: "folder", disabled: isDisabledNewFile },
-			"newFile": { name: "New file", icon: "doc", disabled: isDisabledNewFile}
+			"newFile": { name: "New file", icon: "doc", disabled: isDisabledNewFile},
+			"sep3": "---------",
+			"copyPath": { name: "Copy public path", icon: "copy", disabled: isDisabledCopyPath}
 		};
 
 		$.contextMenu({
@@ -510,6 +556,9 @@ var FileManager = {
 						break;
 					case "open":
 						FileManager.File.open();
+						break;
+					case "copyPath":
+						FileManager.File.copyPath();
 						break;
 				}
 			},

@@ -1,4 +1,4 @@
-<div {if $type == 'content'} class="block-container"{else} class="block-holder{if $block.byRef} by-ref{/if}{if get_class($block) === 'Fraym\Block\Entity\ChangeSet' || $block->changeSets->count()} changeset{/if}" data-id="{$id}"{if $block && $block->byRef} data-byRef="{$block->byRef->id}"{/if}{/if}>
+<div {if $type == 'content'} class="block-container"{if $style} style="{$style}"{/if}{else} class="block-holder{if $block.byRef} by-ref{/if}{if get_class($block) === 'Fraym\Block\Entity\ChangeSet' || $block->changeSets->count()} changeset{/if}" data-id="{$id}"{if $block && $block->byRef} data-byRef="{$block->byRef->id}"{/if}{/if}>
 
     {if $type !== 'content'}
         <div class="block-info">

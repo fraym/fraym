@@ -111,6 +111,7 @@ class BlockController extends \Fraym\Core
 
         $this->view->assign('renderTime', $renderTime);
         $this->view->assign('type', $this->blockParser->getXMLAttr($xml, 'type'));
+        $this->view->assign('style', $this->blockParser->getXMLAttr($xml, 'style'));
         $this->view->assign('id', $block && $block->block ? $block->block->id : $this->blockParser->getXMLAttr($xml, 'id'));
         $this->view->assign('block', $block);
         $this->view->assign('moduleName', $block ? $block->extension->name : '');
@@ -197,6 +198,7 @@ class BlockController extends \Fraym\Core
             'setEditMode',
             'deleteBlock',
             'getTemplateConfig',
+            'clearCache',
             'saveBlockConfig'
         );
         $cmd = trim($this->request->gp('cmd', ''));
@@ -205,6 +207,14 @@ class BlockController extends \Fraym\Core
             return true;
         }
         return false;
+    }
+
+    /**
+     *
+     */
+    private function clearCache() {
+        $this->cache->clearAll();
+        $this->response->sendAsJson(array('success' => true));
     }
 
     /**
@@ -561,6 +571,7 @@ class BlockController extends \Fraym\Core
             }
 
             if ($op === 'copy') {
+                $block = $block->changeSets->count() ? $block->changeSets->last() : $block;
                 $copiedBlock = clone $block;
 
                 $copiedBlock->id = null;
@@ -579,12 +590,7 @@ class BlockController extends \Fraym\Core
 
                 $changedBlock = $this->createChangeSet($copiedBlock, null, \Fraym\Block\Entity\ChangeSet::ADDED);
             } else {
-                if($block->changeSets->count()) {
-                    $changedBlock = clone $block->changeSets->last();
-                } else {
-                    $changedBlock = clone $block;
-                }
-
+                $changedBlock = $block->changeSets->count() ? $block->changeSets->last() : $block;
                 $changedBlock->position = 0;
                 $changedBlock->menuItem = $menuItem;
                 $changedBlock->contentId = $contentId;
@@ -594,7 +600,7 @@ class BlockController extends \Fraym\Core
             $this->response->sendAsJson(array('success' => true, 'data' => $this->prepareBlockOutput($changedBlock)));
         }
         $this->response->sendAsJson(
-            array('success' => false, 'message' => $this->translation->getTranslation('Paste error, please copy again'))
+            array('success' => false, 'message' => $this->translation->getTranslation('Paste error, please reload the page and copy again.'))
         );
     }
 

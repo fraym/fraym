@@ -157,7 +157,7 @@
                 </div>
 
                 <div class="form-group text-right">
-                    <button type="submit" class="btn btn-primary" data-loading-text="Loading..."/>Save</button>
+                    <button type="submit" class="btn btn-primary" data-loading-text="Loading..."/>Install</button>
                 </div>
             </fieldset>
         </form>

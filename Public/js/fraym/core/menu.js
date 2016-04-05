@@ -163,7 +163,7 @@ Core.Menu = {
                             return true;
                         },
                         onDragEnter: function (node, sourceNode) {
-                            return false;
+                            return true;
                         },
                         onDrop: function (node, sourceNode, hitMode, ui, draggable) {
                             sourceNode.move(node, hitMode);

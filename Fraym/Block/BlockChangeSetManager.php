@@ -12,13 +12,19 @@ namespace Fraym\Block;
  * @package Fraym\Block
  * @Injectable(lazy=true)
  */
-class BlockChangeSetManager extends \Fraym\Core
+class BlockChangeSetManager
 {
     /**
      * @Inject
      * @var \Fraym\Database\Database
      */
     protected $db;
+
+    /**
+     * @Inject
+     * @var \Fraym\Cache\Cache
+     */
+    protected $cache;
 
     /**
      * @return bool|mixed
@@ -117,6 +123,7 @@ class BlockChangeSetManager extends \Fraym\Core
         }
 
         $this->db->flush();
+        $this->cache->clearAll();
     }
 
     /**

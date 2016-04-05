@@ -28,7 +28,7 @@ return array(
     'entity' => array(
         '\Fraym\SiteManager\Entity\Extension' => array(
             array(
-                'name' => 'Menu editor',
+                'name' => 'Menu Editor',
                 'class' => '\Fraym\Menu\MenuController',
                 'method' => 'getContent',
                 'active' => '1',

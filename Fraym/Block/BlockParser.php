@@ -822,42 +822,74 @@ class BlockParser
      */
     public function findBlocks($menuId, $contentId)
     {
-        $result = $this->db->createQueryBuilder();
+        $queryBuilder = $this->db->createQueryBuilder();
+        $menuTranslationId = $this->route->getCurrentMenuItemTranslation()->id;
+        $siteId = $this->route->getCurrentMenuItem()->site->id;
         $blocks = array();
 
-        $results = $result
-            ->select("block, byRef")
+        $query = $queryBuilder
+            ->select("block")
             ->from('\Fraym\Block\Entity\Block', 'block')
-            ->leftJoin('block.byRef', 'byRef')
-            ->andWhere('block INSTANCE OF \Fraym\Block\Entity\Block OR block.block IS NULL')
-            ->andWhere("block.menuItem IS NULL OR block.menuItem = :menuId")
-            ->andWhere("block.site = :site")
-            ->andWhere("block.menuItemTranslation IS NULL OR block.menuItemTranslation = :menuTranslationId")
-            ->setParameter('menuId', $menuId)
-            ->setParameter('menuTranslationId', $this->route->getCurrentMenuItemTranslation()->id)
-            ->setParameter('site', $this->route->getCurrentMenuItem()->site->id)
-            ->addOrderBy('block.position', 'asc')
+            ->andWhere('block INSTANCE OF \Fraym\Block\Entity\Block OR block.block IS NULL');
+
+        if($this->user->isAdmin() === false) {
+            $query = $query->andWhere("block.menuItem IS NULL OR block.menuItem = :menuId")
+                ->andWhere("block.site = :site")
+                ->andWhere("block.menuItemTranslation IS NULL OR block.menuItemTranslation = :menuTranslationId")
+                ->setParameter('menuId', $menuId)
+                ->setParameter('menuTranslationId', $menuTranslationId)
+                ->setParameter('site', $siteId);
+        }
+
+        $results = $query->addOrderBy('block.position', 'asc')
             ->addOrderBy('block.id', 'desc')
             ->getQuery()
             ->getResult();
 
         foreach($results as $result) {
-            if($this->user->isAdmin() && $result->changeSets->count() > 0) {
+            if($this->user->isAdmin() &&
+                $result->changeSets->count() > 0) {
+
                 $lastChange = $result->changeSets->last();
-                if($contentId === $lastChange->contentId && $lastChange->type !== Entity\ChangeSet::DELETED) {
+
+                if($lastChange->contentId === $contentId &&
+                    ($lastChange->menuItem === NULL || $lastChange->menuItem->id === $menuId) &&
+                    ($lastChange->menuItemTranslation === NULL || $lastChange->menuItemTranslation->id === $menuTranslationId) &&
+                    ($lastChange->site->id == $siteId) &&
+                    $lastChange->type !== Entity\ChangeSet::DELETED) {
+
+                    // Changed blocks
                     $lastChange = clone $lastChange;
                     $lastChange->id = $result->id;
                     $blocks[$result->id] = $lastChange;
                 }
-            } elseif($contentId === $result->contentId && $this->user->isAdmin() && get_class($result) === 'Fraym\Block\Entity\ChangeSet') {
+
+            } elseif($this->user->isAdmin() &&
+                $result->contentId === $contentId &&
+                ($result->menuItem === NULL || $result->menuItem->id === $menuId) &&
+                ($result->menuItemTranslation === NULL || $result->menuItemTranslation->id === $menuTranslationId) &&
+                ($result->site->id == $siteId) &&
+                get_class($result) === 'Fraym\Block\Entity\ChangeSet') {
+
+                // New blocks
                 $blocks[$result->id] = $result;
-            } elseif($contentId === $result->contentId && get_class($result) === 'Fraym\Block\Entity\Block') {
+
+            } elseif($contentId === $result->contentId &&
+                ($result->menuItem === NULL || $result->menuItem->id === $menuId) &&
+                ($result->menuItemTranslation === NULL || $result->menuItemTranslation->id === $menuTranslationId) &&
+                ($result->site->id == $siteId) &&
+                get_class($result) === 'Fraym\Block\Entity\Block') {
+
+                // Old none changed blocks
                 $blocks[$result->id] = $result;
             }
         }
 
         if($this->user->isAdmin()) {
             uasort($blocks, function($a, $b) {
+               if($a->position === $b->position) {
+                   return $a->id < $b->id ? 1 : -1;
+               }
                return $a->position > $b->position ? 1 : -1;
             });
         }
@@ -939,6 +971,7 @@ class BlockParser
      */
     public function wrapBlockConfig($block)
     {
+        $block = $block->changeSets->count() ? $block->changeSets->last() : $block;
         $blockConfigXml = $block->getConfig($this->user->isAdmin());
 
         $dom = new \DOMDocument;

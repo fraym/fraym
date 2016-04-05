@@ -10,13 +10,6 @@
   <meta name="description" content="">
   <meta name="keywords" content="">
 
-  <!-- Favicons
-  ================================================== -->
-  <link rel="shortcut icon" href="/images/default_theme/favicon.ico" type="image/x-icon">
-  <link rel="apple-touch-icon" href="/images/default_theme/apple-touch-icon.png">
-  <link rel="apple-touch-icon" sizes="72x72" href="/images/default_theme/apple-touch-icon-72x72.png">
-  <link rel="apple-touch-icon" sizes="114x114" href="/images/default_theme/apple-touch-icon-114x114.png">
-
   <link href='http://fonts.googleapis.com/css?family=Lato:100,300,400,700,900,100italic,300italic,400italic,700italic,900italic' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,700,300,600,800,400' rel='stylesheet' type='text/css'>
 
@@ -32,8 +25,6 @@
 
   {js('default_theme/modernizr.custom.js', 'head')}
 
-  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
   <!--[if lt IE 9]>
   <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
   <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -41,11 +32,8 @@
 </head>
 <body>
 
-<!-- Navigation
-==========================================-->
 <nav id="tf-menu" class="navbar navbar-default navbar-fixed-top">
   <div class="container">
-    <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
         <span class="sr-only">Toggle navigation</span>
@@ -56,7 +44,6 @@
       <a class="navbar-brand" href="/">Fraym</a>
     </div>
 
-    <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <block type="content">
         <view id="nav" description="{_('Add menu here.')}" renderElement="false">
@@ -75,12 +62,9 @@
         </view>
       </block>
 
-    </div><!-- /.navbar-collapse -->
-  </div><!-- /.container-fluid -->
+    </div>
+  </div>
 </nav>
-
-<!-- Home Page
-==========================================-->
 
 <block type="content">
   <view id="tf-home-wrapper" renderElement="false" description="{_('Add welcome hero element here.')}" editStyle="min-height: 400px;" actionBarStyle="top: 185px; padding: 0; position: absolute; width: 100%;">
@@ -100,9 +84,6 @@
   </view>
 </block>
 
-
-<!-- About Us Page
-==========================================-->
 <block type="content">
   <view id="tf-about-wrapper" renderElement="false" description="{_('Add about text element here.')}">
     <placeholder>
@@ -146,8 +127,6 @@
   </view>
 </block>
 
-<!-- Team Page
-==========================================-->
 <block type="content">
   <view id="tf-slider-wrapper" renderElement="false" description="{_('Add a slider here.')}">
     <placeholder>
@@ -264,8 +243,6 @@
   </view>
 </block>
 
-<!-- Services Section
-==========================================-->
 <block type="content">
   <view id="tf-services-wrapper" renderElement="false" description="{_('Add a services here.')}">
     <placeholder>
@@ -313,8 +290,6 @@
   </view>
 </block>
 
-<!-- Testimonials Section
-==========================================-->
 <block type="content">
   <view id="tf-testimonials-wrapper" renderElement="false" description="{_('Add a testimonials here.')}">
     <placeholder>
@@ -355,7 +330,6 @@
     </placeholder>
   </view>
 </block>
-
 
 <block type="content">
   <view id="tf-contact-wrapper" renderElement="false" description="{_('Add a contact form here.')}">

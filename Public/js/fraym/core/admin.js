@@ -15,6 +15,18 @@ Core.Admin = {
 	    $('body').on('mousemove', '[data-toggle="tooltip"]', function(){
 		    $(this).tooltip();
 	    });
+	    $('#clearcache').click(function (e) {
+			e.preventDefault();
+			$.ajax({
+				url:parent.window.Core.getAjaxRequestUri(),
+				dataType:'json',
+				data:{cmd:'clearCache'},
+				type:'post',
+				success:function (data, textStatus, jqXHR) {
+					Core.Notification.show('success', 'Cache cleared!');
+				}
+			});
+		});
     },
 
 	iFrameInit: function() {

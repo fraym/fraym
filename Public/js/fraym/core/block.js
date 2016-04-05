@@ -120,6 +120,39 @@ Core.Block = {
 
 		$baseElement.find('[type="submit"]').removeAttr('disabled');
         $('select').trigger("chosen:updated");
+		Core.Block.initElements();
+	},
+
+	initElements: function () {
+		$.each($('[data-rte]'), function () {
+			if(!$(this).attr('id')) {
+				$(this).attr('id', Core.getUniqueId());
+				var id = $(this).attr('id');
+				if($(this).attr('data-rte')) {
+					var config = JSON.parse($(this).attr('data-rte'));
+				} else {
+					var config = {};
+				}
+
+				config['filebrowserBrowseUrl'] = window.filebrowserBrowseUrl;
+				config['filebrowserImageBrowseUrl'] = window.filebrowserImageBrowseUrl;
+				config['filebrowserWindowWidth'] = window.filebrowserWindowWidth;
+				config['filebrowserWindowHeight'] = window.filebrowserWindowHeight;
+
+				CKEDITOR.replace(id, config);
+				CKEDITOR.instances[id].on('change', function() { CKEDITOR.instances[id].updateElement(); });
+			}
+		});
+
+		$.each($('[data-datepicker]'), function () {
+			$(this).datepicker({ dateFormat: $(this).attr('data-datepicker') });
+		});
+
+		$.each($('[data-datetimepicker]'), function () {
+			$(this).datetimepicker({ dateFormat: $(this).attr('data-datetimepicker') });
+		});
+
+		FileManager.initFilePathInput();
 	},
 
 	addTab: function (title, html) {
@@ -158,7 +191,8 @@ Core.Block = {
 			Core.Admin.setEditMode();
 		});
 
-		$(Core.$.BLOCK_BLOCK_TO_TOP).click(function(){
+		$(Core.$.BLOCK_BLOCK_TO_TOP).click(function(e){
+			e.preventDefault();
 			var $container = $(this).parents('.block-container-content:first, .block-container:first');
 			if($(this).hasClass('active')) {
 				$(this).removeClass('active');
@@ -246,13 +280,6 @@ Core.Block = {
                     $(Core.Block).trigger('saveBlockConfig');
                 },
                 'onSuccess': function (json) {
-
-                    // For view extension reloadpage with no config.
-                    // If not blocks of type content will not be rendered correctly.
-                    if($(Core.$.BLOCK_TABS).find('> ul > li').length == 1) {
-                        Core.getBaseWindow().Core.reloadPage();
-                    }
-
                     $(Core.Block).trigger('blockConfigSaved');
                     if (json && json.data) {
                         if ($(Core.$.BLOCK_CURRENT_INPUT).val() == '') {
@@ -346,6 +373,7 @@ Core.Block = {
 				Core.Block.addBlockActions($(this).attr('data-id'));
 			}
 		});
+
 		$.each($(Core.$.BLOCK_VIEW_CONTAINER), function(){
 			if(!$(this).hasClass('action-added')) {
 				$(this).addClass('action-added');
@@ -398,9 +426,6 @@ Core.Block = {
 				}
 			}
 		});
-
-
-
 	},
 
 	addViewActions: function (id) {

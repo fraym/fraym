@@ -40,9 +40,9 @@
             {/foreach}
 
             <li class="{if $inEditMode}active{/if}">
-                <a title="{if $inEditMode}{_('Disable edit mode', 'FRAYM_DISABLE_EDIT_MODE')}{else}{_('Enable edit mode', 'FRAYM_ENABLE_EDIT_MODE')}{/if}" href="#" id="block-edit-mode" data-id="block-edit-mode" data-id="menu-editor" data-editmode="{if $inEditMode}1{else}0{/if}">
+                <a title="{if $inEditMode}{_('Disable Edit Mode', 'FRAYM_DISABLE_EDIT_MODE')}{else}{_('Enable Edit Mode', 'FRAYM_ENABLE_EDIT_MODE')}{/if}" href="#" id="block-edit-mode" data-id="block-edit-mode" data-id="menu-editor" data-editmode="{if $inEditMode}1{else}0{/if}">
                     <i class="fa {if $inEditMode}fa-cogs{else}fa-cog{/if}"><span class="overlay-label green"></span></i>
-                    <span>{if $inEditMode}{_('Disable edit mode', 'FRAYM_DISABLE_EDIT_MODE')}{else}{_('Enable edit mode', 'FRAYM_ENABLE_EDIT_MODE')}{/if}</span>
+                    <span>{if $inEditMode}{_('Disable Edit Mode', 'FRAYM_DISABLE_EDIT_MODE')}{else}{_('Enable Edit Mode', 'FRAYM_ENABLE_EDIT_MODE')}{/if}</span>
                 </a>
             </li>
         </ul>

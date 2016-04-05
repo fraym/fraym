@@ -15,7 +15,7 @@
                     </div>
                     <div class="panel-body">
                         <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-danger" data-placement="top" data-toggle="tooltip" title="{_('Clears cached pages, data and APC/APCu/OPcache.', 'FRAYM_CLEAR_CACHE_INFO')}">{_('Clear cache', 'FRAYM_CLEAR_CACHE')}</button>
+                            <button id="clearcache" type="button" class="btn btn-danger" data-placement="top" data-toggle="tooltip" title="{_('Clears cached pages, data and APC/APCu/OPcache.', 'FRAYM_CLEAR_CACHE_INFO')}">{_('Clear cache', 'FRAYM_CLEAR_CACHE')}</button>
                         </div>
                     </div>
                 </div>

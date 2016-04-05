@@ -10,43 +10,6 @@ var Core = {
 	    return base_path + menu_path + (menu_path.charAt(menu_path.length-1) == '/' ? '' : '/') + 'ajax';
     },
 
-    reloadPage: function() {
-        var baseWindow = Core.getBaseWindow();
-        $.ajax({
-            url: baseWindow.location.href,
-            dataType:'html',
-            beforeSend: function( xhr ) {
-                xhr.setRequestHeader('X-Requested-With', {toString: function(){ return ''; }});
-            },
-            success: function( data ) {
-	            var doc = document.implementation.createHTMLDocument('');
-	            doc.open();
-	            doc.write(data);
-	            doc.close();
-
-                // Destroy context menu
-                baseWindow.$.contextMenu('destroy');
-
-                // Remove all text nodes
-	            baseWindow.$('body').contents()
-                .filter(function() {
-                    return this.nodeType == 3;
-                }).remove();
-
-                // Remove body content, prevent block-dialog and the admin panel
-	            baseWindow.$('body > :not(.block-dialog):not(#blockConfigMenu)').remove();
-                // Remove admin panel
-                $('body', doc).find('#blockConfigMenu').remove();
-                var headHtml = $('head', doc).html();
-
-                // Replace head data
-                baseWindow.$('head:first').html(headHtml);
-                // Add the new body content to the current body
-	            baseWindow.$('body:first').prepend($('body', doc).html());
-            }
-        });
-    },
-
     encodeQueryData: function (data)
     {
         var ret = [];
@@ -84,55 +47,6 @@ var Core = {
 
     showMessage:function (msg) {
         alert(msg);
-    },
-
-    initLabels:function () {
-        $.each($('input').parent().children(),
-            function () {
-                if ($(this).attr('title') != '' && ($(this).attr('type') == 'text' || $(this).attr('type') == 'password')) {
-                    var new_div = document.createElement('div');
-                    var new_label = document.createElement('label');
-                    $(new_label).html($(this).attr('title'));
-
-
-                    $(new_label).css({opacity:'0.8', position:'absolute', top:'5px', left:'8px', color:'#3c3c3c', cursor:'text', zIndex:'1'});
-
-                    $(this).focus(function () {
-                        if ($(this).val() == '') {
-                            $(new_label).fadeTo(300, '0.4');
-                        }
-                    });
-
-                    $(new_label).click(function () {
-                        $(this).siblings(':first').focus();
-                    });
-
-                    $(this).keydown(function () {
-                        $(new_label).hide();
-                    });
-
-                    $(this).blur(function () {
-                        if ($(this).val() == '') {
-                            $(new_label).show();
-                            $(new_label).fadeTo(300, '0.8');
-                        }
-                    });
-
-                    if ($(this).val() != '') {
-                        $(new_label).hide();
-                    }
-
-                    $(new_div).append(new_label);
-                    $(new_div).css({position:'relative', display:'inline-block'});
-
-                    $(this).parent().append(new_div);
-                    $(new_div).append($(this));
-                }
-                else {
-                    $(this).parent().append($(this));
-                }
-            }
-        );
     },
 
 	inArray: function (needle, haystack, argStrict) {

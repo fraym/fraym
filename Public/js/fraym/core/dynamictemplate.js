@@ -15,7 +15,7 @@ $(Core.Block).bind('blockConfigLoaded', function (e, json) {
                 async: false,
                 success: function (data, textStatus, jqXHR) {
                     $('#dynamicTemplateConfig').html(data).parents('.panel:first').show();
-                    DynamicTemplate.initElements();
+                    Core.Block.initElements();
                 }
             });
         } else {
@@ -25,25 +25,3 @@ $(Core.Block).bind('blockConfigLoaded', function (e, json) {
 
     $('#dynamicTemplate').change();
 });
-var DynamicTemplate = {
-    initElements: function () {
-        $.each($('[data-rte]'), function () {
-            if(!$(this).attr('id')) {
-                $(this).attr('id', Core.getUniqueId());
-                var id = $(this).attr('id');
-                CKEDITOR.replace(id, $(this).attr('data-rte'));
-                CKEDITOR.instances[id].on('change', function() { CKEDITOR.instances[id].updateElement(); });
-            }
-        });
-
-        $.each($('[data-datepicker]'), function () {
-            $(this).datepicker({ dateFormat: $(this).attr('data-datepicker') });
-        });
-
-        $.each($('[data-datetimepicker]'), function () {
-            $(this).datepicker({ dateFormat: $(this).attr('data-datetimepicker') });
-        });
-
-        FileManager.initFilePathInput();
-    }
-};

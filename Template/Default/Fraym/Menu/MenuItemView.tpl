@@ -190,7 +190,5 @@
                 $('#add-edit-menu').append($('<input type="hidden" value="' + v + '" name="menu[translations][' + k + '][id]" />'));
             });
         }
-
-        Core.reloadPage();
     } });
 </script>
