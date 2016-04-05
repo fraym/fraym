@@ -33,6 +33,27 @@ class SiteManager
     protected $template;
 
     /**
+     * @Inject
+     * @var \Fraym\Database\Database
+     */
+    protected $db;
+
+    /**
+     * @return array
+     */
+    public function getRteMenuItemArray()
+    {
+        $menuItems = array();
+        $locales = $this->db->getRepository('\Fraym\Locale\Entity\Locale')->findAll();
+        foreach ($locales as $locale) {
+            foreach ($locale->menuItemTranslations as $menuItemTranslation) {
+                $menuItems[] = array($menuItemTranslation->title . " ({$locale->name})", $menuItemTranslation->id);
+            }
+        }
+        return json_encode($menuItems);
+    }
+
+    /**
      * Add block xml before </body> to add the site manager admin panel
      */
     public function addAdminPanel()

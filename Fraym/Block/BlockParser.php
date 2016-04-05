@@ -565,6 +565,9 @@ class BlockParser
             case 'js':
                 return $this->execBlockOfTypeJS($xml);
                 break;
+            case 'link':
+                return $this->execBlockOfTypeLink($xml);
+                break;
             case 'module':
                 $blockHtml = $this->execBlockOfTypeModule($xml);
                 break;
@@ -1438,6 +1441,29 @@ class BlockParser
         $this->sequence = false;
 
         return $string;
+    }
+
+    /**
+     * @param $xml
+     * @return string
+     */
+    private function execBlockOfTypeLink($xml) {
+        $menuItemId = $this->getXMLAttr($xml->a, 'href');
+        $translation = $this->getXMLAttr($xml, 'translation');
+
+        if($translation) {
+            $menuItemTranslation = $this->db->getRepository('\Fraym\Menu\Entity\MenuItemTranslation')->findOneById($menuItemId);
+        } else {
+            $menuItem = $this->db->getRepository('\Fraym\Menu\Entity\MenuItem')->findOneById($menuItemId);
+            $menuItemTranslation = $menuItem->getCurrentTranslation();
+        }
+
+        if($menuItemTranslation->externalUrl) {
+            $xml->a->addAttribute('target', '_blank');
+        }
+        $xml->a->attributes()->href = $menuItemTranslation->url;
+
+        return (string)$xml->a->asXml();
     }
 
     /**

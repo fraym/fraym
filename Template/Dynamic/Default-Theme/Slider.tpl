@@ -78,7 +78,7 @@
                 });
 
                 $clone.insertAfter($slideItem);
-                DynamicTemplate.initElements();
+                Core.Block.initElements();
             });
             $('body').on('click', '.remove-slide', function(){
                 $(this).parents('.slide-item').remove();

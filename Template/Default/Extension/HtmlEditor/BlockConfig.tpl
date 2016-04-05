@@ -18,7 +18,3 @@
            </div>
         {/foreach}
 </div>
-
-<script type="text/javascript">
-    var page_list_json = {{$menuItems}};
-</script>

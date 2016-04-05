@@ -113,7 +113,7 @@ class HtmlEditor
         $locales = $xml->xpath('html[@locale="' . $currentLocaleId . '"]');
         $html = trim((string)current($locales));
         // set template content for custom templates
-        $this->htmlEditorController->renderHtml($this->replaceLinkTags($html));
+        $this->htmlEditorController->renderHtml($html);
     }
 
     /**
@@ -127,47 +127,5 @@ class HtmlEditor
             $configXml = $this->blockParser->getXMLObjectFromString($this->blockParser->wrapBlockConfig($block));
         }
         $this->htmlEditorController->getBlockConfig($configXml);
-    }
-
-    /**
-     * @return array
-     */
-    public function buildMenuItemArray()
-    {
-        $menuItems = array();
-        $locales = $this->db->getRepository('\Fraym\Locale\Entity\Locale')->findAll();
-        foreach ($locales as $locale) {
-            foreach ($locale->menuItemTranslations as $menuItemTranslation) {
-                $menuItems[] = array($menuItemTranslation->title . " ({$locale->name})", $menuItemTranslation->id);
-            }
-        }
-        return $menuItems;
-    }
-
-    /**
-     * @param $blockHtml
-     * @return mixed
-     */
-    public function replaceLinkTags($blockHtml)
-    {
-        $callback = function ($matches) {
-            $id = trim(trim($matches[1], '"'), "'");
-
-            if (is_numeric($id)) {
-
-                $menuItemTranslation = $this->db->getRepository('\Fraym\Menu\Entity\MenuItemTranslation')->findOneById($id);
-
-                if ($menuItemTranslation) {
-                    return ' href="' . $this->route->buildFullUrl($menuItemTranslation->menuItem, true) . '"';
-                }
-            }
-            return $matches[0];
-        };
-
-        return preg_replace_callback(
-            '#\s*(?i)href\s*=\s*(\"([^"]*\")|\'[^\']*\'|([^\'">\s]+))#si',
-            $callback,
-            $blockHtml
-        );
     }
 }

@@ -140,9 +140,13 @@ Core.Block = {
 				config['filebrowserWindowHeight'] = window.filebrowserWindowHeight;
 
 				CKEDITOR.replace(id, config);
-				CKEDITOR.instances[id].on('change', function() { CKEDITOR.instances[id].updateElement(); });
+				CKEDITOR.instances[id].on('change', function() {
+					CKEDITOR.instances[id].updateElement();
+				});
 			}
 		});
+
+		Core.Block.replaceRteBlockLinks();
 
 		$.each($('[data-datepicker]'), function () {
 			$(this).datepicker({ dateFormat: $(this).attr('data-datepicker') });
@@ -255,6 +259,37 @@ Core.Block = {
 		});
 	},
 
+	replaceRteLinks: function() {
+		if (typeof CKEDITOR != 'undefined') {
+			for (var instance in CKEDITOR.instances) {
+				var html = $('<div>' + CKEDITOR.instances[instance].getData() + '</div>');
+				$.each(html.find('[data-page-link]'), function(kk, l){
+					if($(l).parent('block').length) {
+						$(l).unwrap();
+					}
+					var $linkHtml = $('<div/>').html($(l).clone().removeAttr('data-page-link'));
+					var $blockLink = $('<block type="link" translation="true">' + $linkHtml.html() + '</block>');
+					$(l).replaceWith($blockLink);
+				});
+				CKEDITOR.instances[instance].setData(html.html());
+			}
+		}
+	},
+
+	replaceRteBlockLinks: function() {
+		if (typeof CKEDITOR != 'undefined') {
+			for (var instance in CKEDITOR.instances) {
+				var html = $('<div>' + CKEDITOR.instances[instance].getData() + '</div>');
+				$.each(html.find('block'), function(){
+					var $link = $($(this).html());
+					$link.attr('data-page-link', $link.attr('href'));
+					$(this).replaceWith($link);
+				});
+				CKEDITOR.instances[instance].setData(html.html());
+			}
+		}
+	},
+
 	initIframeContent: function () {
 		// init tabs on block dialog
 		$(Core.$.BLOCK_TABS).tabs();
@@ -276,8 +311,9 @@ Core.Block = {
 
 		$('form#block-add-edit-form').formSubmit({
                 url: Core.getAjaxRequestUri(),
-                'beforeSubmit': function() {
-                    $(Core.Block).trigger('saveBlockConfig');
+                'beforeSubmit': function(f) {
+					Core.Block.replaceRteLinks();
+					$(Core.Block).trigger('saveBlockConfig');
                 },
                 'onSuccess': function (json) {
                     $(Core.Block).trigger('blockConfigSaved');
@@ -297,6 +333,7 @@ Core.Block = {
                     if($('form').data('closeonsuccess') == true) {
                         window.parent.$(Core.$.BLOCK_OVERLAY).dialog('close');
                     }
+					Core.Block.replaceRteBlockLinks();
                 },
                 dataType: 'json'
             });

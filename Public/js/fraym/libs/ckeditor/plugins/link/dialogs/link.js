@@ -368,7 +368,7 @@ CKEDITOR.dialog.add( 'link', function( editor ) {
                     		label : 'Page from within your site to link to',
                     		id : 'localPage',
                     		title : 'Select the page from within your site that you would like to link to',
-                    		items: page_list_json,
+                    		items: pageListJson,
                     		setup : function( data )
                     		{
                     			if ( data.localPage )
@@ -1112,6 +1112,7 @@ CKEDITOR.dialog.add( 'link', function( editor ) {
 					break;
                 case 'localPage':	// ADD THIS SECTION
                         attributes[ 'data-cke-saved-href' ] = data.localPage;
+                        attributes[ 'data-page-link' ] = data.localPage;
                 		break;
 				case 'anchor':
 					var name = ( data.anchor && data.anchor.name ),

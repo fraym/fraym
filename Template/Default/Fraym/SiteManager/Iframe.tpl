@@ -96,6 +96,7 @@
         var filebrowserImageBrowseUrl = '{i('Fraym\Route\Route')->getVirtualRoute('fileManager')->route}?locale={i('Fraym\Registry\Config')->get('ADMIN_LOCALE_ID')->value}&rte=1&singleFileSelect=1&fileFilter=*.jpg,*.svg,*.jpeg,*.png,*.gif';
         var filebrowserWindowWidth = 1000;
         var filebrowserWindowHeight = 600;
+        var pageListJson = {i('Fraym\SiteManager\SiteManager')->getRteMenuItemArray()};
 
         FileManager.fileViewerSrc = '//{i('Fraym\Route\Route')->getSiteBaseURI(false)}{i('Fraym\Route\Route')->getVirtualRoute('fileViewer')->route}?locale={i('Fraym\Registry\Config')->get('ADMIN_LOCALE_ID')->value}';
         FileManager.fileManagerSrc = '//{i('Fraym\Route\Route')->getSiteBaseURI(false)}{i('Fraym\Route\Route')->getVirtualRoute('fileManager')->route}?locale={i('Fraym\Registry\Config')->get('ADMIN_LOCALE_ID')->value}';
