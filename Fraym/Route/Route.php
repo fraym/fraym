@@ -336,7 +336,7 @@ class Route
             "(domain.address = :domain AND
             translation.url IN (:url)) AND
             site.active = 1 AND
-            menu.active = 1 AND
+            translation.active = 1 AND
             translation.externalUrl = 0"
         );
 
@@ -660,7 +660,7 @@ class Route
                 ->join("menuItemTranslation.locale", 'locale')
                 ->setMaxResults(1)
                 ->setParameter('site', $this->currentMenuItem->site->id)
-                ->where("site.id = :site AND menuItem.is404 = 1 AND menuItem.active = 1");
+                ->where("site.id = :site AND menuItem.is404 = 1 AND menuItemTranslation.active = 1");
 
             if ($localeId) {
                 $page404 = $page404->andWhere('locale.id = :locale')->setParameter('locale', $localeId);
@@ -871,7 +871,6 @@ class Route
         }
         return $url;
     }
-
 
     /**
      * Converts a string to a URI string

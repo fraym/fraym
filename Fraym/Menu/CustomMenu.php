@@ -96,7 +96,7 @@ class CustomMenu
                 ->select("menu, translation")
                 ->from('\Fraym\Menu\Entity\MenuItemTranslation', 'translation')
                 ->join('translation.menuItem', 'menu')
-                ->where('menu.id = :id AND translation.locale = :localeId AND menu.active = 1')
+                ->where('menu.id = :id AND translation.locale = :localeId AND translation.active = 1')
                 ->setParameter('id', $id)
                 ->setParameter('localeId', $this->route->getCurrentMenuItemTranslation()->locale->id)
                 ->getQuery()

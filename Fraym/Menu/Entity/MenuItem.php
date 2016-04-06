@@ -79,20 +79,6 @@ class MenuItem extends \Fraym\Entity\BaseEntity
     protected $is404;
 
     /**
-     * @var boolean $visible
-     *
-     * @ORM\Column(name="visible", type="boolean", nullable=false)
-     */
-    protected $visible;
-
-    /**
-     * @var boolean $active
-     *
-     * @ORM\Column(name="active", type="boolean", nullable=false)
-     */
-    protected $active;
-
-    /**
      * @var boolean $https
      *
      * @ORM\Column(name="https", type="boolean", nullable=false)
@@ -174,52 +160,6 @@ class MenuItem extends \Fraym\Entity\BaseEntity
         return $url;
     }
 
-    /**
-     * @param null $children
-     * @return \Doctrine\Common\Collections\ArrayCollection
-     */
-    public function getActiveAndVisibleChildren($children = null)
-    {
-        $childrenCollection = new \Doctrine\Common\Collections\ArrayCollection();
-        if ($children === null) {
-            $children = $this->children;
-        }
-        foreach ($children as $child) {
-            if ($child->active === true && $child->visible === true) {
-                $childrenCollection->set($child->id, $child);
-            }
-        }
-        return $childrenCollection;
-    }
-
-    /**
-     * @return \Doctrine\Common\Collections\ArrayCollection
-     */
-    public function getActiveChildren()
-    {
-        $activeChildren = new \Doctrine\Common\Collections\ArrayCollection();
-        foreach ($this->children as $child) {
-            if ($child->active === true) {
-                $activeChildren->add($child);
-            }
-        }
-        return $activeChildren;
-    }
-
-    /**
-     * @return \Doctrine\Common\Collections\ArrayCollection
-     */
-    public function getVisibleChildren()
-    {
-        $visibleChildren = new \Doctrine\Common\Collections\ArrayCollection();
-        foreach ($this->children as $child) {
-            if ($child->visible === true) {
-                $visibleChildren->add($child);
-            }
-        }
-        return $visibleChildren;
-    }
-
     public function __construct()
     {
         $this->children = new \Doctrine\Common\Collections\ArrayCollection();
@@ -227,8 +167,6 @@ class MenuItem extends \Fraym\Entity\BaseEntity
         $this->translations = new \Doctrine\Common\Collections\ArrayCollection();
         $this->is404 = false;
         $this->caching = true;
-        $this->visible = true;
-        $this->active = true;
         $this->https = false;
         $this->checkPermission = false;
     }

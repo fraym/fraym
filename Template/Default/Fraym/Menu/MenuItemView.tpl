@@ -73,6 +73,26 @@
                             </div>
 
                             <div class="form-group">
+                                <label class="col-lg-2 control-label">{_("Visible")}</label>
+                                <div class="col-lg-10">
+                                    <select class="form-control" name="menu[translations][{$locale.id}][visible]">
+                                        <option value="1"{if !$menuItem || $localeMenuItem.visible} selected="selected"{/if}>{_("Yes")}</option>
+                                        <option value="0"{if $menuItem && !$localeMenuItem.visible} selected="selected"{/if}>{_("No")}</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-lg-2 control-label">{_("Status")}</label>
+                                <div class="col-lg-10">
+                                    <select class="form-control" name="menu[translations][{$locale.id}][active]">
+                                        <option value="1"{if !$menuItem || $localeMenuItem.active} selected="selected"{/if}>{_("Active")}</option>
+                                        <option value="0"{if $menuItem && !$localeMenuItem.active} selected="selected"{/if}>{_("Inactive")}</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
                                 <div class="col-xs-3">
                                     <div class="checkbox">
                                         <label>
@@ -114,26 +134,6 @@
                             <select class="form-control" name="menu[checkPermission]">
                                 <option value="0"{if !$menuItem.checkPermission} selected="selected"{/if}>{_("No")}</option>
                                 <option value="1"{if $menuItem.checkPermission} selected="selected"{/if}>{_("Yes")}</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="col-lg-2 control-label">{_("Visible")}</label>
-                        <div class="col-lg-10">
-                            <select class="form-control" name="menu[visible]">
-                                <option value="1"{if !$menuItem || $menuItem.visible} selected="selected"{/if}>{_("Yes")}</option>
-                                <option value="0"{if $menuItem && !$menuItem.visible} selected="selected"{/if}>{_("No")}</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="col-lg-2 control-label">{_("Status")}</label>
-                        <div class="col-lg-10">
-                            <select class="form-control" name="menu[active]">
-                                <option value="1"{if !$menuItem || $menuItem.active} selected="selected"{/if}>{_("Active")}</option>
-                                <option value="0"{if $menuItem && !$menuItem.active} selected="selected"{/if}>{_("Inactive")}</option>
                             </select>
                         </div>
                     </div>

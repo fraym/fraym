@@ -102,6 +102,20 @@ class MenuItemTranslation extends \Fraym\Entity\BaseEntity
     protected $blocks;
 
     /**
+     * @var boolean $visible
+     *
+     * @ORM\Column(name="visible", type="boolean", nullable=false)
+     */
+    protected $visible;
+
+    /**
+     * @var boolean $active
+     *
+     * @ORM\Column(name="active", type="boolean", nullable=false)
+     */
+    protected $active;
+
+    /**
      * @ORM\PrePersist
      * @ORM\PreUpdate
      */
@@ -153,5 +167,7 @@ class MenuItemTranslation extends \Fraym\Entity\BaseEntity
         $locale = $this->getServiceLocator()->get('Fraym\Locale\Locale');
         $this->locale = $locale->getDefaultLocale();
         $this->externalUrl = false;
+        $this->visible = true;
+        $this->active = true;
     }
 }

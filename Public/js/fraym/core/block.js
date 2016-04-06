@@ -119,17 +119,60 @@ Core.Block = {
 		}
 
 		$baseElement.find('[type="submit"]').removeAttr('disabled');
-        $('select').trigger("chosen:updated");
 		Core.Block.initElements();
 	},
 
 	initElements: function () {
+		$('select').trigger("chosen:updated");
+
+		$('[data-repeat-item-remove]').unbind('click').click(function(e){
+			e.preventDefault();
+			$(this).parents('[data-repeat]:first').remove();
+		});
+
+		var firstRemoved = [];
+		$.each($('[data-repeat]'), function(){
+			var name = $(this).attr('data-repeat');
+			if(firstRemoved.indexOf(name) < 0) {
+				firstRemoved.push(name);
+				$('[data-repeat="' + name + '"]:first').find('[data-repeat-item-remove]').hide();
+			}
+		});
+
+		$('[data-repeat-add]').unbind('click').click(function(){
+			var $firstItem = $('[data-repeat="' + $(this).attr('data-repeat-add') + '"]:first');
+			var $clone = $firstItem.clone();
+			$clone.find('div.cke').remove();
+			$clone.find('textarea').removeAttr('id').css({ display: '', visibility: '' });
+			$clone.find('textarea,input[type=text],input[type=email],input[type=date],input[type=datetime],input[type=color],input[type=password]').val('');
+			$clone.find('select > option').removeAttr('selected');
+			$clone.find('.fraym-file-input-wrapper i').remove();
+			$clone.find('[data-filepath]').unwrap().removeClass('fraym-file-select');
+			$clone.find('[type=radio], [type=checkbox]').removeAttr('checked').prop('checked', false);
+			var count = $('[data-repeat="' + $(this).attr('data-repeat-add') + '"]').length+1;
+			$clone.find('[data-repeat-item-pos]').html(count);
+			$clone.find('[data-repeat-item-remove]').show().click(function(e){
+				e.preventDefault();
+				$clone.remove();
+			});
+			$.each($clone.find('input[type=text],textarea'), function(){
+				$(this).val('');
+				$(this).attr('name', $(this).attr('name').replace('[1]', '[' + count + ']'));
+			});
+			$clone.insertAfter($('[data-repeat="' + $(this).attr('data-repeat-add') + '"]').last());
+			Core.Block.initElements();
+		});
+
 		$.each($('[data-rte]'), function () {
 			if(!$(this).attr('id')) {
 				$(this).attr('id', Core.getUniqueId());
 				var id = $(this).attr('id');
-				if($(this).attr('data-rte')) {
-					var config = JSON.parse($(this).attr('data-rte'));
+				if($(this).attr('data-rte') !== undefined) {
+					try {
+						var config = JSON.parse($(this).attr('data-rte'));
+					} catch(e) {
+						var config = {};
+					}
 				} else {
 					var config = {};
 				}
@@ -262,16 +305,20 @@ Core.Block = {
 	replaceRteLinks: function() {
 		if (typeof CKEDITOR != 'undefined') {
 			for (var instance in CKEDITOR.instances) {
-				var html = $('<div>' + CKEDITOR.instances[instance].getData() + '</div>');
-				$.each(html.find('[data-page-link]'), function(kk, l){
-					if($(l).parent('block').length) {
-						$(l).unwrap();
-					}
-					var $linkHtml = $('<div/>').html($(l).clone().removeAttr('data-page-link'));
-					var $blockLink = $('<block type="link" translation="true">' + $linkHtml.html() + '</block>');
-					$(l).replaceWith($blockLink);
-				});
-				CKEDITOR.instances[instance].setData(html.html());
+				try {
+					var html = $('<div>' + CKEDITOR.instances[instance].getData() + '</div>');
+					$.each(html.find('[data-page-link]'), function(kk, l){
+						if($(l).parent('block').length) {
+							$(l).unwrap();
+						}
+						var $linkHtml = $('<div/>').html($(l).clone().removeAttr('data-page-link'));
+						var $blockLink = $('<block type="link" translation="true">' + $linkHtml.html() + '</block>');
+						$(l).replaceWith($blockLink);
+					});
+					CKEDITOR.instances[instance].setData(html.html());
+				} catch(e) {
+					delete CKEDITOR.instances[instance];
+				}
 			}
 		}
 	},
@@ -279,13 +326,17 @@ Core.Block = {
 	replaceRteBlockLinks: function() {
 		if (typeof CKEDITOR != 'undefined') {
 			for (var instance in CKEDITOR.instances) {
-				var html = $('<div>' + CKEDITOR.instances[instance].getData() + '</div>');
-				$.each(html.find('block'), function(){
-					var $link = $($(this).html());
-					$link.attr('data-page-link', $link.attr('href'));
-					$(this).replaceWith($link);
-				});
-				CKEDITOR.instances[instance].setData(html.html());
+				try {
+					var html = $('<div>' + CKEDITOR.instances[instance].getData() + '</div>');
+					$.each(html.find('block'), function(){
+						var $link = $($(this).html());
+						$link.attr('data-page-link', $link.attr('href'));
+						$(this).replaceWith($link);
+					});
+					CKEDITOR.instances[instance].setData(html.html());
+				} catch(e) {
+					delete CKEDITOR.instances[instance];
+				}
 			}
 		}
 	},

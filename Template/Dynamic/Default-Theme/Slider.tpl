@@ -28,18 +28,18 @@
             </div>
         </div>
         {function createSlideItem($k, $item = null)}
-            <div class="slide-item row">
+            <div class="slide-item row" data-repeat="slide-item">
                 <div class="col-xs-12">
                     <div class="pull-right">
-                        <i class="remove-slide fa fa-times"></i>
+                        <i data-repeat-item-remove class="fa fa-times"></i>
                     </div>
-                    <h4>Item <span>{$k}</span></h4>
+                    <h4>Item <span data-repeat-item-pos>{$k}</span></h4>
                     <div class="row">
                         <div class="col-xs-12">
                             <label>
                                 Text
                             </label>
-                            <textarea name="config[items][{$k}][rte]" class="form-control" data-rte="{ toolbar: [{ name: 'document', groups: ['mode', 'document', 'doctools'], items: ['Source', '-', 'Save', 'NewPage', 'Preview', 'Print', '-', 'Templates'] }, { name: 'clipboard', groups: ['clipboard', 'undo'], items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] }, { name: 'editing', groups: ['find', 'selection', 'spellchecker'], items: ['Find', 'Replace', '-', 'SelectAll', '-', 'Scayt'] }, { name: 'tools', items: ['Maximize', 'ShowBlocks']}, '/', { name: 'insert', items: ['Image', 'Flash', 'Table', 'HorizontalRule', 'SpecialChar', 'Iframe'] }, { name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align', 'bidi'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl'] }, { name: 'links', items: ['Link', 'Unlink', 'Anchor'] }, { name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] }, { name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize'] }, { name: 'colors', items: ['TextColor', 'BGColor'] }] }">{$item.rte}</textarea>
+                            <textarea name="config[items][{$k}][rte]" class="form-control" data-rte='{ "toolbar":[{ "name":"document","groups":["mode","document","doctools"],"items":["Source","-"] },{ "name":"clipboard","groups":["clipboard","undo"],"items":["Cut","Copy","Paste","PasteText","PasteFromWord","-","Undo","Redo"] },{ "name":"editing","groups":["find","selection","spellchecker"],"items":["Find","Replace","-","SelectAll","-","Scayt"] },{ "name":"tools","items":["Maximize","ShowBlocks"] },"/",{ "name":"insert","items":["Image","Flash","Table","HorizontalRule","SpecialChar","Iframe"] },{ "name":"paragraph","groups":["list","indent","blocks","align","bidi"],"items":["NumberedList","BulletedList","-","Outdent","Indent","-","Blockquote","CreateDiv","-","JustifyLeft","JustifyCenter","JustifyRight","JustifyBlock","-","BidiLtr","BidiRtl"] },{ "name":"links","items":["Link","Unlink","Anchor"] },{ "name":"basicstyles","groups":["basicstyles","cleanup"],"items":["Bold","Italic","Underline","Strike","Subscript","Superscript","-","RemoveFormat"] },{ "name":"styles","items":["Styles","Format","Font","FontSize"] },{ "name":"colors","items":["TextColor","BGColor"] }] }'>{$item.rte}</textarea>
                         </div>
                     </div>
                     <div class="row">
@@ -63,28 +63,6 @@
             </div>
         {/function}
 
-        <script>
-            $('#add-slide').click(function(){
-                var $slideItem = $('.slide-item:last');
-                var item = parseInt($slideItem.find('h4 span').text())+1;
-                var $clone = $slideItem.clone();
-                $clone.find('div.cke').remove();
-                $clone.find('textarea').removeAttr('id').css({ display: '', visibility: '' });
-
-                $clone.find('h4 span').html(item);
-                $.each($clone.find('input[type=text],textarea'), function(){
-                    $(this).val('');
-                    $(this).attr('name', $(this).attr('name').replace('[' + (item-1) + ']', '[' + (item) + ']'));
-                });
-
-                $clone.insertAfter($slideItem);
-                Core.Block.initElements();
-            });
-            $('body').on('click', '.remove-slide', function(){
-                $(this).parents('.slide-item').remove();
-            });
-        </script>
-
         {if count((array)$config.items)}
             {foreach $config.items as $k => $item}
                 {createSlideItem($k, $item)}
@@ -94,7 +72,7 @@
         {/if}
 
         <div class="pull-right clearfix">
-            <button id="add-slide" class="btn btn-default">{_('Add slide item')}</button>
+            <button id="add-slide" class="btn btn-default" data-repeat-add="slide-item">{_('Add slide item')}</button>
         </div>
 
         ]]>

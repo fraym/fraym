@@ -311,14 +311,14 @@ class InstallController extends \Fraym\Core
         $pageRoot = new \Fraym\Menu\Entity\MenuItem();
         $pageRoot->site = $site;
         $pageRoot->caching = true;
-        $pageRoot->visible = true;
-        $pageRoot->active = true;
         $pageRoot->https = false;
         $pageRoot->checkPermission = false;
         $pageRoot->is404 = false;
 
         $pageRootTranslation = new \Fraym\Menu\Entity\MenuItemTranslation();
         $pageRootTranslation->menuItem = $pageRoot;
+        $pageRootTranslation->visible = true;
+        $pageRootTranslation->active = true;
         $pageRootTranslation->title = $this->translation->autoTranslation('Home', 'en', $gp->locale);
         $pageRootTranslation->subtitle = $this->translation->autoTranslation(
             'Welcome to my website.',
@@ -345,8 +345,6 @@ class InstallController extends \Fraym\Core
         $newPage = new \Fraym\Menu\Entity\MenuItem();
         $newPage->site = $site;
         $newPage->caching = true;
-        $newPage->visible = false;
-        $newPage->active = true;
         $newPage->https = false;
         $newPage->checkPermission = false;
         $newPage->is404 = true;
@@ -354,6 +352,8 @@ class InstallController extends \Fraym\Core
 
         $newPageTranslation = new \Fraym\Menu\Entity\MenuItemTranslation();
         $newPageTranslation->menuItem = $newPage;
+        $newPageTranslation->visible = false;
+        $newPageTranslation->active = true;
         $newPageTranslation->title = $this->translation->autoTranslation('404 Page not found', 'en', $gp->locale);
         $newPageTranslation->subtitle = '';
         $newPageTranslation->url = '/' . $this->translation->autoTranslation('error', 'en', $gp->locale) . '-404';
