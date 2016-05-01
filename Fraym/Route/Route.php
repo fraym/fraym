@@ -29,6 +29,11 @@ class Route
     private $addionalRoute = '';
 
     /**
+     * @var null
+     */
+    private $routeMatches = array();
+
+    /**
      * @var bool
      */
     private $forcePageLoad = false;
@@ -154,6 +159,15 @@ class Route
     protected $fileManager;
 
     /**
+     * Returns the regex matches from a virtual route
+     *
+     * @return array
+     */
+    public function getRouteMatches() {
+        return $this->routeMatches;
+    }
+
+    /**
      * If we have a virtual URI we must set force page load to true, otherwise we get page note fount error
      *
      * @param bool $forcePageLoad
@@ -192,11 +206,21 @@ class Route
      */
     public function redirectToPage($menuItemTranslation, $header = 'HTTP/1.1 301 Moved Permanently')
     {
-        $url = ($menuItemTranslation->menuItem->https ? 'https://' : 'http://') . $this->getCurrentDomain() . $menuItemTranslation->url;
+        $url = ($this->isHttps($menuItemTranslation->menuItem) ? 'https://' : 'http://') . $this->getCurrentDomain() . $menuItemTranslation->url;
 
         header($header);
         header("Location: $url");
         exit(0);
+    }
+
+    /**
+     * @param null $menuItem
+     * @return bool
+     */
+    public function isHttps($menuItem = null) {
+        return ($menuItem !== null && $menuItem->https) ||
+            (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+            || $_SERVER['SERVER_PORT'] == 443;
     }
 
     /**
@@ -255,20 +279,14 @@ class Route
                                 $key,
                                 $route,
                                 array($class, $method),
-                                $methodAnnotation->permission);
+                                $methodAnnotation->regex,
+                                $methodAnnotation->permission
+                            );
                         }
                     }
                 }
             }
         }
-    }
-
-    /**
-     * @return bool
-     */
-    public function isHTTPS()
-    {
-        return isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? true : false;
     }
 
     /**
@@ -422,15 +440,17 @@ class Route
      * @param $key
      * @param $route
      * @param $callback
+     * @param boolean $regex
      * @param array $permission
      */
-    public function addVirtualRoute($key, $route, $callback, $permission = array())
+    public function addVirtualRoute($key, $route, $callback, $regex = false, $permission = array())
     {
         $stdClass = new \stdClass();
         $stdClass->route = $route;
         $stdClass->controller = $callback[0];
         $stdClass->action = $callback[1];
         $stdClass->permission = $permission;
+        $stdClass->regex = $regex;
         $this->virutalRoutes[$key] = $stdClass;
     }
 
@@ -449,15 +469,19 @@ class Route
      */
     public function checkVirtualRoute()
     {
+        $requestRoute = $this->getRequestRoute(false, false);
+        $addionalUri = $this->getAddionalURI();
+        $siteBaseUri = $this->getSiteBaseURI(false);
+
         foreach ($this->virutalRoutes as $data) {
-            $isRelativeRoute = substr($data->route, 0, 1) === '/' ? false : true;
-            $route = rtrim($this->getSiteBaseURI(false), '/') . $data->route;
+            $route = rtrim($siteBaseUri, '/') . $data->route;
 
-            if (($this->core->isCLI() && $route == $this->getRequestRoute(false, false)) ||
-                ($isRelativeRoute === true && ltrim($this->getAddionalURI(), '/') == $data->route ||
-                    ($isRelativeRoute === false && $route == $this->getRequestRoute(false, false)))
+            if (($this->core->isCLI() && $route === $requestRoute) ||
+                (
+                    $route === $requestRoute ||
+                    ($data->regex === true && preg_match($data->route, $addionalUri, $this->routeMatches))
+                )
             ) {
-
                 $allowAccess = false;
                 if(count($data->permission)) {
                     $className = key($data->permission);
@@ -574,7 +598,7 @@ class Route
 
             if ($virtualRouteContent === false &&
                 $this->request->isXmlHttpRequest() === false &&
-                $this->isHTTPS() === false &&
+                $this->isHttps() === false &&
                 $this->currentMenuItem->https === true
             ) {
                 $this->redirectToURL('https://' . $this->getRequestRoute());
@@ -625,8 +649,10 @@ class Route
                     $tpl->renderString($mainTemplateString);
                 }
 
-                // cache page if cache enable
-                $this->cache->setCacheContent();
+                if($this->template->isCachingDisabled() === false) {
+                    // cache page if cache enable
+                    $this->cache->setCacheContent();
+                }
             } else {
                 $tpl->renderString($menuItemTranslation->menuItem->template->html);
             }
@@ -678,8 +704,7 @@ class Route
             // cache the 404 page
             $this->cache->setCacheContent();
         } else {
-
-            error_log('Menuitem not found or template not set!');
+            error_log('Menu item not found or template not set! Solutions: Set a menu item template with the menu editor, reinstall Fraym or check your webserver configuration.');
             $this->response->sendHTTPStatusCode(500);
         }
         $this->response->finish(true, true);
@@ -787,7 +812,7 @@ class Route
         }
 
         if ($withProtocol) {
-            $protocol = ($menu && $menu->https ? 'https://' : 'http://');
+            $protocol = ($this->isHttps($menu) ? 'https://' : 'http://');
         }
 
         $url = ($menu !== false ? $this->getCurrentDomain() : '') . $root_page_uri;
@@ -804,7 +829,7 @@ class Route
     public function getHostnameWithBasePath($withProtocol = true)
     {
         $menu = $this->currentMenuItem;
-        return ($withProtocol ? ($menu && $menu->https ? 'https://' : 'http://') : '') . $this->getHostname();
+        return ($withProtocol ? ($this->isHttps($menu) ? 'https://' : 'http://') : '') . $this->getHostname();
     }
 
     /**
@@ -843,7 +868,7 @@ class Route
         $menu = $this->currentMenuItem;
 
         return ($withProtocol ?
-                ($menu && $menu->https ? 'https://' : 'http://') : '') .
+                ($this->isHttps($menu) ? 'https://' : 'http://') : '') .
                 ($requst_only ? '' : $this->getHostname()) .
                 (isset($urlParts['path']) ? $urlParts['path'] : '') .
                 ($withParamater &&
@@ -867,7 +892,7 @@ class Route
                 ltrim($menuItem->getCurrentTranslation()->url, '/')
                 : '');
         if ($withProtocol === true) {
-            $url = ($menuItem->https ? 'https://' : 'http://') . $url;
+            $url = ($this->isHttps($menuItem) ? 'https://' : 'http://') . $url;
         }
         return $url;
     }

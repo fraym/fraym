@@ -143,7 +143,7 @@ class Database
         $this->createModuleDirCache();
 
         if (APC_ENABLED && ENV !== \Fraym\Core::ENV_DEVELOPMENT) {
-            $cache = new \Doctrine\Common\Cache\ApcCache();
+            $cache = new \Doctrine\Common\Cache\ApcuCache();
         } else {
             $cache = new \Doctrine\Common\Cache\ArrayCache;
         }

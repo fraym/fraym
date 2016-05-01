@@ -175,11 +175,9 @@ return array(
             ),
             array(
                 'name' => 'Container',
-                'description' => 'Add a static content to your website.',
+                'description' => 'Add a static template to your website.',
                 'class' => '\Fraym\Block\Block',
-                'configMethod' => 'getBlockConfig',
                 'execMethod' => 'execBlock',
-                'saveMethod' => 'saveBlockConfig'
             ),
             array(
                 'name' => 'User',

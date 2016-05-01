@@ -191,8 +191,8 @@ class BlockParser
         $newContent = '';
 
         foreach ($blocks as $block) {
-            $xml = $this->getXMLObjectFromString($block);
-            if ($this->getXMLAttr($xml, 'id') != $id) {
+            $xml = $this->getXmlObjectFromString($block);
+            if ($this->getXmlAttr($xml, 'id') != $id) {
                 $newContent .= $block;
             }
         }
@@ -211,8 +211,8 @@ class BlockParser
         $blocks = $this->getAllBlocks($content);
 
         foreach ($blocks as $block) {
-            $xml = $this->getXMLObjectFromString($block);
-            if ($this->getXMLAttr($xml, 'id') == $id) {
+            $xml = $this->getXmlObjectFromString($block);
+            if ($this->getXmlAttr($xml, 'id') == $id) {
                 return $block;
             }
         }
@@ -262,7 +262,7 @@ class BlockParser
      * @param $xml
      * @return mixed
      */
-    public function replaceXMLTags($elementName, $callbackFunction, $xml)
+    public function replaceXmlTags($elementName, $callbackFunction, $xml)
     {
         return preg_replace_callback(
             '#<' . $elementName . '(?:\s+[^>]+)?>(.*?)</' . $elementName . '>#si',
@@ -275,7 +275,7 @@ class BlockParser
      * @param $xmlString
      * @return \SimpleXMLElement
      */
-    public function getXMLObjectFromString($xmlString)
+    public function getXmlObjectFromString($xmlString)
     {
         $xmlString = $this->removeXmlHeader((string)$xmlString);
         libxml_use_internal_errors(true);
@@ -293,8 +293,8 @@ class BlockParser
     {
         $blocks = array();
         foreach ($this->getAllBlocks($html) as $match) {
-            $xml = $this->getXMLObjectFromString($match);
-            if ($xml && $this->getXMLAttr($xml, 'type') == $type) {
+            $xml = $this->getXmlObjectFromString($match);
+            if ($xml && $this->getXmlAttr($xml, 'type') == $type) {
                 $blocks[] = $match;
             }
             unset($xml);
@@ -350,14 +350,14 @@ class BlockParser
 
         if ($this->user->isAdmin()) {
             $adminBlock = "<block type='module'><class>Fraym\Block\BlockController</class><method>ajaxHandler</method><checkRoute>checkRoute</checkRoute></block>";
-            $xml = $this->getXMLObjectFromString($adminBlock);
+            $xml = $this->getXmlObjectFromString($adminBlock);
             $this->foundRouteModules .= $this->checkBlockRouteByXml($xml);
         }
 
-        $blocks = $this->getXMLTags('block', $html);
+        $blocks = $this->getXmlTags('block', $html);
         if (isset($blocks[0])) {
             foreach ($blocks[0] as $block) {
-                $xml = $this->getXMLObjectFromString($block);
+                $xml = $this->getXmlObjectFromString($block);
                 if ($this->isBlockEnable($xml) === false) {
                     continue;
                 }
@@ -386,7 +386,7 @@ class BlockParser
                 $block = $block->changeSets->last();
             }
 
-            $xml = $this->getXMLObjectFromString($this->wrapBlockConfig($block));
+            $xml = $this->getXmlObjectFromString($this->wrapBlockConfig($block));
             if ($this->isBlockEnable($xml) === false) {
                 continue;
             }
@@ -403,7 +403,7 @@ class BlockParser
             empty($this->foundRouteModules)) ? false : $this->foundRouteModules;
     }
 
-    public function getXMLTags($elementName, $string)
+    public function getXmlTags($elementName, $string)
     {
         $matches = array();
         if (preg_match_all('#<' . $elementName . '(?:\s+[^>]+)?>(.*?)</' . $elementName . '>#si', $string, $matches)) {
@@ -421,7 +421,7 @@ class BlockParser
     public function checkPermission($blockId)
     {
         if ($this->cached && isset($this->executedBlocks[$blockId])) {
-            $xml = $this->getXMLObjectFromString($this->executedBlocks[$blockId]);
+            $xml = $this->getXmlObjectFromString($this->executedBlocks[$blockId]);
         } else {
             $block = $this->db
                 ->getEntityManager()
@@ -430,7 +430,7 @@ class BlockParser
                 ->useResultCache(true)
                 ->getOneOrNullResult();
 
-            $xml = $this->getXMLObjectFromString($this->wrapBlockConfig($block));
+            $xml = $this->getXmlObjectFromString($this->wrapBlockConfig($block));
         }
         $user = $this->user;
         $allow = true;
@@ -443,7 +443,7 @@ class BlockParser
             if (isset($xml->permissions)) {
                 $allow = false;
                 foreach ($xml->permissions->permission as $permission) {
-                    $identifier = $this->getXMLAttr($permission, 'identifier');
+                    $identifier = $this->getXmlAttr($permission, 'identifier');
                     if ($userIdentifier === $identifier || in_array($identifier, $userGroupIdentifiers)) {
                         $allow = true;
                         break;
@@ -513,7 +513,7 @@ class BlockParser
             $detection = $this->serviceLocator->get('Detection\MobileDetect');
             $excluded = array();
             foreach ($xml->excludedDevices->device as $device) {
-                $excluded[] = $this->getXMLAttr($device[0], 'type');
+                $excluded[] = $this->getXmlAttr($device[0], 'type');
             }
 
             if ($this->block->inEditMode() === false &&
@@ -536,7 +536,7 @@ class BlockParser
     {
         $xmlString = is_array($xmlString) ? $xmlString[0] : $xmlString;
         $this->xmlString = $xmlString;
-        $xml = $this->getXMLObjectFromString($this->xmlString);
+        $xml = $this->getXmlObjectFromString($this->xmlString);
 
         if ($xml === false) {
             throw new \Exception('XML Error. XML Block is not supported: ' . $this->xmlString);
@@ -548,19 +548,19 @@ class BlockParser
             return '';
         }
 
-        if ($this->getXMLAttr($xml, 'id')) {
-            $this->core->startTimer('blockExecution_' . $this->getXMLAttr($xml, 'id'));
+        if ($this->getXmlAttr($xml, 'id')) {
+            $this->core->startTimer('blockExecution_' . $this->getXmlAttr($xml, 'id'));
         };
 
-        if ($this->getXMLAttr($xml, 'cached') == '1') {
+        if ($this->getXmlAttr($xml, 'cached') == '1') {
             $this->db->connect();
         }
 
-        $blockType = strtolower($this->getXMLAttr($xml, 'type'));
+        $blockType = strtolower($this->getXmlAttr($xml, 'type'));
 
         switch ($blockType) {
             case 'css':
-                return $this->execBlockOfTypeCSS($xml);
+                return $this->execBlockOfTypeCss($xml);
                 break;
             case 'js':
                 return $this->execBlockOfTypeJS($xml);
@@ -633,7 +633,7 @@ class BlockParser
      */
     private function isBlockCached($xml)
     {
-        return !$this->request->isPost() && $this->getXMLAttr($xml, 'cached') &&
+        return !$this->request->isPost() && $this->getXmlAttr($xml, 'cached') &&
         $this->cached === false &&
         GLOBAL_CACHING_ENABLED === true &&
         $this->route->getCurrentMenuItem()->caching === true;
@@ -646,30 +646,30 @@ class BlockParser
      */
     private function processBlockAttributes($xml, $blockHtml)
     {
-        $blockType = strtolower($this->getXMLAttr($xml, 'type'));
+        $blockType = strtolower($this->getXmlAttr($xml, 'type'));
         if ($this->request->isXmlHttpRequest() === false) {
             if ($this->block->inEditMode() && in_array($blockType, $this->editModeTypes)) {
                 $block = null;
 
-                if (($this->getXMLAttr($xml, 'type') === 'extension' ||
-                        $this->getXMLAttr(
+                if (($this->getXmlAttr($xml, 'type') === 'extension' ||
+                        $this->getXmlAttr(
                             $xml,
                             'type'
                         ) === null) &&
-                    ($id = $this->getXMLAttr($xml, 'id'))
+                    ($id = $this->getXmlAttr($xml, 'id'))
                 ) {
                     $block = $this->db->getRepository('\Fraym\Block\Entity\Block')->findOneById($id);
                 }
-                $editable = $this->getXMLAttr($xml, 'editable');
+                $editable = $this->getXmlAttr($xml, 'editable');
                 if ($editable === true || $editable === null) {
                     $blockHtml = $this->blockController->addBlockInfo($block, $blockHtml, $xml);
                 }
             }
 
             // Disable cache on block attribute or on element level
-            if ($this->getXMLAttr($xml, 'cached') != '1' &&
+            if ($this->getXmlAttr($xml, 'cached') != '1' &&
                 (
-                    $this->getXMLAttr(
+                    $this->getXmlAttr(
                         $xml,
                         'cache'
                     ) === false ||
@@ -683,7 +683,7 @@ class BlockParser
                 $blockHtml = $this->addBlockCacheState($xml, $blockHtml);
             }
 
-            if ($this->getXMLAttr($xml, 'placeholder') !== null) {
+            if ($this->getXmlAttr($xml, 'placeholder') !== null) {
                 return $this->addPlaceholderReplacement($xml, $blockHtml);
             }
         }
@@ -696,8 +696,8 @@ class BlockParser
      */
     private function execBlockOfTypeCache($xml)
     {
-        if (($this->sequence === false && !$this->getXMLAttr($xml, 'sequence')) ||
-            ($this->sequence !== false && $this->getXMLAttr($xml, 'cached'))
+        if (($this->sequence === false && !$this->getXmlAttr($xml, 'sequence')) ||
+            ($this->sequence !== false && $this->getXmlAttr($xml, 'cached'))
         ) {
             $GLOBALS["TEMPLATE"] = $this->template;
             $templateVarString = '$TEMPLATE = ' . '$GLOBALS["TEMPLATE"];';
@@ -714,8 +714,8 @@ class BlockParser
      */
     private function execBlockOfTypePhp($xml)
     {
-        if (($this->sequence === false && !$this->getXMLAttr($xml, 'sequence')) ||
-            ($this->sequence !== false && $this->sequence === $this->getXMLAttr($xml, 'sequence'))
+        if (($this->sequence === false && !$this->getXmlAttr($xml, 'sequence')) ||
+            ($this->sequence !== false && $this->sequence === $this->getXmlAttr($xml, 'sequence'))
         ) {
             $GLOBALS["TEMPLATE"] = $this->template;
             $templateVarString = '$TEMPLATE = ' . '$GLOBALS["TEMPLATE"];';
@@ -754,7 +754,7 @@ class BlockParser
      */
     private function getBlockTemplateString($xml)
     {
-        $attr = strtolower($this->getXMLAttr($xml->children()->template, 'type'));
+        $attr = strtolower($this->getXmlAttr($xml->children()->template, 'type'));
         $template = trim((string)$xml->children()->template);
         if ($attr == 'string') {
             return $template;
@@ -800,7 +800,7 @@ class BlockParser
      */
     private function addPlaceholderReplacement($xml, $value)
     {
-        $attr = $this->getXMLAttr($xml, 'placeholder');
+        $attr = $this->getXmlAttr($xml, 'placeholder');
         $this->placeholderReplacement[$attr] = $value;
         return;
     }
@@ -1120,31 +1120,31 @@ class BlockParser
     public function execBlockOfTypeImage($xml)
     {
         $imageTags = array(
-            'width' => $this->getXMLAttr($xml, 'width'),
-            'height' => $this->getXMLAttr($xml, 'height'),
-            'alt' => $this->getXMLAttr($xml, 'alt'),
-            'class' => $this->getXMLAttr($xml, 'class'),
-            'align' => $this->getXMLAttr($xml, 'align'),
-            'id' => $this->getXMLAttr($xml, 'id'),
-            'itemprop' => $this->getXMLAttr($xml, 'itemprop'),
-            'ismap' => $this->getXMLAttr($xml, 'ismap'),
-            'crossoriginNew' => $this->getXMLAttr($xml, 'crossoriginNew'),
-            'usemap' => $this->getXMLAttr($xml, 'usemap'),
+            'width' => $this->getXmlAttr($xml, 'width'),
+            'height' => $this->getXmlAttr($xml, 'height'),
+            'alt' => $this->getXmlAttr($xml, 'alt'),
+            'class' => $this->getXmlAttr($xml, 'class'),
+            'align' => $this->getXmlAttr($xml, 'align'),
+            'id' => $this->getXmlAttr($xml, 'id'),
+            'itemprop' => $this->getXmlAttr($xml, 'itemprop'),
+            'ismap' => $this->getXmlAttr($xml, 'ismap'),
+            'crossoriginNew' => $this->getXmlAttr($xml, 'crossoriginNew'),
+            'usemap' => $this->getXmlAttr($xml, 'usemap'),
         );
 
         $placeHolderConfig = array(
-            'phtext' => $this->getXMLAttr($xml, 'phtext'),
-            'phwidth' => $this->getXMLAttr($xml, 'phwidth'),
-            'phheight' => $this->getXMLAttr($xml, 'phheight'),
-            'phcolor' => $this->getXMLAttr($xml, 'phcolor'),
-            'phbgcolor' => $this->getXMLAttr($xml, 'phbgcolor'),
-            'phfont' => $this->getXMLAttr($xml, 'phfont'),
-            'phfontsize' => $this->getXMLAttr($xml, 'phfontsize'),
+            'phtext' => $this->getXmlAttr($xml, 'phtext'),
+            'phwidth' => $this->getXmlAttr($xml, 'phwidth'),
+            'phheight' => $this->getXmlAttr($xml, 'phheight'),
+            'phcolor' => $this->getXmlAttr($xml, 'phcolor'),
+            'phbgcolor' => $this->getXmlAttr($xml, 'phbgcolor'),
+            'phfont' => $this->getXmlAttr($xml, 'phfont'),
+            'phfontsize' => $this->getXmlAttr($xml, 'phfontsize'),
         );
 
-        $srcOnly = $this->getXMLAttr($xml, 'srcOnly') === true ? true : false;
+        $srcOnly = $this->getXmlAttr($xml, 'srcOnly') === true ? true : false;
 
-        $src = $this->getXMLAttr($xml, 'src');
+        $src = $this->getXmlAttr($xml, 'src');
         if($src === '') {
             return '';
         }
@@ -1184,10 +1184,10 @@ class BlockParser
         $imagine = $this->serviceLocator->get('Imagine');
         $allowedMethods = array('thumbnail', 'resize', 'crop', '');
         // methods fit / resize / none
-        $imageQuality = intval($this->getXMLAttr($xml, 'quality') ? : ($this->config->get('IMAGE_QUALITY')->value ? : '80'));
-        $method = $this->getXMLAttr($xml, 'method') ? : '';
-        $mode = $this->getXMLAttr($xml, 'mode') ? : 'outbound';
-        $crop = $this->getXMLAttr($xml, 'crop') ? explode(',', $this->getXMLAttr($xml, 'crop')) : null;
+        $imageQuality = intval($this->getXmlAttr($xml, 'quality') ? : ($this->config->get('IMAGE_QUALITY')->value ? : '80'));
+        $method = $this->getXmlAttr($xml, 'method') ? : '';
+        $mode = $this->getXmlAttr($xml, 'mode') ? : 'outbound';
+        $crop = $this->getXmlAttr($xml, 'crop') ? explode(',', $this->getXmlAttr($xml, 'crop')) : null;
 
         if (!in_array($method, $allowedMethods)) {
             throw new \Exception("Image method '{$method}' is not allowed.");
@@ -1237,7 +1237,7 @@ class BlockParser
         // remove Public folder
         $convertedImageFileName = substr($imagePath, strpos($imagePath, DIRECTORY_SEPARATOR)+1);
 
-        if ($this->getXMLAttr($xml, 'autosize')) {
+        if ($this->getXmlAttr($xml, 'autosize')) {
             unset($imageTags['width']);
             unset($imageTags['height']);
         }
@@ -1284,8 +1284,8 @@ class BlockParser
      */
     private function getContentId(&$xml)
     {
-        $contentId = $this->getXMLAttr($xml, 'id');
-        $unique = $this->getXMLAttr($xml, 'unique') === true ? true : false;
+        $contentId = $this->getXmlAttr($xml, 'id');
+        $unique = $this->getXmlAttr($xml, 'unique') === true ? true : false;
         if ($unique) {
             $contentId .= '-' . $this->currentParsingBlockId;
         }
@@ -1307,7 +1307,7 @@ class BlockParser
             $blocks = $this->getDataFromBlocksByContentId($contentId);
 
             // In Editmode we want to render all views to insert content
-            if ((empty($blocks) && $this->getXMLAttr($child, 'hideEmpty') !== false && empty($placeholder)) && $this->block->inEditMode() === false) {
+            if ((empty($blocks) && $this->getXmlAttr($child, 'hideEmpty') !== false && empty($placeholder)) && $this->block->inEditMode() === false) {
                 continue;
             }
 
@@ -1324,7 +1324,7 @@ class BlockParser
                 $content = $this->core->includeScript($this->parse($blocks));
             }
 
-            $html .= $this->blockController->createEditViewContentDIV($child, $content);
+            $html .= $this->blockController->createEditViewElement($child, $content);
         }
 
         return $html;
@@ -1343,17 +1343,17 @@ class BlockParser
             $blocks = $this->getDataFromBlocksByContentId($contentId);
 
             // In Editmode we want to render all views to insert content
-            if ((empty($blocks) && $this->getXMLAttr($child, 'hideEmpty') !== false && empty($placeholder)) && $this->block->inEditMode() === false) {
+            if ((empty($blocks) && $this->getXmlAttr($child, 'hideEmpty') !== false && empty($placeholder)) && $this->block->inEditMode() === false) {
                 continue;
             }
 
             if((empty($blocks) && !empty($placeholder)) && $this->block->inEditMode() === false) {
-                $blocks = $this->blockController->createEditViewContentDIV($child, $placeholder);
+                $blocks = $this->blockController->createEditViewElement($child, $placeholder);
             }
 
             // result returns an array
             $result = $this->contentChildViews($child);
-            $addContent = $this->getXMLAttr($child, 'add') ? : 'afterContent';
+            $addContent = $this->getXmlAttr($child, 'add') ? : 'afterContent';
 
             if (!isset($childsHtml[$addContent])) {
                 $childsHtml[$addContent] = '';
@@ -1368,7 +1368,7 @@ class BlockParser
                     $childsHtml[$addContent] .= (isset($childsHtml[$addContent]) ? $childsHtml[$addContent] : '');
                 } else {
                     $childsHtml[$addContent] .= (isset($childsHtml[$addContent]) ? $childsHtml[$addContent] : '') .
-                        $this->blockController->createEditViewContentDIV(
+                        $this->blockController->createEditViewElement(
                             $child,
                             $blockhtml
                         );
@@ -1379,7 +1379,7 @@ class BlockParser
                 if (trim($blockhtml) === '') {
                     $childsHtml[$addContent] .= '';
                 } else {
-                    $childsHtml[$addContent] .= $this->blockController->createEditViewContentDIV($child, $blockhtml);
+                    $childsHtml[$addContent] .= $this->blockController->createEditViewElement($child, $blockhtml);
                 }
             }
         }
@@ -1432,7 +1432,7 @@ class BlockParser
         if ($parseType === self::PARSE_XML) {
             $string = $this->exec($string);
         } else {
-            $string = $this->replaceXMLTags('block', 'exec', $string);
+            $string = $this->replaceXmlTags('block', 'exec', $string);
         }
 
         foreach ($this->placeholderReplacement as $placeholder => $value) {
@@ -1448,8 +1448,8 @@ class BlockParser
      * @return string
      */
     private function execBlockOfTypeLink($xml) {
-        $menuItemId = $this->getXMLAttr($xml->a, 'href');
-        $translation = $this->getXMLAttr($xml, 'translation');
+        $menuItemId = $this->getXmlAttr($xml->a, 'href');
+        $translation = $this->getXmlAttr($xml, 'translation');
 
         if($translation) {
             $menuItemTranslation = $this->db->getRepository('\Fraym\Menu\Entity\MenuItemTranslation')->findOneById($menuItemId);
@@ -1461,7 +1461,7 @@ class BlockParser
         if($menuItemTranslation->externalUrl) {
             $xml->a->addAttribute('target', '_blank');
         }
-        $xml->a->attributes()->href = $menuItemTranslation->url;
+        $xml->a->attributes()->href = empty($menuItemTranslation->url) ? '/' : $menuItemTranslation->url;
 
         return (string)$xml->a->asXml();
     }
@@ -1500,21 +1500,27 @@ class BlockParser
      * @param $xml
      * @return string
      */
-    private function execBlockOfTypeCSS($xml)
+    private function execBlockOfTypeCss($xml)
     {
         $consolidatedContent = '';
 
         if (($this->sequence === false &&
-                !$this->getXMLAttr(
+                !$this->getXmlAttr(
                     $xml,
                     'sequence'
                 )) ||
-            ($this->sequence !== false && $this->sequence === $this->getXMLAttr($xml, 'sequence'))
+            ($this->sequence !== false && $this->sequence === $this->getXmlAttr($xml, 'sequence'))
         ) {
             $cssReplace = '';
-            $group = $this->getXMLAttr($xml, 'group') ? : 'default';
+            $group = $this->getXmlAttr($xml, 'group') ? : 'default';
+            $fileHash = null;
+            $cssFiles = $this->template->getCssFiles($group);
+            $fileHash = md5(implode('', $cssFiles));
+            $consolidatedCssFilePath = rtrim(CONSOLIDATE_FOLDER, '/') . '/' . $fileHash . '.css';
+            $consolidatedFileExists = is_file('Public' . $consolidatedCssFilePath);
+            $consolidate = GLOBAL_CACHING_ENABLED ? $this->getXmlAttr($xml, 'consolidate') : false;
 
-            foreach ($this->template->getCssFiles($group) as $cssFile) {
+            foreach ($cssFiles as $cssFile) {
                 if ($isUrl = preg_match(
                     "#((http|https|ftp)://(\S*?\.\S*?))(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|\<|$|\.\s)#ie",
                     $cssFile
@@ -1524,17 +1530,25 @@ class BlockParser
                 } else {
                     $file = (substr($cssFile, 0, 1) == '/' ? $cssFile : rtrim(CSS_FOLDER, '/') . '/' . $cssFile);
                 }
-                if ($this->getXMLAttr($xml, 'consolidate') === true) {
-                    $consolidatedContent .= file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/' . ltrim($file, '/'));
-                } else {
-                    $fileHash = hash_file('crc32', 'Public/' . $file);
-                    $cssReplace .= '<link rel="stylesheet" type="text/css" href="' . $file . '?' . $fileHash . '" />';
+
+                if ($isUrl == 0 && $consolidatedFileExists === false && $consolidate === true) {
+                    $consolidatedContent .= file_get_contents('Public/' . ltrim($file, '/'));
+                } elseif($isUrl !== 0 || $consolidate !== true) {
+                    if(!$isUrl) {
+                        $fileHash = hash_file('crc32', 'Public/' . $file);
+                    }
+                    $cssReplace .= '<link rel="stylesheet" type="text/css" href="' . $file . ($fileHash ? '?' . $fileHash : '') . '" />';
                 }
             }
-            if ($this->getXMLAttr($xml, 'consolidate') === true) {
-                $cssReplace = $this->consolidateCss($consolidatedContent);
+
+            if ($consolidate === true && (!empty($consolidatedContent) || $consolidatedFileExists)) {
+                if($consolidatedFileExists) {
+                    $cssReplace .= '<link rel="stylesheet" type="text/css" href="' . $consolidatedCssFilePath . '" />';
+                } else {
+                    $cssReplace .= $this->consolidateCss($consolidatedCssFilePath, $consolidatedContent);
+                }
             }
-            if ($this->getXMLAttr($xml, 'placeholder')) {
+            if ($this->getXmlAttr($xml, 'placeholder')) {
                 $this->addPlaceholderReplacement($xml, $cssReplace);
                 return '';
             }
@@ -1546,26 +1560,60 @@ class BlockParser
     }
 
     /**
+     * @param $content
+     * @return mixed
+     */
+    function minifyCSSContent($content) {
+        // Remove comments
+        $content = preg_replace('/\/\*.*?\*\//s', '' , $content);
+        // Remove empty tags
+        $content = preg_replace('/(^|\})[^\{\}]+\{\s*\}/', '\\1', $content);
+
+        /**
+         * Remove Whitespaces
+         */
+        // remove leading & trailing whitespace
+        $content = preg_replace('/^\s*/m', '', $content);
+        $content = preg_replace('/\s*$/m', '', $content);
+        // replace newlines with a single space
+        $content = preg_replace('/\s+/', ' ', $content);
+        // remove whitespace around meta characters
+        // inspired by stackoverflow.com/questions/15195750/minify-compress-css-with-regex
+        $content = preg_replace('/\s*([\*$~^|]?+=|[{};,>~]|!important\b)\s*/', '$1', $content);
+        $content = preg_replace('/([\[(:])\s+/', '$1', $content);
+        $content = preg_replace('/\s+([\]\)])/', '$1', $content);
+        $content = preg_replace('/\s+(:)(?![^\}]*\{)/', '$1', $content);
+        // whitespace around + and - can only be stripped in selectors, like
+        // :nth-child(3+2n), not in things like calc(3px + 2px) or shorthands
+        // like 3px -2px
+        $content = preg_replace('/\s*([+-])\s*(?=[^}]*{)/', '$1', $content);
+        // remove semicolon/whitespace followed by closing bracket
+        $content = str_replace(';}', '}', $content);
+        return trim($content);
+    }
+
+    /**
+     * @param $content
+     * @return mixed
+     */
+    function minifyJSContent($content) {
+        $content = \JSMin\JSMin::minify($content);
+        return trim($content);
+    }
+
+    /**
+     * @param $consolidatedCssFilePath
      * @param $consolidatedContent
      * @return string
      */
-    public function consolidateCss($consolidatedContent)
+    public function consolidateCss($consolidatedCssFilePath, $consolidatedContent)
     {
-        $temp = tmpfile();
-        fwrite($temp, $consolidatedContent);
-        $fileInfo = stream_get_meta_data($temp);
-        $cssFilePublicPath = rtrim(CONSOLIDATE_FOLDER, '/') . '/' . md5_file($fileInfo['uri']) . '.css';
-        $file = '/' . $cssFilePublicPath;
-
-        if (is_file($fileInfo['uri'])) {
-            $toFile = $_SERVER['DOCUMENT_ROOT'] . $file;
-            if (!is_dir($toDir = dirname($toFile))) {
-                mkdir($toDir, 0777);
-            }
-            copy($fileInfo['uri'], $toFile);
+        $dir = 'Public' . dirname($consolidatedCssFilePath);
+        if(!is_dir($dir)) {
+            mkdir($dir, 0777);
         }
-        fclose($temp);
-        return '<link rel="stylesheet" type="text/css" href="' . $cssFilePublicPath . '" />';
+        file_put_contents('Public' . $consolidatedCssFilePath, $consolidatedContent);
+        return '<link rel="stylesheet" type="text/css" href="' . $consolidatedCssFilePath . '" />';
     }
 
     /**
@@ -1577,18 +1625,25 @@ class BlockParser
         $consolidatedContent = '';
 
         if (($this->sequence === false &&
-                !$this->getXMLAttr(
+                !$this->getXmlAttr(
                     $xml,
                     'sequence'
                 )) ||
             ($this->sequence !== false &&
-                $this->sequence === $this->getXMLAttr($xml, 'sequence'))
+                $this->sequence === $this->getXmlAttr($xml, 'sequence'))
         ) {
             $jsReplace = '';
             $isUrl = 0;
-            $group = $this->getXMLAttr($xml, 'group') ? : 'default';
+            $fileHash = null;
+            $group = $this->getXmlAttr($xml, 'group') ? : 'default';
 
-            foreach ($this->template->getJsFiles($group) as $jsFile) {
+            $jsFiles = $this->template->getJsFiles($group);
+            $fileHash = md5(implode('', $jsFiles));
+            $consolidatedJsFilePath = rtrim(CONSOLIDATE_FOLDER, '/') . '/' . $fileHash . '.js';
+            $consolidatedFileExists = is_file('Public' . $consolidatedJsFilePath);
+            $consolidate = GLOBAL_CACHING_ENABLED ? $this->getXmlAttr($xml, 'consolidate') : false;
+
+            foreach ($jsFiles as $jsFile) {
                 if ($isUrl = preg_match(
                     "#((http|https|ftp)://(\S*?\.\S*?))(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|\<|$|\.\s)#ie",
                     $jsFile
@@ -1599,18 +1654,25 @@ class BlockParser
                     $file = (substr($jsFile, 0, 1) == '/' ? $jsFile : rtrim(JS_FOLDER, '/') . '/' . $jsFile);
                 }
 
-                if ($isUrl == 0 && $this->getXMLAttr($xml, 'consolidate') === true) {
-                    $consolidatedContent .= file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/' . ltrim($file, '/'));
-                } else {
-                    $fileHash = hash_file('crc32', 'Public/' . $file);
-                    $jsReplace .= '<script type="text/javascript" src="' . $file . '?' . $fileHash . '"></script>';
+                if ($isUrl == 0 && $consolidatedFileExists === false && $consolidate === true) {
+                    $consolidatedContent .= ";\n" . file_get_contents('Public/' . ltrim($file, '/'));
+                } elseif($isUrl !== 0 || $consolidate !== true) {
+                    if(!$isUrl) {
+                        $fileHash = hash_file('crc32', 'Public/' . $file);
+                    }
+                    $jsReplace .= '<script type="text/javascript" src="' . $file . ($fileHash ? '?' . $fileHash : '') . '"></script>';
                 }
             }
 
-            if ($isUrl == 0 && $this->getXMLAttr($xml, 'consolidate') === true) {
-                $jsReplace = $this->consolidateJs($consolidatedContent);
+            if ($consolidate === true && (!empty($consolidatedContent) || $consolidatedFileExists)) {
+                if($consolidatedFileExists) {
+                    $jsReplace .= '<script type="text/javascript" src="' . $consolidatedJsFilePath . '"></script>';
+                } else {
+                    $jsReplace .= $this->consolidateJs($consolidatedJsFilePath, $consolidatedContent);
+                }
             }
-            if ($this->getXMLAttr($xml, 'placeholder')) {
+
+            if ($this->getXmlAttr($xml, 'placeholder')) {
                 $this->addPlaceholderReplacement($xml, $jsReplace);
                 return '';
             }
@@ -1621,27 +1683,18 @@ class BlockParser
     }
 
     /**
+     * @param $consolidatedJsFilePath
      * @param $consolidatedContent
      * @return string
      */
-    private function consolidateJs($consolidatedContent)
+    private function consolidateJs($consolidatedJsFilePath, $consolidatedContent)
     {
-        $temp = tmpfile();
-        fwrite($temp, $consolidatedContent);
-        $fileInfo = stream_get_meta_data($temp);
-        $jsFilePublicPath = rtrim(CONSOLIDATE_FOLDER, '/') . '/' . md5_file($fileInfo['uri']) . '.js';
-        $file = '/' . $jsFilePublicPath;
-
-        if (is_file($fileInfo['uri'])) {
-            $toFile = $_SERVER['DOCUMENT_ROOT'] . $file;
-            if (!is_dir($toDir = dirname($toFile))) {
-                mkdir($toDir, 0777);
-            }
-            copy($fileInfo['uri'], $toFile);
-            @unlink($fileInfo['uri']);
+        $dir = 'Public' . dirname($consolidatedJsFilePath);
+        if(!is_dir($dir)) {
+            mkdir($dir, 0777);
         }
-        fclose($temp);
-        return '<script type="text/javascript" src="' . $jsFilePublicPath . '"></script>';
+        file_put_contents('Public' . $consolidatedJsFilePath, $consolidatedContent);
+        return '<script type="text/javascript" src="' . $consolidatedJsFilePath . '"></script>';
     }
 
     /**
@@ -1651,7 +1704,7 @@ class BlockParser
      * @param $attr
      * @return bool|null|string
      */
-    public function getXMLAttr($xml, $attr)
+    public function getXmlAttr($xml, $attr)
     {
         if ($xml && get_class($xml) === 'SimpleXMLElement' && isset($xml->attributes()->$attr)) {
             $attrValue = (string)$xml->attributes()->$attr;

@@ -91,7 +91,7 @@ class CustomMenu
 
         foreach ($obj->children() as $objData) {
 
-            $id = $this->blockParser->getXMLAttr($objData, 'id');
+            $id = $this->blockParser->getXmlAttr($objData, 'id');
             $menuItemTranslation = $this->db->createQueryBuilder()
                 ->select("menu, translation")
                 ->from('\Fraym\Menu\Entity\MenuItemTranslation', 'translation')

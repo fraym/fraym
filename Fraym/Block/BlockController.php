@@ -105,14 +105,14 @@ class BlockController extends \Fraym\Core
         }
 
         $renderTime = 0;
-        if ($this->blockParser->getXMLAttr($xml, 'id')) {
-            $renderTime = $this->core->stopTimer('blockExecution_' . $this->blockParser->getXMLAttr($xml, 'id'));
+        if ($this->blockParser->getXmlAttr($xml, 'id')) {
+            $renderTime = $this->core->stopTimer('blockExecution_' . $this->blockParser->getXmlAttr($xml, 'id'));
         };
 
         $this->view->assign('renderTime', $renderTime);
-        $this->view->assign('type', $this->blockParser->getXMLAttr($xml, 'type'));
-        $this->view->assign('style', $this->blockParser->getXMLAttr($xml, 'style'));
-        $this->view->assign('id', $block && $block->block ? $block->block->id : $this->blockParser->getXMLAttr($xml, 'id'));
+        $this->view->assign('type', $this->blockParser->getXmlAttr($xml, 'type'));
+        $this->view->assign('style', $this->blockParser->getXmlAttr($xml, 'style'));
+        $this->view->assign('id', $block && $block->block ? $block->block->id : $this->blockParser->getXmlAttr($xml, 'id'));
         $this->view->assign('block', $block);
         $this->view->assign('moduleName', $block ? $block->extension->name : '');
         $this->view->assign('content', $html);
@@ -153,17 +153,17 @@ class BlockController extends \Fraym\Core
      * @param $content
      * @return mixed
      */
-    public function createEditViewContentDIV($xml, $content)
+    public function createEditViewElement($xml, $content)
     {
-        $contentId = $this->blockParser->getXMLAttr($xml, 'id');
-        $cssClass = $this->blockParser->getXMLAttr($xml, 'class');
-        $editStyle = $this->blockParser->getXMLAttr($xml, 'editStyle');
-        $actionBarStyle = $this->blockParser->getXMLAttr($xml, 'actionBarStyle');
-        $description = $this->blockParser->getXMLAttr($xml, 'description');
+        $contentId = $this->blockParser->getXmlAttr($xml, 'id');
+        $cssClass = $this->blockParser->getXmlAttr($xml, 'class');
+        $editStyle = $this->blockParser->getXmlAttr($xml, 'editStyle');
+        $actionBarStyle = $this->blockParser->getXmlAttr($xml, 'actionBarStyle');
+        $description = $this->blockParser->getXmlAttr($xml, 'description');
 
-        $renderElement = $this->blockParser->getXMLAttr($xml, 'renderElement') === false ? false : true;
-        $htmlElement = $this->blockParser->getXMLAttr($xml, 'element') ? : 'div';
-        $unique = $this->blockParser->getXMLAttr($xml, 'unique') === true ? true : false;
+        $renderElement = $this->blockParser->getXmlAttr($xml, 'renderElement') === false ? false : true;
+        $htmlElement = $this->blockParser->getXmlAttr($xml, 'element') ? : 'div';
+        $unique = $this->blockParser->getXmlAttr($xml, 'unique') === true ? true : false;
 
         $this->view->assign('description', $description);
         $this->view->assign('actionBarStyle', $actionBarStyle);
@@ -385,7 +385,7 @@ class BlockController extends \Fraym\Core
         return $this->addBlockInfo(
             $block,
             $blockParser->parse($blockXmlStringWithId),
-            $blockParser->getXMLObjectFromString($blockXmlStringWithId),
+            $blockParser->getXmlObjectFromString($blockXmlStringWithId),
             true
         );
     }
@@ -421,6 +421,7 @@ class BlockController extends \Fraym\Core
         // set if the block is a new one
         $extensionId = $this->request->gp('extensionId', false);
         $result = new \stdClass();
+        $extension = null;
 
         if ($extensionId) {
             $extension = $this->db->getRepository('\Fraym\Block\Entity\Extension')->findOneById($extensionId);
@@ -434,7 +435,7 @@ class BlockController extends \Fraym\Core
                 }
                 $extension = $block->extension;
                 $arrayFromXml = $this->blockParser->xmlToArray(
-                    $this->blockParser->getXMLObjectFromString($this->blockParser->wrapBlockConfig($block))
+                    $this->blockParser->getXmlObjectFromString($this->blockParser->wrapBlockConfig($block))
                 );
 
                 $result->xml = $arrayFromXml['block'];
@@ -609,16 +610,7 @@ class BlockController extends \Fraym\Core
      */
     public function renderContentBlock($xml)
     {
-        $this->blockParser->setCurrentParsingBlockId($this->blockParser->getXMLAttr($xml, 'id'));
+        $this->blockParser->setCurrentParsingBlockId($this->blockParser->getXmlAttr($xml, 'id'));
         $this->view->setTemplate('Content');
-    }
-
-    /**
-     * @param mixed $blockConfig
-     */
-    public function getBlockContainerConfig($blockConfig = null)
-    {
-        $this->view->assign('blockConfig', $blockConfig);
-        $this->view->render('BlockContainerConfig');
     }
 }

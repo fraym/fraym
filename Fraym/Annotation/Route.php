@@ -23,4 +23,9 @@ final class Route extends Annotation
      * @var array
      */
     public $permission = array();
+
+    /**
+     * @var bool
+     */
+    public $regex = false;
 }

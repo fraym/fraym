@@ -185,6 +185,27 @@ class Template
     protected $cache;
 
     /**
+     * @var bool
+     */
+    private $cachingDisabled = false;
+
+    /**
+     * @return boolean
+     */
+    public function isCachingDisabled()
+    {
+        return $this->cachingDisabled;
+    }
+
+    /**
+     * @param boolean $cachingDisabled
+     */
+    public function setCachingDisabled($cachingDisabled)
+    {
+        $this->cachingDisabled = $cachingDisabled;
+    }
+
+    /**
      * Add the default custom template functions
      */
     public function __construct()
@@ -392,15 +413,15 @@ class Template
         }
 
         $object = new \stdClass();
-
         foreach ($var as $name => $value) {
+            $name = (string)$name;
             if (is_object($value) || is_callable($value)) {
                 $object->{$name} = $value;
-            } else if(!empty($name)) {
+            } else if($name !== null && $name !== '') {
                 $object->{$name} = $this->arrayToObject($value);
             }
-        }
 
+        }
         return $object;
     }
 

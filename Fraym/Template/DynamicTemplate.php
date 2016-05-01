@@ -108,7 +108,7 @@ class DynamicTemplate
             if($block->changeSets->count()) {
                 $block = $block->changeSets->last();
             }
-            $configXml = $this->blockParser->getXMLObjectFromString($this->blockParser->wrapBlockConfig($block));
+            $configXml = $this->blockParser->getXmlObjectFromString($this->blockParser->wrapBlockConfig($block));
         }
 
         $files = $this->getTemplateFiles();
@@ -177,7 +177,7 @@ class DynamicTemplate
             if($block->changeSets->count()) {
                 $block = $block->changeSets->last();
             }
-            $xml = $this->blockParser->getXMLObjectFromString($this->blockParser->wrapBlockConfig($block));
+            $xml = $this->blockParser->getXmlObjectFromString($this->blockParser->wrapBlockConfig($block));
             $variables = unserialize((string)$xml->dynamicTemplateConfig);
         }
 
@@ -186,8 +186,8 @@ class DynamicTemplate
         $templateContent = file_get_contents($template);
         $blocks = $this->blockParser->getAllBlocks($templateContent);
         foreach($blocks as $block) {
-            $obj = $this->blockParser->getXMLObjectFromString($block);
-            if($this->blockParser->getXMLAttr($obj, 'type') === 'config') {
+            $obj = $this->blockParser->getXmlObjectFromString($block);
+            if($this->blockParser->getXmlAttr($obj, 'type') === 'config') {
                 return $this->dynamicTemplateController->renderConfig((string)$obj->template, $variables);
             }
         }

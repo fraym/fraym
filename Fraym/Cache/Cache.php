@@ -114,7 +114,6 @@ class Cache
      */
     public function load()
     {
-
         // gets the current uri - example: /folder/folder2
         $filename = $this->getCacheName();
         // create the cache filename
@@ -139,7 +138,7 @@ class Cache
 
                 if (is_object($menuItemTranslation)) {
                     if ($this->request->isXmlHttpRequest() === false &&
-                        $this->route->isHTTPS() === false &&
+                        $this->route->isHttps() === false &&
                         $menuItemTranslation->menuItem->https === true
                     ) {
                         $this->route->redirectToURL('https://' . $this->route->getRequestRoute());
@@ -375,5 +374,6 @@ class Cache
 
         $this->fileManager->deleteFolder(self::DIR_PAGES);
         $this->fileManager->deleteFolder(self::DIR_CUSTOM_DATA);
+        $this->fileManager->deleteFolder('Public' . CONSOLIDATE_FOLDER);
     }
 }

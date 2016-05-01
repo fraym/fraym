@@ -80,7 +80,7 @@ class RegistryManager
     public function init()
     {
         if (APC_ENABLED && ENV !== \Fraym\Core::ENV_DEVELOPMENT) {
-            $this->cache = new \Doctrine\Common\Cache\ApcCache();
+            $this->cache = new \Doctrine\Common\Cache\ApcuCache();
         } else {
             $this->cache = new \Doctrine\Common\Cache\ArrayCache;
         }
@@ -566,6 +566,13 @@ class RegistryManager
      */
     private function getEntity($className, $entryData)
     {
+        foreach($entryData as $k => &$data) {
+            if(is_array($data)) {
+                $subEntryData = reset($data);
+                $subEntryClassName = key($data);
+                $data = $this->db->getRepository($subEntryClassName)->findOneBy($subEntryData);
+            }
+        }
         return $this->db->getRepository($className)->findOneBy($entryData);
     }
 

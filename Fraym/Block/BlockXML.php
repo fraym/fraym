@@ -160,7 +160,7 @@ class BlockXml
         $this->dom = $this->init();
         switch ($this->type) {
             case 'extension':
-                return $this->buildXMLExtensionBlock();
+                return $this->buildXmlExtensionBlock();
                 break;
         }
         return false;
@@ -177,7 +177,7 @@ class BlockXml
     /**
      * @return string
      */
-    private function buildXMLExtensionBlock()
+    private function buildXmlExtensionBlock()
     {
         $elBlock = $this->dom->getElementsByTagName('block')->item(0);
         $attr = $this->dom->createAttribute('type');

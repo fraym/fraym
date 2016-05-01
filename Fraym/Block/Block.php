@@ -107,17 +107,4 @@ class Block
     {
         return $this->blockController->renderContentBlock($xml);
     }
-
-    /**
-     * @param null $blockId
-     */
-    public function getBlockConfig($blockId = null)
-    {
-        $configXml = null;
-        if ($blockId) {
-            $block = $this->db->getRepository('\Fraym\Block\Entity\Block')->findOneById($blockId);
-            $configXml = $this->blockParser->getXMLObjectFromString($this->blockParser->wrapBlockConfig($block));
-        }
-        $this->blockController->getBlockContainerConfig($configXml);
-    }
 }

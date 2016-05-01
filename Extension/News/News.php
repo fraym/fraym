@@ -409,7 +409,7 @@ class News
         $configXml = null;
         if ($blockId) {
             $block = $this->db->getRepository('\Fraym\Block\Entity\Block')->findOneById($blockId);
-            $configXml = $this->blockParser->getXMLObjectFromString($this->blockParser->wrapBlockConfig($block));
+            $configXml = $this->blockParser->getXmlObjectFromString($this->blockParser->wrapBlockConfig($block));
         }
         $this->newsController->getBlockConfig($configXml);
     }
