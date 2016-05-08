@@ -43,20 +43,6 @@ final class FormField extends Annotation
     public $validation = array();
 
     /**
-     * call back if the field is set
-     *
-     * @var array
-     */
-    public $onSetCallback = array();
-
-    /**
-     * default value callback
-     *
-     * @var array
-     */
-    public $defaultValue = array();
-
-    /**
      * is field editable
      *
      * @var bool

@@ -16,7 +16,7 @@ html {
 .ui-dialog-titlebar .ui-dialog-titlebar-close {
     border: 0;
     border-radius: 0;
-    height: 42px;
+    height: 40px;
     background: none #707070;
     font-family: FontAwesome;
     font-style: normal;
@@ -762,6 +762,10 @@ button.small {
     border-top: 0;
 }
 
+.block-add-edit > iframe {
+    display: block;
+}
+
 a.block-to-top.active {
     opacity: 0.3;
 }
@@ -799,7 +803,7 @@ a.block-to-top.active {
     border-radius: 0;
     z-index: 50000;
     outline: none;
-    border: 6px solid #707070;
+    border: 2px solid #707070;
 }
 
 .ui-dialog .ui-dialog-titlebar {
@@ -814,9 +818,6 @@ table {
     margin-bottom: 18px;
 }
 
-#fraym-iframe {
-    height: 100%;
-}
 
 #fraym-iframe > form {
     margin: 15px;
@@ -852,6 +853,10 @@ table td.right, table th.right {
 
 .margin {
     margin-bottom: 15px;
+}
+
+#fraym-iframe .ui-widget-content {
+    background: #fff;
 }
 
 #fraym-iframe #block-add-edit-form {
@@ -1097,7 +1102,7 @@ table td.right, table th.right {
     width: 100%;
     height: 100%;
     zoom: 1;
-    background-color: #dbdbdb;
+    background-color: #ffffff;
 }
 
 .loadmask-msg {
@@ -1173,4 +1178,8 @@ table td.right, table th.right {
 
 .panel-primary>.panel-footer+.panel-collapse .panel-body {
     border-bottom-color: #9B9DA1
+}
+
+#add-edit-menu .chosen-container {
+    width: 100% !important;
 }

@@ -20,7 +20,7 @@ return array(
                 'method' => 'getContent',
             ),
             array(
-                'name' => 'Package Manager',
+                'name' => 'Extension Manager',
                 'class' => '\Fraym\Registry\RegistryManagerController',
             ),
         ),
@@ -55,11 +55,11 @@ return array(
                 'sorter' => 20
             ),
             array(
-                'name' => 'Package Manager',
+                'name' => 'Extension Manager',
                 'class' => '\Fraym\Registry\RegistryManagerController',
                 'method' => 'getContent',
                 'active' => '1',
-                'description' => 'EXT_PACKAGEMANAGER_DESC',
+                'description' => 'EXT_EXTENSIONMANAGER_DESC',
                 'iconCssClass' => 'fa fa-archive',
                 'sorter' => 30
             ),

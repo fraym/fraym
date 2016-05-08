@@ -6,7 +6,7 @@
  */
 $.noty.defaults = {
     layout: 'topRight',
-    theme: 'defaultTheme', // or 'relax'
+    theme: 'relax', // or 'relax'
     type: 'alert',
     text: '', // can be html or string
     dismissQueue: true, // If you want to use queue feature set this true
@@ -34,6 +34,13 @@ $.noty.defaults = {
 };
 
 Core.Notification = {
+    TYPE_ALERT: 'alert',
+    TYPE_SUCCESS: 'success',
+    TYPE_ERROR: 'error',
+    TYPE_WARNING: 'warning',
+    TYPE_INFORMATION: 'information',
+    TYPE_CONFIRM: 'confirm',
+
     show: function(type, text, timeout) {
         return noty({type: type, text: text, timeout: timeout});
     }

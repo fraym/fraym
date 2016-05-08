@@ -11,7 +11,7 @@ namespace Fraym;
  * Class Core
  * @package Fraym
  * @Injectable(lazy=true)
- * @property $view
+ * @property \Fraym\Template\Template $view
  */
 class Core
 {
