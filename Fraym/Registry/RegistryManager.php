@@ -135,6 +135,7 @@ class RegistryManager
                 }
             }
         }
+
         return $classAnnotation;
     }
 
@@ -186,9 +187,22 @@ class RegistryManager
     /**
      * @return array
      */
-    public function getUnregisteredExtensions()
+    public function getUnregisteredExtensions() {
+        $unregExtensions = array();
+        foreach($this->getExtensions() as $class => $ext) {
+            if($ext['registred'] === false) {
+                $unregExtensions[$class] = $ext;
+            }
+        }
+        return $unregExtensions;
+    }
+
+    /**
+     * @return array
+     */
+    public function getExtensions()
     {
-        $unregisteredExtensions = array();
+        $extensions = array();
         $coreFiles = $this->fileManager->findFiles(
             $this->core->getApplicationDir() . DIRECTORY_SEPARATOR . 'Fraym' . DIRECTORY_SEPARATOR . '*.php'
         );
@@ -212,16 +226,15 @@ class RegistryManager
                         $registryEntry = $this->db->getRepository(
                             '\Fraym\Registry\Entity\Registry'
                         )->findOneByClassName($class);
-                        if ($registryEntry === null) {
-                            $unregisteredExtensions[$class] = (array)$classAnnotation;
-                            $unregisteredExtensions[$class]['file'] = $file;
-                            $unregisteredExtensions[$class]['fileHash'] = md5($file);
-                        }
+                        $extensions[$class] = (array)$classAnnotation;
+                        $extensions[$class]['file'] = $file;
+                        $extensions[$class]['fileHash'] = md5($file);
+                        $extensions[$class]['registred'] = $registryEntry !== null;
                     }
                 }
             }
         }
-        return $unregisteredExtensions;
+        return $extensions;
     }
 
     /**
@@ -314,6 +327,55 @@ class RegistryManager
     }
 
     /**
+     * Inlcude composer
+     */
+    public function loadComposer() {
+        if(!class_exists(\Composer\Console\Application::class)) {
+            \Phar::loadPhar('composer.phar', 'composer.phar');
+            require_once 'phar://composer.phar/src/bootstrap.php';
+        }
+    }
+
+    /**
+     * @param $extension
+     */
+    public function composerRequire($extension) {
+        $this->loadComposer();
+        if(isset($extension->composer) && isset($extension->composer['require'])) {
+            $input = new \Symfony\Component\Console\Input\ArrayInput(array('command' => 'require', 'packages' => $extension->composer['require']));
+            $application = new \Composer\Console\Application();
+            $application->setAutoExit(false);
+            $application->run($input);
+        }
+    }
+
+    /**
+     * Update composer dependencies
+     */
+    public function composerUpdate() {
+        $this->loadComposer();
+        $input = new \Symfony\Component\Console\Input\ArrayInput(array('command' => 'update'));
+        $application = new \Composer\Console\Application();
+        $application->setAutoExit(false);
+        $application->run($input);
+    }
+
+    /**
+     * Remove composer dependencies
+     *
+     * @param $extension
+     */
+    public function composerRemove($extension) {
+        $this->loadComposer();
+        if(isset($extension->composer) && isset($extension->composer['require'])) {
+            $input = new \Symfony\Component\Console\Input\ArrayInput(array('command' => 'remove', 'packages' => $extension->composer['require']));
+            $application = new \Composer\Console\Application();
+            $application->setAutoExit(false);
+            $application->run($input);
+        }
+    }
+
+    /**
      * @param $class
      * @param $file
      * @param null $oldRegistryEntry
@@ -323,9 +385,11 @@ class RegistryManager
     {
         require_once($file);
 
-        $classAnnotation = $this->getRegistryConfig($class);
+        $extension = $this->getRegistryConfig($class);
 
-        if ($classAnnotation) {
+        if ($extension) {
+            $this->composerRequire($extension);
+
             $registryEntry = $this->db->getRepository('\Fraym\Registry\Entity\Registry')->findOneByClassName($class);
 
             $this->db->updateSchema();
@@ -334,14 +398,14 @@ class RegistryManager
                 $registryEntry = new \Fraym\Registry\Entity\Registry();
             }
 
-            $registryEntry = $this->updateRegistryEntry($registryEntry, $class, $classAnnotation);
+            $registryEntry = $this->updateRegistryEntry($registryEntry, $class, $extension);
 
-            $this->createEntities($registryEntry, $classAnnotation, $oldRegistryEntry);
+            $this->createEntities($registryEntry, $extension, $oldRegistryEntry);
 
-            if ($classAnnotation->onRegister) {
+            if ($extension->onRegister) {
                 call_user_func_array(
-                    array($this->serviceLocator->get($class), $classAnnotation->onRegister),
-                    array($classAnnotation, $oldRegistryEntry)
+                    array($this->serviceLocator->get($class), $extension->onRegister),
+                    array($extension, $oldRegistryEntry)
                 );
             }
 
@@ -380,26 +444,26 @@ class RegistryManager
     {
         $entry = $this->db->getRepository('\Fraym\Registry\Entity\Registry')->findOneById($id);
         if ($entry) {
+            $className = $entry->className;
             $this->db->remove($entry);
             $this->db->flush();
 
             $unregisteredExtensions = $this->getUnregisteredExtensions();
-
-            foreach ($unregisteredExtensions as $class => $classAnnotation) {
-                $this->removeEntities($classAnnotation);
-
-                if (isset($classAnnotation->onUnregister)) {
-                    call_user_func_array(
-                        array($this->serviceLocator->get($class), $classAnnotation->onUnregister),
-                        array($classAnnotation)
-                    );
-                }
+            $extension = $unregisteredExtensions[$className];
+            $this->composerRemove($extension);
+            $this->removeEntities($extension);
+            if (isset($extension->onUnregister)) {
+                call_user_func_array(
+                    array($this->serviceLocator->get($className), $extension->onUnregister),
+                    array($extension)
+                );
             }
+
             return true;
         }
         return false;
     }
-
+    
     /**
      * @param $extension
      * @return $this

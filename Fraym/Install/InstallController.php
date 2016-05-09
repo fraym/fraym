@@ -157,7 +157,9 @@ class InstallController extends \Fraym\Core
             $this->cache->clearAll();
 
             $this->db->connect()->getSchemaTool()->dropDatabase();
+
             $this->db->createSchema();
+            
             if (($errors = $this->initConfigurations()) !== true) {
                 unlink($this->_configFile);
                 $this->view->assign('error', implode('<br />', $errors));

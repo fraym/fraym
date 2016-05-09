@@ -28,4 +28,9 @@ final class Route extends Annotation
      * @var bool
      */
     public $regex = false;
+
+    /**
+     * @var bool
+     */
+    public $contextCallback = array();
 }

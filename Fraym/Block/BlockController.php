@@ -179,37 +179,6 @@ class BlockController extends \Fraym\Core
     }
 
     /**
-     * Check if the requested route exsits for the block modules.
-     *
-     * @return bool
-     */
-    public function checkRoute()
-    {
-        if ($this->user->isAdmin() === false) {
-            return false;
-        }
-
-        $allowCmds = array(
-            'pasteBlock',
-            'getBlockConfigView',
-            'moveBlockToView',
-            'getExtensionConfigView',
-            'getBlockConfig',
-            'setEditMode',
-            'deleteBlock',
-            'getTemplateConfig',
-            'clearCache',
-            'saveBlockConfig'
-        );
-        $cmd = trim($this->request->gp('cmd', ''));
-
-        if (in_array($cmd, $allowCmds)) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
      *
      */
     private function clearCache() {
@@ -393,12 +362,13 @@ class BlockController extends \Fraym\Core
     /**
      * AJAX handler function
      *
+     * @Fraym\Annotation\Route("/ajax", name="fraymAjaxHandler")
      * @return bool
      */
     public function ajaxHandler()
     {
         if ($this->user->isAdmin() === false) {
-            return;
+            $this->response->sendPageNotFound();
         }
 
         $cmd = trim($this->request->gp('cmd', ''));

@@ -8,11 +8,7 @@
 
 chdir(realpath(dirname(__FILE__)));
 
-require 'Vendor/DI/functions.php';
-require 'Fraym/ClassLoader/ClassLoader.php';
-
-$classLoader = new Fraym\ClassLoader\ClassLoader();
-$classLoader->register();
+require 'Vendor/autoload.php';
 
 if (is_file('Config.php')) {
     require 'Config.php';

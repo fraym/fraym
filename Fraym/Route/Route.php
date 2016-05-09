@@ -6,7 +6,6 @@
  * @license   http://www.opensource.org/licenses/gpl-license.php GNU General Public License, version 2 or later (see the LICENSE file)
  */
 namespace Fraym\Route;
-use Gedmo\SoftDeleteable\Mapping\Driver\Annotation;
 use Symfony\Component\Routing\Loader\AnnotationDirectoryLoader;
 use Symfony\Component\Routing\Loader\AnnotationFileLoader;
 use Symfony\Component\Routing\Router;
@@ -69,11 +68,6 @@ class Route
      * @var array
      */
     private $virutalRoutes = array();
-
-    /**
-     * @var array
-     */
-    private $routeHooks = array();
 
     /**
      * @Inject
@@ -244,6 +238,38 @@ class Route
     }
 
     /**
+     * @param $class
+     */
+    private function initClassAnnotationRoutes($class) {
+        $routeAnnotation = 'Fraym\Annotation\Route';
+
+        $refClass = new \ReflectionClass($class);
+        $classAnnotations = $this->db->getAnnotationReader()->getClassAnnotations(
+            $refClass
+        );
+
+        foreach($classAnnotations as $annotation) {
+            if($annotation instanceof $routeAnnotation) {
+                $route = $annotation->value;
+                $key = $annotation->name;
+                $regex = $annotation->regex;
+                $permission = $annotation->permission;
+                $contextCallback = empty($annotation->contextCallback) ? array() : array($class, $annotation->contextCallback);
+                $callback = null;
+
+                $this->addVirtualRoute(
+                    $key,
+                    $route,
+                    $callback,
+                    $contextCallback,
+                    $regex,
+                    $permission
+                );
+            }
+        }
+    }
+
+    /**
      * @return $this
      */
     private function initAnnotationRoutes()
@@ -264,23 +290,36 @@ class Route
             $class = $namespace . $classname;
 
             if (is_file($file)) {
+
                 require_once($file);
+
                 if (class_exists($class)) {
+                    $this->initClassAnnotationRoutes($class);
+
                     foreach(get_class_methods($class) as $method) {
+                        $key = null;
+
                         $refMethod = new \ReflectionMethod($class, $method);
                         $methodAnnotation = $this->db->getAnnotationReader()->getMethodAnnotation(
                             $refMethod,
                             'Fraym\Annotation\Route'
                         );
+
                         if(empty($methodAnnotation) === false) {
                             $route = $methodAnnotation->value;
                             $key = $methodAnnotation->name;
+                            $regex = $methodAnnotation->regex;
+                            $permission = $methodAnnotation->permission;
+                            $callback = array($class, $method);
+                            $contextCallback = null;
+
                             $this->addVirtualRoute(
                                 $key,
                                 $route,
-                                array($class, $method),
-                                $methodAnnotation->regex,
-                                $methodAnnotation->permission
+                                $callback,
+                                $contextCallback,
+                                $regex,
+                                $permission
                             );
                         }
                     }
@@ -311,9 +350,10 @@ class Route
             ->join("menu.site", 'site')
             ->join("site.domains", 'domain')
             ->join("translation.locale", 'locale')
-            ->setMaxResults(1)
             ->orderBy('translation.url', 'desc')
-            ->addOrderBy('menu.checkPermission', 'desc');
+            ->addOrderBy('menu.checkPermission', 'desc')
+            ->where('site.active = 1 AND translation.active = 1 AND translation.externalUrl = 0')
+            ->setMaxResults(1);
 
         if ($this->user->isLoggedIn() === false) {
             $dql = $dql->andWhere('menu.checkPermission = 0');
@@ -350,13 +390,8 @@ class Route
 
         $routeHost = $this->getHostname();
 
-        $qb = $this->prepareMenuQuery()->where(
-            "(domain.address = :domain AND
-            translation.url IN (:url)) AND
-            site.active = 1 AND
-            translation.active = 1 AND
-            translation.externalUrl = 0"
-        );
+        $qb = $this->prepareMenuQuery()
+            ->andWhere("(domain.address = :domain AND translation.url IN (:url))");
 
         $concatPath = '';
 
@@ -376,7 +411,6 @@ class Route
             $fullMenuItemUrl = $routeHost . $result->url;
             $this->setCurrentDomain($routeHost);
         }
-
         $this->addionalRoute = str_replace($fullMenuItemUrl, '', $this->getRequestRoute());
 
         $this->db->clear();
@@ -440,17 +474,24 @@ class Route
      * @param $key
      * @param $route
      * @param $callback
-     * @param boolean $regex
+     * @param bool $regex
+     * @param array $contextCallback
      * @param array $permission
      */
-    public function addVirtualRoute($key, $route, $callback, $regex = false, $permission = array())
+    public function addVirtualRoute($key, $route, $callback, $contextCallback = null, $regex = false, $permission = array())
     {
         $stdClass = new \stdClass();
         $stdClass->route = $route;
-        $stdClass->controller = $callback[0];
-        $stdClass->action = $callback[1];
+        if(is_array($callback)) {
+            $stdClass->controller = $callback[0];
+            $stdClass->action = $callback[1];
+            $stdClass->inContext = false;
+        } else {
+            $stdClass->inContext = true;
+        }
         $stdClass->permission = $permission;
         $stdClass->regex = $regex;
+        $stdClass->contextCallback = $contextCallback;
         $this->virutalRoutes[$key] = $stdClass;
     }
 
@@ -465,22 +506,33 @@ class Route
     }
 
     /**
+     * @param bool $inContext
      * @return bool
      */
-    public function checkVirtualRoute()
+    public function getVirtualRouteContent($inContext = false)
     {
         $requestRoute = $this->getRequestRoute(false, false);
+        $requestRouteWithoutBase = $this->getRequestRoute(true, true);
         $addionalUri = $this->getAddionalURI();
         $siteBaseUri = $this->getSiteBaseURI(false);
 
         foreach ($this->virutalRoutes as $data) {
-            $route = rtrim($siteBaseUri, '/') . $data->route;
+            if($data->inContext !== $inContext) {
+                continue;
+            }
+            $route = null;
+            $callbackResult = false;
 
-            if (($this->core->isCLI() && $route === $requestRoute) ||
-                (
-                    $route === $requestRoute ||
-                    ($data->regex === true && preg_match($data->route, $addionalUri, $this->routeMatches))
-                )
+            if(is_array($data->route)) {
+                $callback = array($this->serviceLocator->get(key($data->route)), reset($data->route));
+                $callbackResult = call_user_func_array($callback, array($data, $requestRouteWithoutBase));
+            } else {
+                $route = rtrim($siteBaseUri, '/') . $data->route;
+            }
+
+            if ($callbackResult === true ||
+                ($this->core->isCLI() && $route === $requestRoute) ||
+                ($route === $requestRoute || ($data->regex === true && preg_match($data->route, $addionalUri, $this->routeMatches)))
             ) {
                 $allowAccess = false;
                 if(count($data->permission)) {
@@ -491,37 +543,23 @@ class Route
                 }
 
                 if(count($data->permission) === 0 || $allowAccess) {
-                    $controller = $data->controller;
-                    $action = $data->action;
-                    $instance = $this->serviceLocator->get($controller);
+                    if($inContext && is_array($data->contextCallback)) {
 
-                    return $instance->$action();
+                        if(count($data->contextCallback) === 2) {
+                            $menuItemTranslation = call_user_func(array($this->serviceLocator->get($data->contextCallback[0]), $data->contextCallback[1]));
+                            if($menuItemTranslation) {
+                                $this->template->setMainTemplate($menuItemTranslation->menuItem->template->html);
+                            }
+                        }
+
+                        return true;
+                    } elseif($inContext === false) {
+                        $controller = $data->controller;
+                        $action = $data->action;
+                        $instance = $this->serviceLocator->get($controller);
+                        return $instance->$action();
+                    }
                 }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * @param $callback
-     * @param array $paramArr
-     */
-    public function addRouteHook($callback, $paramArr = array())
-    {
-        $this->routeHooks[] = array($callback, $paramArr);
-    }
-
-    /**
-     * @return bool|mixed
-     */
-    private function checkRouteHook()
-    {
-        foreach ($this->routeHooks as $hook) {
-            list($callback, $paramArr) = $hook;
-            $result = call_user_func_array($callback, $paramArr);
-            if ($result !== false) {
-                $this->addionalRoute = $this->getRequestRoute(true, false);
-                return $result;
             }
         }
         return false;
@@ -556,11 +594,7 @@ class Route
         $this->db->connect();
         $this->db->setUpTranslateable()->setUpSortable();
 
-        if ($menuItem = $this->checkRouteHook()) {
-            $this->renderSite(true, $menuItem);
-        } else {
-            $this->renderSite(true, $this->parseRoute());
-        }
+        $this->renderSite($this->parseRoute());
     }
 
     /**
@@ -572,10 +606,9 @@ class Route
     }
 
     /**
-     * @param bool $routeInit
      * @param null $menuItemTranslation
      */
-    public function renderSite($routeInit = true, $menuItemTranslation = null)
+    public function renderSite($menuItemTranslation = null)
     {
         $tpl = $this->template;
 
@@ -583,19 +616,22 @@ class Route
 
             $this->loadRoutes();
 
-            $menuItemTranslation = $this->db->getRepository('\Fraym\Menu\Entity\MenuItemTranslation')->findOneById(
-                $menuItemTranslation->id
-            );
+            $menuItemTranslation = $this->db
+                ->getRepository('\Fraym\Menu\Entity\MenuItemTranslation')
+                ->findOneById($menuItemTranslation->id);
+
+            // must set before check route, because the locale must be set
+            $this->setupPage($menuItemTranslation);
 
             if (!$this->getCurrentDomain()) {
                 $this->setCurrentDomain($this->getRequestDomain());
             }
 
-            // must set before check route, because the locale must be set
-            $this->setupPage($menuItemTranslation);
+            $virtualRouteContent = $this->getVirtualRouteContent();
 
-            $virtualRouteContent = $this->checkVirtualRoute();
-
+            /**
+             * Redirect http to https if enabled
+             */
             if ($virtualRouteContent === false &&
                 $this->request->isXmlHttpRequest() === false &&
                 $this->isHttps() === false &&
@@ -606,56 +642,30 @@ class Route
 
             $this->sitefullRoute = rtrim($this->buildFullUrl($this->currentMenuItem), '/');
 
-            if ($routeInit == true) {
-
-                if ($virtualRouteContent !== false) {
-                    // virtual route content
-                    $this->response->send($virtualRouteContent, true);
-                }
-
-                if ($this->currentMenuItem->checkPermission === true &&
-                    $this->currentMenuItem->parent !== null &&
-                    $this->user->isLoggedIn() === false
-                ) {
-                    return $this->menuItemNotFound();
-                }
-
-                // read the template content
-                $mainTemplateString = ($menuItemTranslation->menuItem->template ?
-                    $menuItemTranslation->menuItem->template->html :
-                    $this->getDefaultMenuItemTemplate());
-
-                if ($this->getFoundURI(false) != trim($this->getRequestRoute(false, false), '/')) {
-
-                    $this->blockParser->setCheckRouteError(true);
-                    $tpl->setTemplate('string:' . $mainTemplateString);
-                    $content = $tpl->prepareTemplate();
-
-                    $routeExistModules = $this->blockParser->moduleRouteExist($content);
-
-                    if ($routeExistModules === false) {
-                        return $this->menuItemNotFound();
-                    } else {
-                        if ($this->request->isXmlHttpRequest() === true) {
-                            // only exec modules where we find the route
-                            $this->core->response->send($this->blockParser->parse($routeExistModules));
-                        } else {
-                            $this->siteManager->addAdminPanel();
-                            echo $this->blockParser->parse($content);
-                        }
-                    }
-                } else {
-                    $this->siteManager->addAdminPanel();
-                    $tpl->renderString($mainTemplateString);
-                }
-
-                if($this->template->isCachingDisabled() === false) {
-                    // cache page if cache enable
-                    $this->cache->setCacheContent();
-                }
-            } else {
-                $tpl->renderString($menuItemTranslation->menuItem->template->html);
+            if ($virtualRouteContent !== false) {
+                // virtual route content
+                $this->response->send($virtualRouteContent, true);
             }
+
+            if ($this->currentMenuItem->checkPermission === true &&
+                $this->currentMenuItem->parent !== null &&
+                $this->user->isLoggedIn() === false
+            ) {
+                return $this->menuItemNotFound();
+            }
+
+            if ($this->getFoundURI(false) === trim($this->getRequestRoute(false, false), '/') || $this->getVirtualRouteContent(true)) {
+                $this->siteManager->addAdminPanel();
+                $tpl->renderMainTemplate();
+            } else {
+                return $this->menuItemNotFound();
+            }
+
+            if($this->template->isCachingDisabled() === false) {
+                // cache page if cache enable
+                $this->cache->setCacheContent();
+            }
+
         } else {
             $this->menuItemNotFound();
         }
@@ -664,7 +674,7 @@ class Route
     /**
      * @return string
      */
-    private function getDefaultMenuItemTemplate() {
+    public function getDefaultMenuItemTemplate() {
         return '<html><head><block type="css" sequence="outputFilter" consolidate="false"></block><block type="js" sequence="outputFilter" consolidate="false"></block></head><body>Add a template to the menu item</body></html>';
     }
 

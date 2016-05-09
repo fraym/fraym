@@ -78,13 +78,6 @@ class BlockParser
     private $execModule = true;
 
     /**
-     * all block modules that acceppt the requested route
-     *
-     * @var string
-     */
-    private $foundRouteModules = '';
-
-    /**
      * the current parsing mode for cached block elements
      *
      * @var bool
@@ -303,106 +296,19 @@ class BlockParser
     }
 
     /**
-     * Calls the checkRoute xml function from an XML Block attribute.
-     * If the method from the block return true the xml of this block will returned.
-     *
-     * @param $xml
-     * @return mixed|string
+     * @param $xmlString
+     * @return mixed
      */
-    private function checkBlockRouteByXml($xml)
-    {
-        if ($xml) {
-            $class = (string)$xml->class;
-            $checkRoute = (string)$xml->checkRoute;
-
-            if (!empty($class) && !empty($checkRoute)) {
-                $instance = $this->serviceLocator->get($class);
-
-                if ($this->checkRouteError === true &&
-                    (!empty($checkRoute) && $instance->$checkRoute() === true)
-                ) {
-                    $xmlString = $xml->asXML();
-                    return $this->removeXmlHeader($xmlString);
-                }
-            }
-        }
-        return '';
-    }
-
     public function removeXmlHeader($xmlString)
     {
         return preg_replace('#<\?xml.*?\?>#is', '', $xmlString);
     }
 
-
     /**
-     * Check the block elements of a string to call the "checkBlockRouteByXml"
-     * method an check if a modules accept the custom route.
-     *
-     * @param $html
-     * @return bool|string
+     * @param $elementName
+     * @param $string
+     * @return array
      */
-    public function moduleRouteExist($html)
-    {
-        // the function method of the module xml will not be executed if this is false
-        $this->execModule = false;
-        $this->foundRouteModules = '';
-
-        if ($this->user->isAdmin()) {
-            $adminBlock = "<block type='module'><class>Fraym\Block\BlockController</class><method>ajaxHandler</method><checkRoute>checkRoute</checkRoute></block>";
-            $xml = $this->getXmlObjectFromString($adminBlock);
-            $this->foundRouteModules .= $this->checkBlockRouteByXml($xml);
-        }
-
-        $blocks = $this->getXmlTags('block', $html);
-        if (isset($blocks[0])) {
-            foreach ($blocks[0] as $block) {
-                $xml = $this->getXmlObjectFromString($block);
-                if ($this->isBlockEnable($xml) === false) {
-                    continue;
-                }
-                $this->foundRouteModules .= $this->checkBlockRouteByXml($xml);
-            }
-        }
-
-        $blocks = $this->db->createQueryBuilder()
-            ->select("block, byRef")
-            ->from('\Fraym\Block\Entity\Block', 'block')
-            ->leftJoin('block.byRef', 'byRef')
-            ->where("block.menuItem IS NULL OR block.menuItem = :menuId")
-            ->andWhere('block INSTANCE OF \Fraym\Block\Entity\Block OR block.block IS NULL')
-            ->andWhere("block.menuItemTranslation IS NULL OR block.menuItemTranslation = :menuTranslationId")
-            ->setParameter('menuId', $this->route->getCurrentMenuItem()->id)
-            ->setParameter('menuTranslationId', $this->route->getCurrentMenuItemTranslation()->id)
-            ->getQuery()
-            ->getResult();
-
-        foreach ($blocks as $block) {
-            if(!$this->user->isAdmin() && get_class($block) === 'Fraym\Block\Entity\ChangeSet') {
-                continue;
-            }
-
-            if($this->user->isAdmin() && $block->changeSets->count() > 0) {
-                $block = $block->changeSets->last();
-            }
-
-            $xml = $this->getXmlObjectFromString($this->wrapBlockConfig($block));
-            if ($this->isBlockEnable($xml) === false) {
-                continue;
-            }
-            $this->foundRouteModules .= $this->checkBlockRouteByXml($xml);
-        }
-
-        if (!empty($this->foundRouteModules)) {
-            $this->checkRouteError = false;
-        }
-
-        $this->execModule = true;
-
-        return (($this->isRouteError() && $this->block->inEditMode() === false) ||
-            empty($this->foundRouteModules)) ? false : $this->foundRouteModules;
-    }
-
     public function getXmlTags($elementName, $string)
     {
         $matches = array();
@@ -1062,9 +968,10 @@ class BlockParser
         /** @var \Imagine\Gd\Imagine $imagine */
         $imagine = $this->serviceLocator->get('Imagine');
         $bgBox = new \Imagine\Image\Box($configArr['phwidth'], $configArr['phheight']);
-        $img = $imagine->create($bgBox, new \Imagine\Image\Color($configArr['phbgcolor'], 0));
+        $imgColor = new \Imagine\Image\Palette\RGB();
+        $img = $imagine->create($bgBox, $imgColor->color($configArr['phbgcolor']));
 
-        $descriptionBoxImg = new \Imagine\Gd\Font(realpath($configArr['phfont']), $configArr['phfontsize'], new \Imagine\Image\Color($configArr['phcolor']));
+        $descriptionBoxImg = new \Imagine\Gd\Font(realpath($configArr['phfont']), $configArr['phfontsize'], $imgColor->color($configArr['phcolor']));
         $descriptionBoxImg = $descriptionBoxImg->box($configArr['phtext'], 0)->getWidth();
 
         // set the point to start drawing text, depending on parent image width
@@ -1076,7 +983,7 @@ class BlockParser
 
         $img->draw()->text(
             $configArr['phtext'],
-            new \Imagine\Gd\Font(realpath($configArr['phfont']), $configArr['phfontsize'], new \Imagine\Image\Color($configArr['phcolor'])),
+            new \Imagine\Gd\Font(realpath($configArr['phfont']), $configArr['phfontsize'], $imgColor->color($configArr['phcolor'])),
             new \Imagine\Image\Point($descriptionPositionCenter, $img->getSize()->getHeight() / 2 - ($configArr['phfontsize']/2)),
             0
         );
@@ -1402,22 +1309,6 @@ class BlockParser
     }
 
     /**
-     * @return bool
-     */
-    public function isRouteError()
-    {
-        return $this->checkRouteError;
-    }
-
-    /**
-     * @param $bool
-     */
-    public function setCheckRouteError($bool)
-    {
-        $this->checkRouteError = $bool;
-    }
-
-    /**
      * Parse a string for block elements and replace them with their content.
      *
      * @param $string
@@ -1597,7 +1488,7 @@ class BlockParser
      * @return mixed
      */
     function minifyJSContent($content) {
-        $content = \JSMin\JSMin::minify($content);
+        $content = \JsMin\Minify::minify($content);
         return trim($content);
     }
 

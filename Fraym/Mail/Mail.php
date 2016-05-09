@@ -18,7 +18,6 @@ class Mail
 
     public function __construct()
     {
-        require_once('Vendor/Swift/swift_required.php');
         $this->messageInstance = \Swift_Message::newInstance();
         $this->useSendmail();
     }

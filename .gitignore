@@ -5,6 +5,10 @@ Cache/Sessions/*
 Cache/Pages/*
 Cache/DoctrineProxies/*
 Cache/*
+Vendor/*
 Public/consolidated/*
 Public/images/deposit/*
 !.gitkeep
+composer.lock
+composer-setup.php
+composer.phar

@@ -22,6 +22,11 @@ class Template
     /**
      * @var string
      */
+    private $mainTemplate = '';
+
+    /**
+     * @var string
+     */
     private $defaultDir = 'Default';
 
     /**
@@ -183,6 +188,12 @@ class Template
      * @var \Fraym\Cache\Cache
      */
     protected $cache;
+
+    /**
+     * @Inject
+     * @var \Fraym\Route\Route
+     */
+    protected $route;
 
     /**
      * @var bool
@@ -457,8 +468,9 @@ class Template
      *
      * @param $file
      * @param array $vars
-     * @param string $cacheKey
-     * @return string
+     * @param null $cacheKey
+     * @param bool $showError
+     * @return bool|mixed|string
      */
     public function includeTemplate($file, $vars = array(), $cacheKey = null, $showError = true)
     {
@@ -709,6 +721,25 @@ class Template
     }
 
     /**
+     * @param string $tpl
+     */
+    public function setMainTemplate($tpl) {
+        $this->mainTemplate = $tpl;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMainTemplate() {
+        if(empty($this->mainTemplate)) {
+            return $this->route->getCurrentMenuItemTranslation()->menuItem->template ?
+                $this->route->getCurrentMenuItemTranslation()->menuItem->template->html :
+                $this->getDefaultMenuItemTemplate();
+        }
+        return $this->mainTemplate;
+    }
+
+    /**
      * @param null $content
      * @return string
      */
@@ -893,6 +924,13 @@ class Template
     public function renderString($string = null)
     {
         return $this->render('string:' . $string);
+    }
+
+    /**
+     * Render the main template
+     */
+    public function renderMainTemplate() {
+        $this->renderString($this->getMainTemplate());
     }
 
     /**

@@ -43,7 +43,7 @@
             <div class="form-group">
                 <label class="col-sm-2 control-label" for="newsListSort">{_('Limit')}</label>
                 <div class="col-sm-10">
-                    <input type="number" min="1" name="limit"{if $blockConfig && $blockConfig.limit > 0} value="{$blockConfig.limit}"{/if} />
+                    <input type="number" class="form-control" min="1" name="limit"{if $blockConfig && $blockConfig.limit > 0} value="{$blockConfig.limit}"{/if} />
                 </div>
             </div>
 

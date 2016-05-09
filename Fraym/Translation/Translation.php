@@ -6,6 +6,7 @@
  * @license   http://www.opensource.org/licenses/gpl-license.php GNU General Public License, version 2 or later (see the LICENSE file)
  */
 namespace Fraym\Translation;
+use Stichoza\GoogleTranslate\TranslateClient;
 
 /**
  * Class Translation
@@ -206,33 +207,6 @@ class Translation
      */
     public function autoTranslation($str, $fromLocale = 'en', $toLocale = 'de')
     {
-        if (strpos($fromLocale, '_') !== false) {
-            $fromLocale = explode('_', $fromLocale);
-            $fromLocale = reset($fromLocale);
-        }
-        if (strpos($toLocale, '_') !== false) {
-            $toLocale = explode('_', $toLocale);
-            $toLocale = reset($toLocale);
-        }
-        $word = urlencode($str);
-        $url = sprintf($this->autoTranslationServiceUrl, $toLocale, $toLocale, $fromLocale) . $word;
-        $data = @file_get_contents($url);
-
-        $data = explode('"', $data);
-
-        $translatedString = isset($data[1]) ? mb_convert_encoding($data[1], 'utf-8') : $str;
-        $translatedString = str_ireplace(array(' .', ' ,', ' !', ' -'), array('.', ',', '!', '-'), $translatedString);
-        return $this->unescapeUTF8EscapeSeq($translatedString);
-    }
-
-    /**
-     * @param $str
-     * @return mixed
-     */
-    function unescapeUTF8EscapeSeq($str) {
-        return preg_replace_callback("/\\\u([0-9a-f]{4})/i",
-            create_function('$matches',
-                'return html_entity_decode(\'&#x\'.$matches[1].\';\', ENT_QUOTES, \'UTF-8\');'
-            ), $str);
+        return TranslateClient::translate($fromLocale, $toLocale, $str);
     }
 }

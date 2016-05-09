@@ -40,11 +40,6 @@ class Database
     private $schemaTool = null;
 
     /**
-     * @var bool|string
-     */
-    private $moduleDirCacheFile = false;
-
-    /**
      * @var bool|\Doctrine\Common\Annotations\CachedReader
      */
     private $cachedAnnotationReader = false;
@@ -101,12 +96,16 @@ class Database
      */
     public function getModelDirs()
     {
-        $entities = $this->fileManager->findFiles(
-            $this->core->getApplicationDir() . DIRECTORY_SEPARATOR . 'Entity',
+        $fraymEntities = $this->fileManager->findFiles(
+            'Fraym' . DIRECTORY_SEPARATOR . 'Entity',
+            GLOB_ONLYDIR
+        );
+        $extensionEntities = $this->fileManager->findFiles(
+            'Extension' . DIRECTORY_SEPARATOR . 'Entity',
             GLOB_ONLYDIR
         );
 
-        return $entities;
+        return array_merge($extensionEntities, $fraymEntities);
     }
 
     /**
@@ -221,7 +220,7 @@ class Database
         $config->setProxyNamespace('Proxies');
         $this->fetchMode = \PDO::FETCH_OBJ;
 
-        $tablePrefix = new \DoctrineExtensions\TablePrefix(DB_TABLE_PREFIX);
+        $tablePrefix = new TablePrefix(DB_TABLE_PREFIX);
         $this->eventManager = new \Doctrine\Common\EventManager();
 
         $this->eventManager->addEventListener(\Doctrine\ORM\Events::loadClassMetadata, $tablePrefix);
@@ -234,7 +233,7 @@ class Database
         $this->pdo = $this->entityManager->getConnection();
         $this->pdo->getDatabasePlatform()->registerDoctrineTypeMapping('set', 'string');
 
-        $driverChain = new \Doctrine\ORM\Mapping\Driver\DriverChain();
+        $driverChain = new \Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain();
         \Gedmo\DoctrineExtensions::registerAbstractMappingIntoDriverChainORM(
             $driverChain, // our metadata driver chain, to hook into
             $this->cachedAnnotationReader // our cached annotation reader

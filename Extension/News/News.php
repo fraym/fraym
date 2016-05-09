@@ -69,6 +69,8 @@ use Fraym\Block\BlockMetadata;
  * }
  * )
  * @Injectable(lazy=true)
+ * @Fraym\Annotation\Route({"Extension\News\News": "newsRouteCheck"}, name="newsRouteCheck")
+ * @Fraym\Annotation\Route({"Extension\News\News": "newsListRouteCheck"}, name="newsListRouteCheck")
  */
 class News
 {
@@ -120,23 +122,15 @@ class News
         $element = $customProperties->createElement('view');
         $element->appendChild($customProperties->createCDATASection($blockConfig->newsView));
         $customProperties->appendChild($element);
+        $listPage = isset($blockConfig->listPage) ? intval($blockConfig->listPage) : 1;
+
         if ($blockConfig->newsView === 'detail' || $blockConfig->newsView === 'detail-category' || $blockConfig->newsView === 'detail-tag') {
-            $element = $customProperties->createElement('checkRoute');
-            $element->appendChild($customProperties->createCDATASection('newsRouteCheck'));
-            $customProperties->appendChild($element);
-            $element = $customProperties->createElement('listPage', intval($blockConfig->listPage));
+            $element = $customProperties->createElement('listPage', $listPage);
             $customProperties->appendChild($element);
         } elseif ($blockConfig->newsView === 'list-category' || $blockConfig->newsView === 'list-tag') {
-            $element = $customProperties->createElement('checkRoute');
-            $element->appendChild($customProperties->createCDATASection('newsRouteCheck'));
-            $customProperties->appendChild($element);
             $element = $customProperties->createElement('listPage', $this->route->getCurrentMenuItem()->id);
             $customProperties->appendChild($element);
         } elseif ($blockConfig->newsView === 'list') {
-            $element = $customProperties->createElement('checkRoute');
-            $element->appendChild($customProperties->createCDATASection('newsListRouteCheck'));
-            $customProperties->appendChild($element);
-
             $element = $customProperties->createElement('limit');
             $element->nodeValue = $blockConfig->limit;
             $customProperties->appendChild($element);
@@ -172,14 +166,16 @@ class News
      */
     public function newsRouteCheck()
     {
-        $newsItem = $this->getCurrentNewsItem();
-        if ($newsItem) {
-            $slugTitle = $this->route->createSlug($newsItem->title);
-            $fullSlug = "$slugTitle-" . $newsItem->id;
-            if (ltrim($this->route->getAddionalURI(), '/') === $fullSlug) {
-                return true;
-            } elseif (!empty($fullSlug)) {
-                $this->route->redirectToURL($this->route->getCurrentMenuItem()->getUrl($this->route, true) . $fullSlug);
+        $url = str_ireplace($this->route->getFoundURI(), '', $this->route->getSiteBaseURI());
+        // Allow news detail only on sub pages
+        if($url !== '') {
+            $newsItem = $this->getCurrentNewsItem();
+            if ($newsItem) {
+                $slugTitle = $this->route->createSlug($newsItem->title);
+                $fullSlug = "$slugTitle-" . $newsItem->id;
+                if (ltrim($this->route->getAddionalURI(), '/') === $fullSlug) {
+                    return true;
+                }
             }
         }
         return false;
@@ -190,9 +186,12 @@ class News
      */
     function newsListRouteCheck()
     {
-        $filter = $this->getNewsListFilter();
-        if ($filter) {
-            return true;
+        $url = str_ireplace($this->route->getFoundURI(), '', $this->route->getSiteBaseURI());
+        if($url !== '') {
+            $filter = $this->getNewsListFilter();
+            if ($filter) {
+                return true;
+            }
         }
         return false;
     }

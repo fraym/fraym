@@ -285,7 +285,7 @@ class Core
             if ($params['p']) {
                 $_SERVER['REQUEST_URI'] = $params['p'];
                 $this->route->loadRoutes();
-                echo $this->route->checkVirtualRoute();
+                echo $this->route->getVirtualRouteContent();
             }
         }
     }

@@ -76,6 +76,7 @@ class RegistryManagerController extends \Fraym\Core
      */
     public function installExtension()
     {
+        set_time_limit(0);
         $extensionHash = $this->request->post('extensionHash', null);
         $unregisteredExtensions = $this->registryManager->getUnregisteredExtensions();
         foreach ($unregisteredExtensions as $class => $extension) {
@@ -92,6 +93,7 @@ class RegistryManagerController extends \Fraym\Core
      */
     public function uninstallExtension()
     {
+        set_time_limit(0);
         $extensionId = $this->request->post('extensionId', null);
         $this->registryManager->unregisterExtension($extensionId);
         return $this->response->sendAsJson();
@@ -102,6 +104,7 @@ class RegistryManagerController extends \Fraym\Core
      */
     public function removeExtension()
     {
+        set_time_limit(0);
         $extensionHash = $this->request->post('extensionHash', null);
         $unregisteredExtensions = $this->registryManager->getUnregisteredExtensions();
         foreach ($unregisteredExtensions as $class => $extension) {
@@ -117,6 +120,7 @@ class RegistryManagerController extends \Fraym\Core
      */
     public function downloadExtension()
     {
+        set_time_limit(0);
         $repositoryKey = $this->request->post('repositoryKey', '');
         $this->registryManager->downloadExtension($repositoryKey);
         $this->response->finish();
@@ -127,6 +131,7 @@ class RegistryManagerController extends \Fraym\Core
      */
     public function updateExtension()
     {
+        set_time_limit(0);
         $repositoryKey = $this->request->post('repositoryKey', '');
         $this->registryManager->updateExtension($repositoryKey);
         $this->response->finish();
@@ -137,6 +142,7 @@ class RegistryManagerController extends \Fraym\Core
      */
     public function downloadPackage()
     {
+        set_time_limit(0);
         $repositoryKey = $this->request->get('repositoryKey', '');
         $registryEntry = $this->db->getRepository('\Fraym\Registry\Entity\Registry')->findOneByRepositoryKey(
             $repositoryKey
