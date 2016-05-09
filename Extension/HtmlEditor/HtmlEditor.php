@@ -39,11 +39,6 @@ use Fraym\Annotation\Registry;
  *      "Template/Default/Extension/HtmlEditor/",
  *      "Public/js/fraym/extension/htmleditor/*",
  *      "Public/js/fraym/extension/htmleditor/",
- * },
- * composer={
- *      "require"={
- *          "facebook/php-sdk"
- *      }
  * }
  * )
  * @Injectable(lazy=true)
