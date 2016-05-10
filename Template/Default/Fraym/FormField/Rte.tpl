@@ -7,7 +7,7 @@
         <textarea class="form-control" name="{$propertyName}[{$locale.locale}]" id="{$propertyName}_{$locale.id}_{$entity.id}" rows="5" cols="10" class="rte{if $errors && $errors->$propertyName} error{/if}">
             {et($entity, $propertyName, $locale.locale, $data->$propertyName->$localeString)}
         </textarea>
-        {if count((array)$locales) > 1}<div>{$locale->name}</div>{/if}
+        {if count((array)$locales) > 1}<div class="add-on">{$locale->name}</div>{/if}
     {/foreach}
 {else}
     <textarea class="form-control" name="{$propertyName}" id="{$propertyName}_{$entity.id}" rows="5" cols="10" class="rte{if $errors && $errors->$propertyName} error{/if}">

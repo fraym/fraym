@@ -8,28 +8,31 @@
 chdir(realpath(dirname(__FILE__). DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR));
 set_time_limit(0);
 
+if(!is_file('Vendor/autoload.php') && !(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')) {
+    echo file_get_contents('Template/Default/Fraym/Install/Preload.tpl');
+    exit();
+}
+
 /**
  * Install composer
  */
-if(!is_file('composer-setup.php') || !is_file('composer.phar')) {
-    copy('https://getcomposer.org/installer', 'composer-setup.php');
-    require 'composer-setup.php';
+if(!is_file('composer.phar')) {
+    copy('https://getcomposer.org/composer.phar', 'composer.phar');
+    echo json_encode(['message' => 'Downloading dependencies, this may take several minutes...', 'done' => true]);
+    ob_flush();
+    exit();
 }
 
 if(!is_file('Vendor/autoload.php')) {
-    echo str_pad('Please wait, downloading composer...<br/>', 9096);
-    ob_flush();
     \Phar::loadPhar('composer.phar', 'composer.phar');
     require 'phar://composer.phar/src/bootstrap.php';
-    echo str_pad('Downloading dependencies, this may take several minutes...<br/>', 9096);
-    ob_flush();
     $input = new Symfony\Component\Console\Input\ArrayInput(array('command' => 'install'));
     $application = new Composer\Console\Application();
     $application->setAutoExit(false);
     $application->run($input);
-    echo str_pad('Done. Reloading installation...<script>window.location.reload();</script><br/>', 9096);
+    echo json_encode(['message' => 'Done. Reloading installation...', 'done' => false]);
     ob_flush();
-    die;
+    exit();
 }
 
 require 'Vendor/autoload.php';

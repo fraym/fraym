@@ -154,16 +154,20 @@
                         </select>
                     </div>
                 </div>
-
-                <div class="form-group">
-                    <div class="col-lg-10">
-                        <button class="btn btn-primary" type="submit">{_("Save")}</button>
-                    </div>
-                </div>
-
             </fieldset>
         </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="col-lg-10">
+                        <button class="btn btn-primary pull-right" type="submit">{_("Save")}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
 </form>
 
 <script type="text/javascript">

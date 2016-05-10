@@ -367,11 +367,28 @@ class RegistryManager
      */
     public function composerRemove($extension) {
         $this->loadComposer();
-        if(isset($extension->composer) && isset($extension->composer['require'])) {
-            $input = new \Symfony\Component\Console\Input\ArrayInput(array('command' => 'remove', 'packages' => $extension->composer['require']));
+        $composerRequires = [];
+
+        foreach($this->getExtensions() as $ext) {
+            if($extension['repositoryKey'] !== $ext['repositoryKey']) {
+                foreach($ext['composer']['require'] as $package) {
+                    $composerRequires[$package] = $package;
+                }
+            }
+        }
+
+        foreach($extension['composer']['require'] as $k => $package) {
+            if(isset($composerRequires[$package])) {
+                unset($extension['composer']['require'][$k]);
+            }
+        }
+
+        if(isset($extension['composer']) && isset($extension['composer']['require'])) {
+            $input = new \Symfony\Component\Console\Input\ArrayInput(array('command' => 'remove', 'packages' => $extension['composer']['require']));
             $application = new \Composer\Console\Application();
             $application->setAutoExit(false);
             $application->run($input);
+            $this->composerUpdate();
         }
     }
 
@@ -409,8 +426,8 @@ class RegistryManager
                 );
             }
 
+            $this->core->cache->clearAll();
             return true;
-
         }
         return false;
     }
@@ -470,18 +487,11 @@ class RegistryManager
      */
     public function removeExtensionFiles($extension)
     {
-        foreach ($extension['files'] as $path) {
-            foreach (glob($path) as $file) {
-                if (is_file($file)) {
-                    unlink($file);
-                }
-            }
-        }
-        foreach ($extension['files'] as $path) {
-            foreach (glob($path) as $file) {
-                if (is_dir($file)) {
-                    rmdir($file);
-                }
+        foreach ($extension['files'] as $file) {
+            if (is_file($file)) {
+                unlink($file);
+            } else if(is_dir($file)) {
+                $this->fileManager->deleteFolder($file);
             }
         }
         return $this;

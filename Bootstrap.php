@@ -8,15 +8,14 @@
 
 chdir(realpath(dirname(__FILE__)));
 
-require 'Vendor/autoload.php';
-
 if (is_file('Config.php')) {
     require 'Config.php';
 } else {
-    header('HTTP/1.1 500 Internal Server Error');
     echo '<a href="/install.php">Please install Fraym.</a>';
     exit(0);
 }
+
+require 'Vendor/autoload.php';
 
 date_default_timezone_set(TIMEZONE);
 define('APC_ENABLED', extension_loaded('apc') && ini_get('apc.enabled'));

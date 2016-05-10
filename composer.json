@@ -1,6 +1,7 @@
 {
     "name": "fraym/fraym",
     "description": "Fraym is an open source content management platform for websites and applications.",
+    "homepage": "http://fraym.org",
     "type": "project",
     "license": "GPL-2.0+",
     "minimum-stability": "dev",
@@ -15,7 +16,8 @@
         "psr-4": {
             "Fraym\\": "Fraym/",
             "Extension\\": "Extension/"
-        }
+        },
+        "exclude-from-classmap": ["Tests/", "tests/", "Test/"]
     },
     "autoload-dev": {
         "psr-4": {
@@ -27,12 +29,11 @@
         "php-di/php-di": "^5.2",
         "beberlei/DoctrineExtensions": "^1.0",
         "werkint/jsmin": "^1.0",
-        "imagine/imagine": "dev-develop",
+        "imagine/imagine": "^0.6.3",
         "stichoza/google-translate-php": "^3.2",
         "swiftmailer/swiftmailer": "^5.4",
-        "ocramius/proxy-manager": "~0.3",
-        "gedmo/doctrine-extensions": "^2.4",
-        "facebook/php-sdk": "^3.2"
+        "ocramius/proxy-manager": "^1.0",
+        "gedmo/doctrine-extensions": "^2.4"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.3"

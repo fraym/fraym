@@ -1286,6 +1286,10 @@ body .navbar .navbar-nav.side-nav .user-status .user .status ul > li .dropdown-m
     display: inline-block;
 }
 
+.welcome .logo {
+  max-width: 200px;
+}
+
 .full-page .welcome {
     display: block;
     margin: 5% auto;

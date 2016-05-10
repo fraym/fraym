@@ -12,6 +12,11 @@ html {
     text-shadow: 1px 1px 4px rgba(182, 182, 182, 0.78);
 }
 
+#entityForm .add-on {
+    display: block;
+    padding: 5px 0 20px;
+}
+
 .ui-dialog-titlebar .ui-dialog-titlebar-refresh-iframe,
 .ui-dialog-titlebar .ui-dialog-titlebar-close {
     border: 0;
@@ -388,6 +393,10 @@ body.dragging, body.dragging * {
 
 #block-tabs.ui-widget-content {
     border: 0;
+}
+
+#block-tabs .ui-tabs-panel {
+    padding: 0;
 }
 
 #block-tabs.ui-tabs .ui-tabs-nav li a {

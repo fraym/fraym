@@ -1,19 +1,23 @@
 body#install {
     margin: 0 auto;
     color: #E6E6E6;
-    background: url(/images/fraym/fraym-bg.jpg);
+    background: rgba(0, 0, 0, 0.62);
     background-size: cover;
+    font-family: monospace;
 }
 
 .green {
-    color: #007500;
+    color: #4CAF50;
 }
 .red {
     color: #ff0000;
 }
+.orange {
+    color: #ffa500;
+}
 
 #wrapper {
-    max-width: 430px;
+    max-width: 630px;
     width: 100%;
     margin: 20px auto;
     padding: 20px 20px 0;
@@ -23,6 +27,15 @@ body#install {
 .text-center {
     text-align: center;
     margin: 10px 0;
+}
+
+.logo-col {
+    text-align: center;
+}
+
+.logo {
+    max-width: 150px;
+    display: inline-block;
 }
 
 .text-center img {
@@ -42,6 +55,24 @@ form input {
     transition: all .1s linear;
 }
 
+.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+    padding: 5px 0 !important;
+    border-bottom: 1px solid rgba(221, 221, 221, 0.26);
+    border-top: 0;
+}
+
+.table>tbody>tr>td:last-child {
+    text-align: right;
+}
+
 legend {
     color: #fff;
+}
+
+.spinner {
+    position: relative;
+    height: 70px;
+    left: 0 !important;
+    margin: 0 auto;
+    top: 52px;
 }

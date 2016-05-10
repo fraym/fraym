@@ -96,16 +96,18 @@ class Database
      */
     public function getModelDirs()
     {
-        $fraymEntities = $this->fileManager->findFiles(
-            'Fraym' . DIRECTORY_SEPARATOR . 'Entity',
-            GLOB_ONLYDIR
-        );
-        $extensionEntities = $this->fileManager->findFiles(
-            'Extension' . DIRECTORY_SEPARATOR . 'Entity',
+        $entities = $this->fileManager->findFiles(
+            $this->core->getApplicationDir() . DIRECTORY_SEPARATOR . 'Entity',
             GLOB_ONLYDIR
         );
 
-        return array_merge($extensionEntities, $fraymEntities);
+        foreach($entities as $k => $entity) {
+            if(preg_match('@^.*/(tests|test)/?.*$@i', $entity)) {
+                unset($entities[$k]);
+            }
+        }
+
+        return $entities;
     }
 
     /**
@@ -474,7 +476,6 @@ class Database
      */
     public function createSchema($outputPathAndFilename = null)
     {
-        $this->core->cache->clearAll();
         if ($outputPathAndFilename === null) {
             $this->getSchemaTool()->createSchema($this->entityManager->getMetadataFactory()->getAllMetadata());
         } else {
@@ -501,7 +502,6 @@ class Database
      */
     public function updateSchema($safeMode = true, $outputPathAndFilename = null)
     {
-        $this->core->cache->clearAll();
         if ($outputPathAndFilename === null) {
             return $this->getSchemaTool()->updateSchema(
                 $this->entityManager->getMetadataFactory()->getAllMetadata(),

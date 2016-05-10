@@ -38,20 +38,56 @@
                 <legend>Install</legend>
 
                 <div class="form-group">
-                    <div class="text-center">
-                        <img src="/images/fraym/logo-opacity.png" class="img-responsive" />
+                    <div class="row">
+                        <div class="col-md-7">
+
+                            <div class="infotext">
+                                <table class="table table-condensed">
+                                    <tbody>
+                                        <tr>
+                                            <td>Fraym version</td>
+                                            <td>{\Fraym\Core::VERSION}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>PHP version</td>
+                                            <td>{phpversion()}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Mod ReWrite enabled</td>
+                                            <td>{if function_exists('apache_get_modules')}{if in_array('mod_rewrite', apache_get_modules())}<span class="green"><i class="fa fa-check"></i> Yes</span>{else}<span class="red"><i class="fa fa-check"></i> No</span>{/if}{else}Can't detect{/if}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>ZipArchive enabled</td>
+                                            <td>{if class_exists('ZipArchive')}<span class="green"><i class="fa fa-check"></i> Yes</span>{else}<span class="red"><i class="fa fa-check"></i> No</span>{/if}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Open basedir disabled</td>
+                                            <td>{if ini_get('open_basedir')}<span class="red"><i class="fa fa-minus"></i> No</span>{else}<span class="green"><i class="fa fa-check"></i> Yes</span>{/if}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>APCu enabled</td>
+                                            <td>{if extension_loaded('apc') && ini_get('apc.enabled')}<span class="green"><i class="fa fa-check"></i> Yes</span>{else}<span class="orange">No</span>{/if}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>OPCache enabled</td>
+                                            <td>{if ini_get('opcache.enable') == '1'}<span class="green"><i class="fa fa-check"></i> Yes</span>{else}<span class="orange">No</span>{/if}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>OPCache load comments</td>
+                                            <td>{if ini_get('opcache.load_comments') == '1'}<span class="green"><i class="fa fa-check"></i> Yes</span>{else}{if ini_get('opcache.enable') == '1'}<span class="red">No</span>{else}<span class="orange">No</span>{/if}{/if}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <p><strong>Note:</strong> open_basedir must be <strong>disabled</strong></p>
+                                <p>If you use PHP <strong>OPcache</strong> opcache.load_comments must be set to 1 in your php.ini</p>
+                                <p>For optimal speed of Fraym it is recommended to enable APCu.</p>
+                            </div>
+
+                        </div>
+                        <div class="col-md-5 logo-col">
+                            <img src="/images/fraym/logo-white.png" class="logo img-responsive" />
+                        </div>
                     </div>
-                    <strong>Fraym version:</strong> {\Fraym\Core::VERSION}<br/>
-                    <strong>PHP version:</strong> {phpversion()}<br/>
-                    <strong>Mod ReWrite enabled:</strong> {if function_exists('apache_get_modules')}{if in_array('mod_rewrite', apache_get_modules())}<span class="green"><i class="fa fa-check"></i> Yes</span>{else}<span class="red"><i class="fa fa-check"></i> No</span>{/if}{else}Can't detect{/if}<br/>
-                    <strong>ZipArchive enabled:</strong> {if class_exists('ZipArchive')}<span class="green"><i class="fa fa-check"></i> Yes</span>{else}<span class="red"><i class="fa fa-check"></i> No</span>{/if}<br/>
-                    <strong>Open basedir disabled:</strong> {if ini_get('open_basedir')}<span class="red"><i class="fa fa-minus"></i> No</span>{else}<span class="green"><i class="fa fa-check"></i> Yes</span>{/if}<br/>
-                    <strong>APCu enabled:</strong> {if extension_loaded('apc') && ini_get('apc.enabled')}Yes{else}No{/if}<br/>
-                    <strong>OPCache enabled:</strong> {if ini_get('opcache.enable') == '1'}Yes{else}No{/if}<br/>
-                    <strong>OPCache Load Comments:</strong> {if ini_get('opcache.load_comments') == '1'}Yes{else}No{/if}<br/><br/>
-                    <p><strong>Note:</strong> open_basedir must be <strong>disabled</strong></p>
-                    <p>If you use PHP <strong>OPcache</strong> opcache.load_comments must be set to 1 in your php.ini</p>
-                    <p>For optimal speed of Fraym it is recommended to enable APCu.</p>
                 </div>
 
                 {if $error}
