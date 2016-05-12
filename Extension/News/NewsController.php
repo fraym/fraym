@@ -84,12 +84,12 @@ class NewsController extends \Fraym\Core
             'image',
         );
 
-        $source = preg_replace_callback('#<meta\s.*\/>#im', function($match) use($replacePropertyTags, $replaceItempropTags) {
+        $source = preg_replace_callback('#<meta\s.*\/>#im', function ($match) use ($replacePropertyTags, $replaceItempropTags) {
             $xml = simplexml_load_string($match[0]);
-            if($xml !== false) {
-                if(isset($xml->attributes()->property) && in_array($xml->attributes()->property, $replacePropertyTags)) {
+            if ($xml !== false) {
+                if (isset($xml->attributes()->property) && in_array($xml->attributes()->property, $replacePropertyTags)) {
                     return '';
-                } elseif(isset($xml->attributes()->itemprop) && in_array($xml->attributes()->itemprop, $replaceItempropTags)) {
+                } elseif (isset($xml->attributes()->itemprop) && in_array($xml->attributes()->itemprop, $replaceItempropTags)) {
                     return '';
                 }
             }

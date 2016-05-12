@@ -60,7 +60,6 @@ class BaseEntity
         $formFields = $formField->setClassName($className)->getFields();
 
         foreach ($obj as $prop => $val) {
-
             if ($prop === 'id') {
                 continue;
             }
@@ -81,7 +80,6 @@ class BaseEntity
                         if ($tmpFieldMappings[$prop]['unique'] === true &&
                             $tmpFieldMappings[$prop]['nullable'] === true &&
                             $val === '') {
-
                             $val = null;
                         }
                         if (array_key_exists($prop, $tmpFieldMappings)) {
@@ -121,7 +119,7 @@ class BaseEntity
         foreach ($obj as $prop => $val) {
             if (is_array($val) && isset($tmpAssocMappings[$prop])) {
                 $targetEntityClass = $tmpAssocMappings[$prop]['targetEntity'];
-                if(isset($newEntity->{$prop}) && $tmpAssocMappings[$prop]['type'] === 2) {
+                if (isset($newEntity->{$prop}) && $tmpAssocMappings[$prop]['type'] === 2) {
                     // ManyToOne update
                     $newEntity->{$prop}->updateEntity($val);
                 } else {
@@ -148,7 +146,7 @@ class BaseEntity
         }
 
         if ($flush) {
-            if(\Doctrine\ORM\UnitOfWork::STATE_MANAGED !== $em->getUnitOfWork()->getEntityState($newEntity) || \Doctrine\ORM\UnitOfWork::STATE_NEW !== $em->getUnitOfWork()->getEntityState($newEntity)) {
+            if (\Doctrine\ORM\UnitOfWork::STATE_MANAGED !== $em->getUnitOfWork()->getEntityState($newEntity) || \Doctrine\ORM\UnitOfWork::STATE_NEW !== $em->getUnitOfWork()->getEntityState($newEntity)) {
                 $em->persist($newEntity);
             }
             $em->flush();
@@ -213,7 +211,7 @@ class BaseEntity
     public function getProperties()
     {
         $ref = new \ReflectionClass($this);
-        $properties = array();
+        $properties = [];
         foreach ($ref->getProperties(\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED) as $prop) {
             $properties[] = $prop->name;
         }
@@ -226,7 +224,7 @@ class BaseEntity
     public function getMethods()
     {
         $ref = new \ReflectionClass($this);
-        $methods = array();
+        $methods = [];
         foreach ($ref->getMethods(\ReflectionMethod::IS_PUBLIC | \ReflectionMethod::IS_PROTECTED) as $meth) {
             $methods[] = $meth->name;
         }

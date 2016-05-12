@@ -50,7 +50,7 @@ class FormField
         $annotationReader = $em->getAnnotationReader();
         $tmpFieldMappings = $em->getClassMetadata($this->_model)->fieldMappings;
         $tmpAssocMappings = $em->getClassMetadata($this->_model)->associationMappings;
-        $formfields = array();
+        $formfields = [];
 
         foreach ($tmpFieldMappings as $propertyName => $value) {
             $property = new \ReflectionProperty($this->_model, $propertyName);
@@ -77,7 +77,7 @@ class FormField
             $formFieldAnnotation = $this->getAnnotation($classAnnotations);
             if ($formFieldAnnotation) {
                 $formFieldAnnotation = $this->buildFormFieldArray($propertyName, $formFieldAnnotation);
-                $sort = isset($formFieldAnnotation['sort']) ? $formFieldAnnotation['sort'] : array();
+                $sort = isset($formFieldAnnotation['sort']) ? $formFieldAnnotation['sort'] : [];
                 $formFieldAnnotation['annotations'] = $classAnnotations;
                 $formFieldAnnotation['options'] = $em->getRepository($value['targetEntity'])->findBy(array(), $sort);
                 $formFieldAnnotation['model'] = '\\' . ltrim($value['targetEntity'], '\\');

@@ -19,42 +19,42 @@ final class Registry extends Annotation
      *
      * @var array
      */
-    public $entity = array();
+    public $entity = [];
 
     /**
      * DB Entries to be updated
      *
      * @var array
      */
-    public $updateEntity = array();
+    public $updateEntity = [];
 
     /**
      * Registry config entries
      *
      * @var array
      */
-    public $config = array();
+    public $config = [];
 
     /**
      * Translations
      *
      * @var array
      */
-    public $translation = array();
+    public $translation = [];
 
     /**
      * Files belongs to this package
      *
      * @var array
      */
-    public $files = array();
+    public $files = [];
 
     /**
      * Composer vendor dependencies
      *
      * @var array
      */
-    public $composer = array();
+    public $composer = [];
 
     /**
      * Callback function that is called after registration

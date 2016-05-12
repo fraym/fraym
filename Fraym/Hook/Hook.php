@@ -30,7 +30,7 @@ class Hook
     /**
      * @var array
      */
-    private $_hooks = array();
+    private $_hooks = [];
 
     /**
      * @return $this

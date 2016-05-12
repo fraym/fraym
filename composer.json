@@ -2,6 +2,7 @@
     "name": "fraym/fraym",
     "description": "Fraym is an open source content management platform for websites and applications.",
     "homepage": "http://fraym.org",
+    "keywords": ["fraym","cms","content management system"],
     "type": "project",
     "license": "GPL-2.0+",
     "minimum-stability": "dev",

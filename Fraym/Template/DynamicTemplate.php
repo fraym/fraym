@@ -6,6 +6,7 @@
  * @license   http://www.opensource.org/licenses/gpl-license.php GNU General Public License, version 2 or later (see the LICENSE file)
  */
 namespace Fraym\Template;
+
 use \Fraym\Block\BlockXml as BlockXml;
 
 /**
@@ -91,7 +92,7 @@ class DynamicTemplate
     {
         $variables = unserialize((string)$xml->dynamicTemplateConfig);
         $template = null;
-        if(!empty((string)$xml->dynamicTemplate)) {
+        if (!empty((string)$xml->dynamicTemplate)) {
             $template = $this->getTemplatePath() . DIRECTORY_SEPARATOR . (string)$xml->dynamicTemplate;
         }
         $this->dynamicTemplateController->render($template, $variables);
@@ -105,7 +106,7 @@ class DynamicTemplate
         $configXml = null;
         if ($blockId) {
             $block = $this->db->getRepository('\Fraym\Block\Entity\Block')->findOneById($blockId);
-            if($block->changeSets->count()) {
+            if ($block->changeSets->count()) {
                 $block = $block->changeSets->last();
             }
             $configXml = $this->blockParser->getXmlObjectFromString($this->blockParser->wrapBlockConfig($block));
@@ -122,17 +123,18 @@ class DynamicTemplate
      * @param null $parentKey
      * @return mixed
      */
-    private function buildSelectOptions($files, &$options = array(), $parentKey = null) {
-        foreach($files as $file) {
-            if($file['isDir'] === true) {
-                if(count($file['files'])) {
+    private function buildSelectOptions($files, &$options = array(), $parentKey = null)
+    {
+        foreach ($files as $file) {
+            if ($file['isDir'] === true) {
+                if (count($file['files'])) {
                     $newParentKey = ($parentKey ? $parentKey . '/' : '') . $file['name'];
-                    $options[$newParentKey] = array();
+                    $options[$newParentKey] = [];
                     $subFiles = $file['files'];
                     $this->buildSelectOptions($subFiles, $options, $newParentKey);
                 }
             } else {
-                if($parentKey) {
+                if ($parentKey) {
                     $options[$parentKey][] = $file['name'];
                 } else {
                     $options[] = $file['name'];
@@ -145,9 +147,10 @@ class DynamicTemplate
     /**
      * @return \Fraym\Registry\Entity\text|string
      */
-    private function getTemplatePath() {
+    private function getTemplatePath()
+    {
         $config = $this->config->get('DYNAMIC_TEMPLATE_PATH');
-        if(!empty($config->value)) {
+        if (!empty($config->value)) {
             $path = $config->value;
         } else {
             $path = $this->template->getTemplateDir() . DIRECTORY_SEPARATOR . 'Dynamic';
@@ -158,7 +161,8 @@ class DynamicTemplate
     /**
      * @return array
      */
-    private function getTemplateFiles() {
+    private function getTemplateFiles()
+    {
         $path = $this->getTemplatePath();
         return $this->fileManager->getFiles($path);
     }
@@ -170,11 +174,11 @@ class DynamicTemplate
     {
         $template = $this->request->post('template');
         $blockId = $this->request->post('blockId');
-        $variables = array();
+        $variables = [];
 
-        if($blockId) {
+        if ($blockId) {
             $block = $this->db->getRepository('\Fraym\Block\Entity\Block')->findOneById($blockId);
-            if($block->changeSets->count()) {
+            if ($block->changeSets->count()) {
                 $block = $block->changeSets->last();
             }
             $xml = $this->blockParser->getXmlObjectFromString($this->blockParser->wrapBlockConfig($block));
@@ -185,9 +189,9 @@ class DynamicTemplate
 
         $templateContent = file_get_contents($template);
         $blocks = $this->blockParser->getAllBlocks($templateContent);
-        foreach($blocks as $block) {
+        foreach ($blocks as $block) {
             $obj = $this->blockParser->getXmlObjectFromString($block);
-            if($this->blockParser->getXmlAttr($obj, 'type') === 'config') {
+            if ($this->blockParser->getXmlAttr($obj, 'type') === 'config') {
                 return $this->dynamicTemplateController->renderConfig((string)$obj->template, $variables);
             }
         }

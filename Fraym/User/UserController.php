@@ -44,7 +44,7 @@ class UserController extends \Fraym\Core
      */
     public function viewLogIn()
     {
-        $errorFields = array();
+        $errorFields = [];
 
         if ($this->request->isPost() && $this->user->isLoggedIn() === false) {
             $loginName = trim($this->request->post('login_name', ''));

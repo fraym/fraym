@@ -121,7 +121,7 @@ class Cache
         $cacheFilenamePhpData = self::DIR_PAGES . $filename . '.cache.config.php';
         $menuItemTranslation = false;
         $domain = false;
-        $executedBlocks = array();
+        $executedBlocks = [];
 
         if (defined('GLOBAL_CACHING_ENABLED') &&
             GLOBAL_CACHING_ENABLED &&
@@ -303,7 +303,7 @@ class Cache
             $data = serialize($data);
         }
         if (!is_dir(self::DIR_CUSTOM_DATA)) {
-            mkdir(self::DIR_CUSTOM_DATA, 0755);
+            mkdir(self::DIR_CUSTOM_DATA, 0755, true);
         }
         $cacheFilename = self::DIR_CUSTOM_DATA . md5($key) . '.cache';
         file_put_contents($cacheFilename, $data);
@@ -354,21 +354,22 @@ class Cache
     /**
      * @Fraym\Annotation\Route("cacheClearAll", name="cacheClearAll")
      */
-    public function clearAll() {
+    public function clearAll()
+    {
         // clear PHP opcache
-        if(function_exists('opcache_reset')) {
+        if (function_exists('opcache_reset')) {
             opcache_reset();
         }
         // clear APC/APCu Cache
-        if(function_exists('apc_clear_cache')) {
+        if (function_exists('apc_clear_cache')) {
             apc_clear_cache('user');
             apc_clear_cache();
         }
 
-        if(defined('CACHE_DI_PATH')) {
+        if (defined('CACHE_DI_PATH')) {
             $this->fileManager->deleteFolder(CACHE_DI_PATH);
         }
-        if(defined('CACHE_DOCTRINE_PROXY_PATH')) {
+        if (defined('CACHE_DOCTRINE_PROXY_PATH')) {
             $this->fileManager->deleteFolder(CACHE_DOCTRINE_PROXY_PATH);
         }
 

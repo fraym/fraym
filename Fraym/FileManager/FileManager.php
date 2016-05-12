@@ -37,14 +37,14 @@ class FileManager
     {
         $config = $this->config->get('FILEMANAGER_STORAGES')->value;
         $storages = explode(',', $config);
-        $storagesGroup = array();
+        $storagesGroup = [];
 
         foreach ($storages as $path) {
             $key = basename($path);
             $realPath = realpath($path);
             if ($realPath) {
                 if (!isset($storagesGroup[$key])) {
-                    $storagesGroup[$key] = array();
+                    $storagesGroup[$key] = [];
                 }
                 $storagesGroup[$key]['path'] = $realPath;
                 $storagesGroup[$key]['storage'] = md5($path);
@@ -60,7 +60,7 @@ class FileManager
      */
     private function toDynatreeArray($fileArray)
     {
-        $dynatree = array();
+        $dynatree = [];
 
         foreach ($fileArray as $key => $file) {
             $dynatree[] = array(
@@ -96,7 +96,7 @@ class FileManager
     public function getStorageTree($pattern = '*', $globFlags = GLOB_ONLYDIR)
     {
         $storages = $this->getStorages();
-        $tree = array();
+        $tree = [];
 
         foreach ($storages as $storage) {
             $rootDirName = basename($storage['path']);
@@ -311,7 +311,7 @@ class FileManager
      */
     public function findFilesInStorages($pattern, $flags = 0)
     {
-        $files = array();
+        $files = [];
         foreach ($this->getStorageTree() as $storageFolder) {
             $files = array_merge(
                 $files,
@@ -328,8 +328,8 @@ class FileManager
      */
     public function findFiles($pattern, $flags = 0)
     {
-        $files = glob($pattern, $flags) ?: array();
-        $dirs = glob(dirname($pattern) . DIRECTORY_SEPARATOR . '*', GLOB_ONLYDIR | GLOB_NOSORT) ?: array();
+        $files = glob($pattern, $flags) ?: [];
+        $dirs = glob(dirname($pattern) . DIRECTORY_SEPARATOR . '*', GLOB_ONLYDIR | GLOB_NOSORT) ?: [];
         foreach ($dirs as $dir) {
             $files = array_merge($files, $this->findFiles($dir . DIRECTORY_SEPARATOR . basename($pattern), $flags));
         }
@@ -344,9 +344,9 @@ class FileManager
      */
     public function getFiles($path, $pattern = '{*}', $globFlags = GLOB_BRACE)
     {
-        $files = array();
+        $files = [];
         $path = rtrim($path, DIRECTORY_SEPARATOR);
-        $dirs = glob($path . DIRECTORY_SEPARATOR . '*', GLOB_ONLYDIR) ?: array();
+        $dirs = glob($path . DIRECTORY_SEPARATOR . '*', GLOB_ONLYDIR) ?: [];
 
         /*
          * Solaris workaround
@@ -359,7 +359,7 @@ class FileManager
             $globFiles = glob($path . DIRECTORY_SEPARATOR . $pattern, $globFlags);
         }
 
-        $globFiles = $globFiles ? array_filter($globFiles, 'is_file') : array();
+        $globFiles = $globFiles ? array_filter($globFiles, 'is_file') : [];
 
         // list all folders and only files with pattern
         $globFiles = array_merge(
@@ -400,7 +400,7 @@ class FileManager
      */
     public function deleteFolder($dir)
     {
-        if(is_dir($dir) === false) {
+        if (is_dir($dir) === false) {
             return false;
         }
 

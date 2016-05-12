@@ -1,5 +1,6 @@
 <?php
 namespace Fraym\Database;
+
 use \Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 
 class TablePrefix

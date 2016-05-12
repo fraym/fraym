@@ -37,12 +37,12 @@ class Core
     /**
      * @var array
      */
-    private $timerStartTime = array();
+    private $timerStartTime = [];
 
     /**
      * @var array
      */
-    private $timerStartTimeByKey = array();
+    private $timerStartTimeByKey = [];
 
     /**
      * @var bool
@@ -229,7 +229,6 @@ class Core
      */
     public function init($mode = Core::ROUTE_NORMAL)
     {
-
         $globalConfigs = array(
             'ENV' => self::ENV_DEVELOPMENT,
             'JS_FOLDER' => '/js',

@@ -9,46 +9,57 @@ System requirements
 -------------------
 
  * Web server (Apache with mod_rewrite recommended)
- * PHP 5.4.0+ with GDlib, ZipArchive
- * MySQL 5.0.3+
-
+ * PHP 5.5.0+ with GDlib, ZipArchive
+ * MySQL 5 and above or MySQL 5.7 and above
 
 Installation
 ------------
 
-See the [installation chapter][2] of the user's manual.
+See the [Getting started][3] guide.
 
 
 Documentation
 -------------
 
- * [User's manual][3]
+ * [Documentation][2]
+ * [Getting started][3]
  * [Change log][4]
- * [API changes][5]
 
 
 License
 -------
 
 Fraym is licensed under the terms of the GPLv2. The full license text is
-available in the [`system/docs`][7] folder.
+available in this file [`LICENSE.txt`][5].
+
 
 Getting support
 ---------------
 
-Visit the [support page][8] to learn about the available support options.
+Visit our [gitter room][7] to get support or mail us support (at) fraym.org.
+
+
+Bug report
+---------------
+
+Please use [Github][6] for bug reports.
 
 
 Installing from Git
 -------------------
 
-We are using [Composer][9] to manage third-party scripts, so after you have
-cloned the repository, make sure to install the vendor libraries:
-
 ```
 git clone https://github.com/fraym/fraym.git
 ```
+We are using [Composer][8] to manage third-party scripts. You don't need to install composer. Composer and the dependencies will be downloaded automatically by the Fraym installer.
+Just call the installer after setting up your server http://yourserver.com/install.php
 
-[1]: https://fraym.org
-[4]: system/docs/CHANGELOG.md
-[5]: system/docs/UPGRADE.md
+
+[1]: http://fraym.org
+[2]: http://fraym.org/documentation
+[3]: http://fraym.org/getting-started
+[4]: CHANGELOG.md
+[5]: LICENSE.txt
+[6]: https://github.com/fraym/fraym/issues
+[7]: https://gitter.im/fraym
+[8]: https://getcomposer.org/

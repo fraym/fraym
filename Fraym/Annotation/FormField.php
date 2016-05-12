@@ -33,14 +33,14 @@ final class FormField extends Annotation
      *
      * @var array
      */
-    public $sort = array();
+    public $sort = [];
 
     /**
      * field validations
      *
      * @var array
      */
-    public $validation = array();
+    public $validation = [];
 
     /**
      * is field editable

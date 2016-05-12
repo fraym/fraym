@@ -17,40 +17,40 @@ final class LifecycleCallback extends Annotation
     /**
      * @var array
      */
-    public $preRemove = array();
+    public $preRemove = [];
 
     /**
      * @var array
      */
-    public $postRemove = array();
+    public $postRemove = [];
 
     /**
      * @var array
      */
-    public $prePersist = array();
+    public $prePersist = [];
 
     /**
      * @var array
      */
-    public $postPersist = array();
+    public $postPersist = [];
 
     /**
      * @var array
      */
-    public $preUpdate = array();
+    public $preUpdate = [];
 
     /**
      * @var array
      */
-    public $postUpdate = array();
+    public $postUpdate = [];
 
     /**
      * @var array
      */
-    public $postLoad = array();
+    public $postLoad = [];
 
     /**
      * @var array
      */
-    public $onFlush = array();
+    public $onFlush = [];
 }

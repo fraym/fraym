@@ -6,6 +6,7 @@
  * @license   http://www.opensource.org/licenses/gpl-license.php GNU General Public License, version 2 or later (see the LICENSE file)
  */
 namespace Fraym\Route;
+
 use Symfony\Component\Routing\Loader\AnnotationDirectoryLoader;
 use Symfony\Component\Routing\Loader\AnnotationFileLoader;
 use Symfony\Component\Routing\Router;
@@ -30,7 +31,7 @@ class Route
     /**
      * @var null
      */
-    private $routeMatches = array();
+    private $routeMatches = [];
 
     /**
      * @var bool
@@ -42,7 +43,7 @@ class Route
      *
      * @var array
      */
-    private $moduleRoutes = array();
+    private $moduleRoutes = [];
 
     /**
      * @var bool
@@ -67,7 +68,7 @@ class Route
     /**
      * @var array
      */
-    private $virutalRoutes = array();
+    private $virutalRoutes = [];
 
     /**
      * @Inject
@@ -157,7 +158,8 @@ class Route
      *
      * @return array
      */
-    public function getRouteMatches() {
+    public function getRouteMatches()
+    {
         return $this->routeMatches;
     }
 
@@ -211,7 +213,8 @@ class Route
      * @param null $menuItem
      * @return bool
      */
-    public function isHttps($menuItem = null) {
+    public function isHttps($menuItem = null)
+    {
         return ($menuItem !== null && $menuItem->https) ||
             (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
             || $_SERVER['SERVER_PORT'] == 443;
@@ -240,7 +243,8 @@ class Route
     /**
      * @param $class
      */
-    private function initClassAnnotationRoutes($class) {
+    private function initClassAnnotationRoutes($class)
+    {
         $routeAnnotation = 'Fraym\Annotation\Route';
 
         $refClass = new \ReflectionClass($class);
@@ -248,8 +252,8 @@ class Route
             $refClass
         );
 
-        foreach($classAnnotations as $annotation) {
-            if($annotation instanceof $routeAnnotation) {
+        foreach ($classAnnotations as $annotation) {
+            if ($annotation instanceof $routeAnnotation) {
                 $route = $annotation->value;
                 $key = $annotation->name;
                 $regex = $annotation->regex;
@@ -290,13 +294,12 @@ class Route
             $class = $namespace . $classname;
 
             if (is_file($file)) {
-
                 require_once($file);
 
                 if (class_exists($class)) {
                     $this->initClassAnnotationRoutes($class);
 
-                    foreach(get_class_methods($class) as $method) {
+                    foreach (get_class_methods($class) as $method) {
                         $key = null;
 
                         $refMethod = new \ReflectionMethod($class, $method);
@@ -305,7 +308,7 @@ class Route
                             'Fraym\Annotation\Route'
                         );
 
-                        if(empty($methodAnnotation) === false) {
+                        if (empty($methodAnnotation) === false) {
                             $route = $methodAnnotation->value;
                             $key = $methodAnnotation->name;
                             $regex = $methodAnnotation->regex;
@@ -482,7 +485,7 @@ class Route
     {
         $stdClass = new \stdClass();
         $stdClass->route = $route;
-        if(is_array($callback)) {
+        if (is_array($callback)) {
             $stdClass->controller = $callback[0];
             $stdClass->action = $callback[1];
             $stdClass->inContext = false;
@@ -517,13 +520,13 @@ class Route
         $siteBaseUri = $this->getSiteBaseURI(false);
 
         foreach ($this->virutalRoutes as $data) {
-            if($data->inContext !== $inContext) {
+            if ($data->inContext !== $inContext) {
                 continue;
             }
             $route = null;
             $callbackResult = false;
 
-            if(is_array($data->route)) {
+            if (is_array($data->route)) {
                 $callback = array($this->serviceLocator->get(key($data->route)), reset($data->route));
                 $callbackResult = call_user_func_array($callback, array($data, $requestRouteWithoutBase));
             } else {
@@ -535,25 +538,24 @@ class Route
                 ($route === $requestRoute || ($data->regex === true && preg_match($data->route, $addionalUri, $this->routeMatches)))
             ) {
                 $allowAccess = false;
-                if(count($data->permission)) {
+                if (count($data->permission)) {
                     $className = key($data->permission);
                     $methodName = reset($data->permission);
                     $obj = $this->serviceLocator->get($className);
                     $allowAccess = $obj->$methodName();
                 }
 
-                if(count($data->permission) === 0 || $allowAccess) {
-                    if($inContext && is_array($data->contextCallback)) {
-
-                        if(count($data->contextCallback) === 2) {
+                if (count($data->permission) === 0 || $allowAccess) {
+                    if ($inContext && is_array($data->contextCallback)) {
+                        if (count($data->contextCallback) === 2) {
                             $menuItemTranslation = call_user_func(array($this->serviceLocator->get($data->contextCallback[0]), $data->contextCallback[1]));
-                            if($menuItemTranslation) {
+                            if ($menuItemTranslation) {
                                 $this->template->setMainTemplate($menuItemTranslation->menuItem->template->html);
                             }
                         }
 
                         return true;
-                    } elseif($inContext === false) {
+                    } elseif ($inContext === false) {
                         $controller = $data->controller;
                         $action = $data->action;
                         $instance = $this->serviceLocator->get($controller);
@@ -568,9 +570,10 @@ class Route
     /**
      *
      */
-    public function loadRoutes() {
-        if($this->core->isCLI() === false && $this->cache->isCachingActive()) {
-            if(($routes = $this->cache->getDataCache('routes')) === false) {
+    public function loadRoutes()
+    {
+        if ($this->core->isCLI() === false && $this->cache->isCachingActive()) {
+            if (($routes = $this->cache->getDataCache('routes')) === false) {
                 $this->initExtensionRoutes();
                 $this->initAnnotationRoutes();
                 $this->cache->setDataCache('routes', $this->virutalRoutes);
@@ -613,7 +616,6 @@ class Route
         $tpl = $this->template;
 
         if (is_object($menuItemTranslation)) {
-
             $this->loadRoutes();
 
             $menuItemTranslation = $this->db
@@ -661,11 +663,10 @@ class Route
                 return $this->menuItemNotFound();
             }
 
-            if($this->template->isCachingDisabled() === false) {
+            if ($this->template->isCachingDisabled() === false) {
                 // cache page if cache enable
                 $this->cache->setCacheContent();
             }
-
         } else {
             $this->menuItemNotFound();
         }
@@ -674,7 +675,8 @@ class Route
     /**
      * @return string
      */
-    public function getDefaultMenuItemTemplate() {
+    public function getDefaultMenuItemTemplate()
+    {
         return '<html><head><block type="css" sequence="outputFilter" consolidate="false"></block><block type="js" sequence="outputFilter" consolidate="false"></block></head><body>Add a template to the menu item</body></html>';
     }
 
@@ -781,7 +783,7 @@ class Route
         $addional_uri = trim($addional_uri, '/');
         $addional_uri = explode('/', $addional_uri);
 
-        $result_arr = array();
+        $result_arr = [];
         if ($addional_uri !== false) {
             foreach ($addional_uri as $key => $value) {
                 if (!empty($value) && !($key % 2)) {
@@ -894,7 +896,6 @@ class Route
     {
         if ($menuItem->getCurrentTranslation() &&
             $menuItem->getCurrentTranslation()->externalUrl) {
-
             return $menuItem->getCurrentTranslation()->url;
         }
         $url = rtrim($this->getCurrentDomain(), '/') . '/' .

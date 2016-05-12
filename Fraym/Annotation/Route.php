@@ -22,7 +22,7 @@ final class Route extends Annotation
     /**
      * @var array
      */
-    public $permission = array();
+    public $permission = [];
 
     /**
      * @var bool
@@ -32,5 +32,5 @@ final class Route extends Annotation
     /**
      * @var bool
      */
-    public $contextCallback = array();
+    public $contextCallback = [];
 }

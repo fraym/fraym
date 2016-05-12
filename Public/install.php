@@ -19,7 +19,6 @@ if(!is_file('Vendor/autoload.php') && !(isset($_SERVER['HTTP_X_REQUESTED_WITH'])
 if(!is_file('composer.phar')) {
     copy('https://getcomposer.org/composer.phar', 'composer.phar');
     echo json_encode(['message' => 'Downloading dependencies, this may take several minutes...', 'done' => true]);
-    ob_flush();
     exit();
 }
 
@@ -31,7 +30,6 @@ if(!is_file('Vendor/autoload.php')) {
     $application->setAutoExit(false);
     $application->run($input);
     echo json_encode(['message' => 'Done. Reloading installation...', 'done' => false]);
-    ob_flush();
     exit();
 }
 

@@ -12,7 +12,7 @@ use Fraym\Annotation\Registry;
 /**
  * Class InstallController
  * @package Fraym\Install
- * @Registry(file="Reg.php")
+ * @Registry(file="Register.php")
  * @Injectable(lazy=true)
  */
 class InstallController extends \Fraym\Core
@@ -73,7 +73,7 @@ class InstallController extends \Fraym\Core
     public function setup()
     {
         if (is_file($this->_configFile) && filesize($this->_configFile) > 0) {
-            $this->response->send('Fraym is already installed! Delete Config.php to reinstall.')->sendHTTPStatusCode(404)->finish();
+            $this->response->sendHTTPStatusCode(404)->send('Fraym is already installed! Delete Config.php to reinstall.');
         }
 
         $this->view->assign('timezones', $this->getTimezones());
@@ -177,7 +177,7 @@ class InstallController extends \Fraym\Core
     {
 
         $gp = $this->request->getGPAsObject();
-        $errors = array();
+        $errors = [];
 
         /**
          * create default language
@@ -242,7 +242,7 @@ class InstallController extends \Fraym\Core
         $this->addMenuItems($site);
 
         $adminGroup = new \Fraym\User\Entity\Group();
-        $adminGroup->name = $this->translation->autoTranslation('Administrator', 'en', $gp->locale);
+        $adminGroup->name = $this->translation->autoTranslation('Administrator', 'en', $this->locale->getLocale()->locale);
         $adminGroup->identifier = 'Administrator';
         $this->db->persist($adminGroup);
 
@@ -321,22 +321,22 @@ class InstallController extends \Fraym\Core
         $pageRootTranslation->menuItem = $pageRoot;
         $pageRootTranslation->visible = true;
         $pageRootTranslation->active = true;
-        $pageRootTranslation->title = $this->translation->autoTranslation('Home', 'en', $gp->locale);
+        $pageRootTranslation->title = $this->translation->autoTranslation('Home', 'en', $this->locale->getLocale()->locale);
         $pageRootTranslation->subtitle = $this->translation->autoTranslation(
             'Welcome to my website.',
             'en',
-            $gp->locale
+            $this->locale->getLocale()->locale
         );
         $pageRootTranslation->url = "";
         $pageRootTranslation->shortDescription = $this->translation->autoTranslation(
             'My short website description',
             'en',
-            $gp->locale
+            $this->locale->getLocale()->locale
         );
         $pageRootTranslation->longDescription = $this->translation->autoTranslation(
             'My long website description',
             'en',
-            $gp->locale
+            $this->locale->getLocale()->locale
         );
         $pageRootTranslation->externalUrl = false;
         $this->db->persist($pageRootTranslation);
@@ -356,18 +356,18 @@ class InstallController extends \Fraym\Core
         $newPageTranslation->menuItem = $newPage;
         $newPageTranslation->visible = false;
         $newPageTranslation->active = true;
-        $newPageTranslation->title = $this->translation->autoTranslation('404 Page not found', 'en', $gp->locale);
+        $newPageTranslation->title = $this->translation->autoTranslation('404 Page not found', 'en', $this->locale->getLocale()->locale);
         $newPageTranslation->subtitle = '';
-        $newPageTranslation->url = '/' . $this->translation->autoTranslation('error', 'en', $gp->locale) . '-404';
+        $newPageTranslation->url = '/' . $this->translation->autoTranslation('error', 'en', $this->locale->getLocale()->locale) . '-404';
         $newPageTranslation->shortDescription = $this->translation->autoTranslation(
             '404 Page not found',
             'en',
-            $gp->locale
+            $this->locale->getLocale()->locale
         );
         $newPageTranslation->longDescription = $this->translation->autoTranslation(
             '404 Page not found',
             'en',
-            $gp->locale
+            $this->locale->getLocale()->locale
         );
         $newPageTranslation->externalUrl = false;
         $this->db->persist($newPageTranslation);

@@ -43,5 +43,4 @@ use Fraym\Annotation\Registry;
  */
 class Theme
 {
-
 }

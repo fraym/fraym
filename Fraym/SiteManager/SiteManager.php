@@ -43,7 +43,7 @@ class SiteManager
      */
     public function getRteMenuItemArray()
     {
-        $menuItems = array();
+        $menuItems = [];
         $locales = $this->db->getRepository('\Fraym\Locale\Entity\Locale')->findAll();
         foreach ($locales as $locale) {
             foreach ($locale->menuItemTranslations as $menuItemTranslation) {

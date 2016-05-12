@@ -81,11 +81,11 @@ class SiteManagerController extends \Fraym\Core
             array('sorter' => 'asc')
         );
 
-        $extensionSorted = array();
+        $extensionSorted = [];
 
         foreach ($extensions as $extension) {
             if (!isset($extensionSorted[$extension->id])) {
-                $extensionSorted[$extension->id] = array();
+                $extensionSorted[$extension->id] = [];
             }
             $extensionSorted[$extension->id] = array(
                 'name' => $this->translation->getTranslation(

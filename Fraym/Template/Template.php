@@ -47,17 +47,17 @@ class Template
     /**
      * @var array
      */
-    private $keywords = array();
+    private $keywords = [];
 
     /**
      * @var array
      */
-    private $headData = array();
+    private $headData = [];
 
     /**
      * @var array
      */
-    private $footData = array();
+    private $footData = [];
 
     /**
      * @var null
@@ -67,7 +67,7 @@ class Template
     /**
      * @var array
      */
-    private $parserLog = array();
+    private $parserLog = [];
 
     /**
      * Holds the current module name
@@ -88,14 +88,14 @@ class Template
      *
      * @var array
      */
-    private $jsFiles = array();
+    private $jsFiles = [];
 
     /**
      * The css stack for rendering the css files to the output source
      *
      * @var array
      */
-    private $cssFiles = array();
+    private $cssFiles = [];
 
     /**
      * @var bool
@@ -105,35 +105,35 @@ class Template
     /**
      * @var array
      */
-    private $outputFilters = array();
+    private $outputFilters = [];
 
     /**
      * holds all template vars
      *
      * @var array
      */
-    private $templateVars = array();
+    private $templateVars = [];
 
     /**
      * holds all template vars from the last template
      *
      * @var array
      */
-    private $lastTemplateVars = array();
+    private $lastTemplateVars = [];
 
     /**
      * holds all template vars
      *
      * @var array
      */
-    private $globalTemplateVars = array();
+    private $globalTemplateVars = [];
 
     /**
      * All user pseudo template functions
      *
      * @var array
      */
-    private $pseudoFunctions = array();
+    private $pseudoFunctions = [];
 
     /**
      * @Inject
@@ -514,7 +514,6 @@ class Template
             $GLOBALS[$globKey] = $value;
             $templateVarString .= "$$var = " . '$GLOBALS["' . $globKey . '"]; ';
         }
-        $this->addParserLog('Template varibales: ' . $templateVarString);
 
         if ($clearTemplateVars) {
             $this->resetTemplateVars();
@@ -530,7 +529,7 @@ class Template
     private function resetTemplateVars()
     {
         $this->lastTemplateVars = $this->templateVars;
-        $this->templateVars = array();
+        $this->templateVars = [];
         return $this;
     }
 
@@ -590,7 +589,6 @@ class Template
                 $func,
                 $content
             );
-            $this->addParserLog('Pseudo function: ' . $content);
         }
         return $content;
     }
@@ -605,11 +603,9 @@ class Template
             },
             $content
         );
-        $this->addParserLog('Html entities encode and cleanup php tags: ' . $content);
 
         // remove comments
         $content = preg_replace('#\{\*.*\*\}#Uis', '', $content);
-        $this->addParserLog('Comments: ' . $content);
 
         // replace close tags
         $content = str_ireplace(
@@ -617,15 +613,12 @@ class Template
             array('{endif}', '{endforeach}', '{endwhile}', '{endfor}', '{endswitch}', '{endfunction}'),
             $content
         );
-        $this->addParserLog('Closing tags: ' . $content);
 
         // replace template functions with open function tag - Add function_exists to prevent double assign of template functions
         $content = preg_replace('/\{((function)\s+([^\}]*)\([^\}]*\)([^\}]*))\}/is', '<?php if(function_exists($3) === false) { $1 { ?>', $content, -1, $cc);
-        $this->addParserLog('Template functions open: ' . $content);
 
         // replace function close tag
         $content = preg_replace('/{endfunction}/is', '<?php } } ?>', $content);
-        $this->addParserLog('Template functions close: ' . $content);
 
         // check for valid objects
         $content = preg_replace_callback(
@@ -633,7 +626,6 @@ class Template
             array($this, 'regexObjectVarCheck'),
             $content
         );
-        $this->addParserLog('Valid object check: ' . $content);
 
         // check string and echo the string
         $content = preg_replace(
@@ -642,19 +634,15 @@ class Template
             $content
         );
 
-        $this->addParserLog('String check and echo: ' . $content);
-
         // escape strings
         $content = preg_replace(
             '/\{\$([^\s][^\}]*)\}/is',
             '<?php $__TPL_DATA__ = $$1; echo htmlspecialchars(isset($__TPL_DATA__) ? (string)$__TPL_DATA__ : "", ENT_QUOTES, \'utf-8\'); unset($__TPL_DATA__); ?>',
             $content
         );
-        $this->addParserLog('Escape string: ' . $content);
 
         // no output vars
         $content = preg_replace('/\{@([^\s][^\}]*)\}/is', '<?php $1; ?>', $content);
-        $this->addParserLog('Escape string: ' . $content);
 
         // echo none objects and booleans
         $content = preg_replace(
@@ -662,7 +650,6 @@ class Template
             '<?php echo (!is_bool($1) && !is_object($1) ? (string)$1 :""); ?>',
             $content
         );
-        $this->addParserLog('Function return check and echo: ' . $content);
 
         // echo strings
         $content = preg_replace(
@@ -670,7 +657,6 @@ class Template
             '<?php echo (string)$1; ?>',
             $content
         );
-        $this->addParserLog('Echo string: ' . $content);
 
         // replace php tags
         $content = preg_replace(
@@ -678,11 +664,9 @@ class Template
             '<?php $2($3): ?>',
             $content
         );
-        $this->addParserLog('Open tags ' . $content);
 
         // replace else tag
         $content = preg_replace('/\{((else)[^\}]*)\}/is', '<?php $1: ?>', $content);
-        $this->addParserLog('Else tags: ' . $content);
 
         // replace php close tags
         $content = preg_replace(
@@ -690,11 +674,9 @@ class Template
             '<?php $1; ?>',
             $content
         );
-        $this->addParserLog('Close tags: ' . $content);
 
         // replace object properties and methods
         $content = preg_replace_callback('/<\?php.*?\s*\?>/is', array($this, 'regexReplacePointer'), $content);
-        $this->addParserLog('Pointer replace: ' . $content);
 
         return $content;
     }
@@ -752,8 +734,6 @@ class Template
 
         $this->currentTemplateContent = $content;
 
-        $this->addParserLog('Start template parsing: ' . $content);
-
         $content = $this->replaceCustomTemplateFunctions($content);
         $content = $this->replaceTemplateTags($content);
 
@@ -761,14 +741,6 @@ class Template
         $vars = $this->getTemplateVarString();
 
         return $this->core->includeScript($vars . $content, array(&$this, 'errorHandler'));
-    }
-
-    /**
-     * @param $content
-     */
-    private function addParserLog($content)
-    {
-        $this->parserLog[] = $content;
     }
 
     /**
@@ -831,7 +803,6 @@ class Template
     public function regexObjectVarCheck($found)
     {
         $content = preg_replace('/((\$[a-zA-Z0-9_]*)(\.+[a-zA-Z0-9_]*)+)/is', '$1', $found[0]);
-        $this->addParserLog('Object var check:' . $content);
         return $content;
     }
 
@@ -842,7 +813,6 @@ class Template
     public function regexReplacePointer($found)
     {
         $result = preg_replace("/\.(\w+)(?=(?:[^']*'[^']*')*[^']*$)/is", "->{'$1'}", current($found));
-        $this->addParserLog('Pointer: ' . $result);
         return $result;
     }
 
@@ -985,7 +955,7 @@ class Template
     public function setKeyword($word, $truncate = false)
     {
         if ($truncate) {
-            $this->keywords = array();
+            $this->keywords = [];
         }
 
         $this->keywords[] = strtolower($word);
@@ -1000,7 +970,7 @@ class Template
     public function setKeywords($words = array(), $truncate = false)
     {
         if ($truncate) {
-            $this->keywords = array();
+            $this->keywords = [];
         }
 
         $this->keywords = array_unique(array_merge($this->keywords, $words));
@@ -1024,7 +994,7 @@ class Template
      */
     public function getJsFiles($group = 'default')
     {
-        return isset($this->jsFiles[$group]) ? $this->jsFiles[$group] : array();
+        return isset($this->jsFiles[$group]) ? $this->jsFiles[$group] : [];
     }
 
     /**
@@ -1044,7 +1014,7 @@ class Template
      */
     public function getCssFiles($group = 'default')
     {
-        return isset($this->cssFiles[$group]) ? $this->cssFiles[$group] : array();
+        return isset($this->cssFiles[$group]) ? $this->cssFiles[$group] : [];
     }
 
     /**
@@ -1077,8 +1047,8 @@ class Template
         $source = $this->addCmsInfo()->prependHeadDataToDocument($source);
         $source = $this->appendFootDataToDocument($source);
 
-        $this->headData = array();
-        $this->footData = array();
+        $this->headData = [];
+        $this->footData = [];
         // replace title
         $title = htmlspecialchars(trim($this->pageTitle), ENT_QUOTES, 'utf-8');
         $search = '/<title>(.*)<\/title>/im';

@@ -103,7 +103,7 @@ class FileManagerController extends \Fraym\Core
             foreach ($files as $file) {
                 if ($file['error'] == '0' && move_uploaded_file($file['tmp_name'], $tempFile)) {
                     // check if all the parts present, and create the final destination file
-                    if($this->createFileFromChunks($savePath, $filename) && count($callback)) {
+                    if ($this->createFileFromChunks($savePath, $filename) && count($callback)) {
                         call_user_func_array($callback, array($savePath, $filename));
                     }
                 } else {
@@ -208,7 +208,7 @@ class FileManagerController extends \Fraym\Core
         $fileFilter = $this->request->gp('fileFilter', '*');
         $fileFilter = empty($fileFilter) ? '*' : $fileFilter;
 
-        $return = array();
+        $return = [];
         if ($storage && $path && ($pathExist = $this->fileManager->pathExists($storage, $path))) {
             $return = $this->fileManager->getFiles($pathExist, '{' . $fileFilter . '}');
         }
@@ -249,7 +249,6 @@ class FileManagerController extends \Fraym\Core
         $fullPath = $this->fileManager->pathExists($storage, $path);
 
         if ($fullPath) {
-
             $content = '';
             $inlineImage = null;
 
@@ -266,7 +265,6 @@ class FileManagerController extends \Fraym\Core
                     array('png', 'gif', 'jpg', 'jpeg', 'bmp', 'tiff')
                 )
             ) {
-
                 if ($cmd === 'crop') {
                     $cropFilename = dirname($fullPath) . DIRECTORY_SEPARATOR . 'crop_' .
                         implode(

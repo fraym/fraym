@@ -46,11 +46,9 @@ class EventListener
 
         if (is_object($lifecycleCallbacks)) {
             foreach ($lifecycleCallbacks as $lifecycleEvent => $lifecycleCallback) {
-
                 if ($event === $lifecycleEvent &&
                     count($lifecycleCallback)
                 ) {
-
                     foreach ($lifecycleCallback as $class => $method) {
                         $this->serviceLocator->get($class)->{$method}($entity, $eventArgs, $event);
                     }
@@ -68,18 +66,15 @@ class EventListener
         $uow = $em->getUnitOfWork();
 
         foreach ($uow->getScheduledEntityUpdates() as $entity) {
-
             $lifecycleCallbacks = $this->db->getAnnotationReader()->getClassAnnotation(
                 new \ReflectionClass($entity),
                 'Fraym\Annotation\LifecycleCallback'
             );
             if (is_object($lifecycleCallbacks)) {
                 foreach ($lifecycleCallbacks as $lifecycleEvent => $lifecycleCallback) {
-
                     if (__FUNCTION__ === $lifecycleEvent &&
                         count($lifecycleCallback)
                     ) {
-
                         foreach ($lifecycleCallback as $class => $method) {
                             $this->serviceLocator->get($class)->{$method}($entity, $eventArgs, __FUNCTION__);
                         }

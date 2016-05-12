@@ -167,6 +167,10 @@ Core.Menu = {
                                 });
                             }
                         },
+                        onDblClick: function(node, event) {
+                            Core.Menu.editMenuItem(node.data.key);
+                            return false;
+                        },
                         children: data
                     });
                 }

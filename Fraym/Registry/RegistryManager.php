@@ -146,7 +146,7 @@ class RegistryManager
     {
         $reflRegClass = new \ReflectionClass('Fraym\Annotation\Registry');
         $properties = $reflRegClass->getProperties(\ReflectionProperty::IS_PUBLIC);
-        $result = array();
+        $result = [];
         foreach ($properties as $property) {
             $result[$property->getName()] = $property->getValue(new \Fraym\Annotation\Registry(array()));
         }
@@ -187,10 +187,11 @@ class RegistryManager
     /**
      * @return array
      */
-    public function getUnregisteredExtensions() {
-        $unregExtensions = array();
-        foreach($this->getExtensions() as $class => $ext) {
-            if($ext['registred'] === false) {
+    public function getUnregisteredExtensions()
+    {
+        $unregExtensions = [];
+        foreach ($this->getExtensions() as $class => $ext) {
+            if ($ext['registred'] === false) {
                 $unregExtensions[$class] = $ext;
             }
         }
@@ -202,7 +203,7 @@ class RegistryManager
      */
     public function getExtensions()
     {
-        $extensions = array();
+        $extensions = [];
         $coreFiles = $this->fileManager->findFiles(
             $this->core->getApplicationDir() . DIRECTORY_SEPARATOR . 'Fraym' . DIRECTORY_SEPARATOR . '*.php'
         );
@@ -265,7 +266,7 @@ class RegistryManager
     {
         $classAnnotation = $this->getRegistryConfig($registry->className);
 
-        $files = array();
+        $files = [];
 
         foreach ($classAnnotation->files as $path) {
             $files = array_merge($files, $this->fileManager->findFiles($path));
@@ -329,8 +330,9 @@ class RegistryManager
     /**
      * Inlcude composer
      */
-    public function loadComposer() {
-        if(!class_exists(\Composer\Console\Application::class)) {
+    public function loadComposer()
+    {
+        if (!class_exists(\Composer\Console\Application::class)) {
             \Phar::loadPhar('composer.phar', 'composer.phar');
             require_once 'phar://composer.phar/src/bootstrap.php';
         }
@@ -339,9 +341,10 @@ class RegistryManager
     /**
      * @param $extension
      */
-    public function composerRequire($extension) {
+    public function composerRequire($extension)
+    {
         $this->loadComposer();
-        if(isset($extension->composer) && isset($extension->composer['require'])) {
+        if (isset($extension->composer) && isset($extension->composer['require'])) {
             $input = new \Symfony\Component\Console\Input\ArrayInput(array('command' => 'require', 'packages' => $extension->composer['require']));
             $application = new \Composer\Console\Application();
             $application->setAutoExit(false);
@@ -352,7 +355,8 @@ class RegistryManager
     /**
      * Update composer dependencies
      */
-    public function composerUpdate() {
+    public function composerUpdate()
+    {
         $this->loadComposer();
         $input = new \Symfony\Component\Console\Input\ArrayInput(array('command' => 'update'));
         $application = new \Composer\Console\Application();
@@ -365,25 +369,26 @@ class RegistryManager
      *
      * @param $extension
      */
-    public function composerRemove($extension) {
+    public function composerRemove($extension)
+    {
         $this->loadComposer();
         $composerRequires = [];
 
-        foreach($this->getExtensions() as $ext) {
-            if($extension['repositoryKey'] !== $ext['repositoryKey']) {
-                foreach($ext['composer']['require'] as $package) {
+        foreach ($this->getExtensions() as $ext) {
+            if ($extension['repositoryKey'] !== $ext['repositoryKey']) {
+                foreach ($ext['composer']['require'] as $package) {
                     $composerRequires[$package] = $package;
                 }
             }
         }
 
-        foreach($extension['composer']['require'] as $k => $package) {
-            if(isset($composerRequires[$package])) {
+        foreach ($extension['composer']['require'] as $k => $package) {
+            if (isset($composerRequires[$package])) {
                 unset($extension['composer']['require'][$k]);
             }
         }
 
-        if(isset($extension['composer']) && isset($extension['composer']['require'])) {
+        if (isset($extension['composer']) && isset($extension['composer']['require'])) {
             $input = new \Symfony\Component\Console\Input\ArrayInput(array('command' => 'remove', 'packages' => $extension['composer']['require']));
             $application = new \Composer\Console\Application();
             $application->setAutoExit(false);
@@ -490,7 +495,7 @@ class RegistryManager
         foreach ($extension['files'] as $file) {
             if (is_file($file)) {
                 unlink($file);
-            } else if(is_dir($file)) {
+            } elseif (is_dir($file)) {
                 $this->fileManager->deleteFolder($file);
             }
         }
@@ -510,7 +515,7 @@ class RegistryManager
                 return $entityData;
             }
         }
-        return array();
+        return [];
     }
 
     /**
@@ -640,8 +645,8 @@ class RegistryManager
      */
     private function getEntity($className, $entryData)
     {
-        foreach($entryData as $k => &$data) {
-            if(is_array($data)) {
+        foreach ($entryData as $k => &$data) {
+            if (is_array($data)) {
                 $subEntryData = reset($data);
                 $subEntryClassName = key($data);
                 $data = $this->db->getRepository($subEntryClassName)->findOneBy($subEntryData);
@@ -696,7 +701,7 @@ class RegistryManager
      */
     public function getUpdates($extensions)
     {
-        $extensionsKeys = array();
+        $extensionsKeys = [];
         foreach ($extensions as $extension) {
             if ($extension->repositoryKey) {
                 $extensionsKeys[$extension->repositoryKey] = $extension->version;

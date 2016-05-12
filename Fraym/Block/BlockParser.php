@@ -27,7 +27,7 @@ class BlockParser
     /**
      * @var array
      */
-    private $customBlockTypes = array();
+    private $customBlockTypes = [];
 
     /**
      * Holds the current parsing block.
@@ -42,12 +42,12 @@ class BlockParser
      *
      * @var array
      */
-    private $placeholderReplacement = array();
+    private $placeholderReplacement = [];
 
     /**
      * @var array
      */
-    private $executedBlocks = array();
+    private $executedBlocks = [];
 
     /**
      * current block sequence
@@ -157,7 +157,8 @@ class BlockParser
      */
     public $request;
 
-    public function setParseCached($val) {
+    public function setParseCached($val)
+    {
         $this->cached = $val;
         return $this;
     }
@@ -241,7 +242,7 @@ class BlockParser
     {
         preg_match_all('#<block(?:\s+[^>]+)?>(.*?)</block>#si', $content, $matches);
         if (isset($matches[0])) {
-            $blocks = array();
+            $blocks = [];
             foreach ($matches[0] as $match) {
                 $blocks[] = $match;
             }
@@ -284,7 +285,7 @@ class BlockParser
      */
     public function getBlockOfType($type, $html)
     {
-        $blocks = array();
+        $blocks = [];
         foreach ($this->getAllBlocks($html) as $match) {
             $xml = $this->getXmlObjectFromString($match);
             if ($xml && $this->getXmlAttr($xml, 'type') == $type) {
@@ -311,7 +312,7 @@ class BlockParser
      */
     public function getXmlTags($elementName, $string)
     {
-        $matches = array();
+        $matches = [];
         if (preg_match_all('#<' . $elementName . '(?:\s+[^>]+)?>(.*?)</' . $elementName . '>#si', $string, $matches)) {
             return $matches;
         }
@@ -342,7 +343,6 @@ class BlockParser
         $allow = true;
 
         if ($user->isLoggedIn()) {
-
             $userGroupIdentifiers = $user->getIdentifiersFromGroups();
             $userIdentifier = $user->identifier;
 
@@ -417,7 +417,7 @@ class BlockParser
     {
         if (isset($xml->excludedDevices)) {
             $detection = $this->serviceLocator->get('Detection\MobileDetect');
-            $excluded = array();
+            $excluded = [];
             foreach ($xml->excludedDevices->device as $device) {
                 $excluded[] = $this->getXmlAttr($device[0], 'type');
             }
@@ -734,14 +734,14 @@ class BlockParser
         $queryBuilder = $this->db->createQueryBuilder();
         $menuTranslationId = $this->route->getCurrentMenuItemTranslation()->id;
         $siteId = $this->route->getCurrentMenuItem()->site->id;
-        $blocks = array();
+        $blocks = [];
 
         $query = $queryBuilder
             ->select("block")
             ->from('\Fraym\Block\Entity\Block', 'block')
             ->andWhere('block INSTANCE OF \Fraym\Block\Entity\Block OR block.block IS NULL');
 
-        if($this->user->isAdmin() === false) {
+        if ($this->user->isAdmin() === false) {
             $query = $query->andWhere("block.menuItem IS NULL OR block.menuItem = :menuId")
                 ->andWhere("block.site = :site")
                 ->andWhere("block.menuItemTranslation IS NULL OR block.menuItemTranslation = :menuTranslationId")
@@ -755,15 +755,14 @@ class BlockParser
             ->getQuery()
             ->getResult();
 
-        foreach($results as $result) {
-            if($this->user->isAdmin() &&
+        foreach ($results as $result) {
+            if ($this->user->isAdmin() &&
                 $result->changeSets->count() > 0) {
-
                 $lastChange = $result->changeSets->last();
 
-                if($lastChange->contentId === $contentId &&
-                    ($lastChange->menuItem === NULL || $lastChange->menuItem->id === $menuId) &&
-                    ($lastChange->menuItemTranslation === NULL || $lastChange->menuItemTranslation->id === $menuTranslationId) &&
+                if ($lastChange->contentId === $contentId &&
+                    ($lastChange->menuItem === null || $lastChange->menuItem->id === $menuId) &&
+                    ($lastChange->menuItemTranslation === null || $lastChange->menuItemTranslation->id === $menuTranslationId) &&
                     ($lastChange->site->id == $siteId) &&
                     $lastChange->type !== Entity\ChangeSet::DELETED) {
 
@@ -772,20 +771,18 @@ class BlockParser
                     $lastChange->id = $result->id;
                     $blocks[$result->id] = $lastChange;
                 }
-
-            } elseif($this->user->isAdmin() &&
+            } elseif ($this->user->isAdmin() &&
                 $result->contentId === $contentId &&
-                ($result->menuItem === NULL || $result->menuItem->id === $menuId) &&
-                ($result->menuItemTranslation === NULL || $result->menuItemTranslation->id === $menuTranslationId) &&
+                ($result->menuItem === null || $result->menuItem->id === $menuId) &&
+                ($result->menuItemTranslation === null || $result->menuItemTranslation->id === $menuTranslationId) &&
                 ($result->site->id == $siteId) &&
                 get_class($result) === 'Fraym\Block\Entity\ChangeSet') {
 
                 // New blocks
                 $blocks[$result->id] = $result;
-
-            } elseif($contentId === $result->contentId &&
-                ($result->menuItem === NULL || $result->menuItem->id === $menuId) &&
-                ($result->menuItemTranslation === NULL || $result->menuItemTranslation->id === $menuTranslationId) &&
+            } elseif ($contentId === $result->contentId &&
+                ($result->menuItem === null || $result->menuItem->id === $menuId) &&
+                ($result->menuItemTranslation === null || $result->menuItemTranslation->id === $menuTranslationId) &&
                 ($result->site->id == $siteId) &&
                 get_class($result) === 'Fraym\Block\Entity\Block') {
 
@@ -794,9 +791,9 @@ class BlockParser
             }
         }
 
-        if($this->user->isAdmin()) {
-            uasort($blocks, function($a, $b) {
-               if($a->position === $b->position) {
+        if ($this->user->isAdmin()) {
+            uasort($blocks, function ($a, $b) {
+               if ($a->position === $b->position) {
                    return $a->id < $b->id ? 1 : -1;
                }
                return $a->position > $b->position ? 1 : -1;
@@ -1014,7 +1011,8 @@ class BlockParser
      * @param $xml
      * @return string
      */
-    public function execBlockOfTypeJavascript($xml) {
+    public function execBlockOfTypeJavascript($xml)
+    {
         $this->template->addFootData('<script type="text/javascript">' . (string)$xml . '</script>');
         return '';
     }
@@ -1052,11 +1050,11 @@ class BlockParser
         $srcOnly = $this->getXmlAttr($xml, 'srcOnly') === true ? true : false;
 
         $src = $this->getXmlAttr($xml, 'src');
-        if($src === '') {
+        if ($src === '') {
             return '';
         }
 
-        if(filter_var($src, FILTER_VALIDATE_URL)) {
+        if (filter_var($src, FILTER_VALIDATE_URL)) {
             $info = getimagesize($src);
             $fname = parse_url($src, PHP_URL_PATH);
             $fname = basename($fname);
@@ -1109,7 +1107,6 @@ class BlockParser
             if ($method == 'resize') {
                 $image->resize($imageBox);
             } elseif ($method == 'thumbnail') {
-
                 $imageTags['width'] = $imageTags['width'] ? : $image->getSize()->getWidth();
                 $imageTags['height'] = $imageTags['height'] ? : $image->getSize()->getHeight();
 
@@ -1128,7 +1125,7 @@ class BlockParser
                 $imageTags['height'] = $imageTags['height'] ? : $image->getSize()->getHeight();
             }
 
-            if($crop) {
+            if ($crop) {
                 $image->crop(new \Imagine\Image\Point($crop[0], $crop[1]), new \Imagine\Image\Box($crop[2], $crop[3]));
                 $imageTags['width'] = $image->getSize()->getWidth();
                 $imageTags['height'] = $image->getSize()->getHeight();
@@ -1171,7 +1168,6 @@ class BlockParser
      */
     private function getImageBox($imageTags, $imagine)
     {
-
         if (empty($imageTags['width']) && !empty($imageTags['height'])) {
             return $imagine->getSize()->heighten($imageTags['height']);
         } elseif (empty($imageTags['height']) && !empty($imageTags['width'])) {
@@ -1218,7 +1214,7 @@ class BlockParser
                 continue;
             }
 
-            if((empty($blocks) && !empty($placeholder)) && $this->block->inEditMode() === false) {
+            if ((empty($blocks) && !empty($placeholder)) && $this->block->inEditMode() === false) {
                 $blocks = $placeholder;
             }
 
@@ -1243,7 +1239,7 @@ class BlockParser
      */
     private function contentChildViews($xml)
     {
-        $childsHtml = array();
+        $childsHtml = [];
         foreach ($xml->children() as $child) {
             $contentId = $this->getContentId($child);
 
@@ -1254,7 +1250,7 @@ class BlockParser
                 continue;
             }
 
-            if((empty($blocks) && !empty($placeholder)) && $this->block->inEditMode() === false) {
+            if ((empty($blocks) && !empty($placeholder)) && $this->block->inEditMode() === false) {
                 $blocks = $this->blockController->createEditViewElement($child, $placeholder);
             }
 
@@ -1338,18 +1334,19 @@ class BlockParser
      * @param $xml
      * @return string
      */
-    private function execBlockOfTypeLink($xml) {
+    private function execBlockOfTypeLink($xml)
+    {
         $menuItemId = $this->getXmlAttr($xml->a, 'href');
         $translation = $this->getXmlAttr($xml, 'translation');
 
-        if($translation) {
+        if ($translation) {
             $menuItemTranslation = $this->db->getRepository('\Fraym\Menu\Entity\MenuItemTranslation')->findOneById($menuItemId);
         } else {
             $menuItem = $this->db->getRepository('\Fraym\Menu\Entity\MenuItem')->findOneById($menuItemId);
             $menuItemTranslation = $menuItem->getCurrentTranslation();
         }
 
-        if($menuItemTranslation->externalUrl) {
+        if ($menuItemTranslation->externalUrl) {
             $xml->a->addAttribute('target', '_blank');
         }
         $xml->a->attributes()->href = empty($menuItemTranslation->url) ? '/' : $menuItemTranslation->url;
@@ -1424,8 +1421,8 @@ class BlockParser
 
                 if ($isUrl == 0 && $consolidatedFileExists === false && $consolidate === true) {
                     $consolidatedContent .= file_get_contents('Public/' . ltrim($file, '/'));
-                } elseif($isUrl !== 0 || $consolidate !== true) {
-                    if(!$isUrl) {
+                } elseif ($isUrl !== 0 || $consolidate !== true) {
+                    if (!$isUrl) {
                         $fileHash = hash_file('crc32', 'Public/' . $file);
                     }
                     $cssReplace .= '<link rel="stylesheet" type="text/css" href="' . $file . ($fileHash ? '?' . $fileHash : '') . '" />';
@@ -1433,7 +1430,7 @@ class BlockParser
             }
 
             if ($consolidate === true && (!empty($consolidatedContent) || $consolidatedFileExists)) {
-                if($consolidatedFileExists) {
+                if ($consolidatedFileExists) {
                     $cssReplace .= '<link rel="stylesheet" type="text/css" href="' . $consolidatedCssFilePath . '" />';
                 } else {
                     $cssReplace .= $this->consolidateCss($consolidatedCssFilePath, $consolidatedContent);
@@ -1454,9 +1451,10 @@ class BlockParser
      * @param $content
      * @return mixed
      */
-    function minifyCSSContent($content) {
+    public function minifyCSSContent($content)
+    {
         // Remove comments
-        $content = preg_replace('/\/\*.*?\*\//s', '' , $content);
+        $content = preg_replace('/\/\*.*?\*\//s', '', $content);
         // Remove empty tags
         $content = preg_replace('/(^|\})[^\{\}]+\{\s*\}/', '\\1', $content);
 
@@ -1487,7 +1485,8 @@ class BlockParser
      * @param $content
      * @return mixed
      */
-    function minifyJSContent($content) {
+    public function minifyJSContent($content)
+    {
         $content = \JsMin\Minify::minify($content);
         return trim($content);
     }
@@ -1500,7 +1499,7 @@ class BlockParser
     public function consolidateCss($consolidatedCssFilePath, $consolidatedContent)
     {
         $dir = 'Public' . dirname($consolidatedCssFilePath);
-        if(!is_dir($dir)) {
+        if (!is_dir($dir)) {
             mkdir($dir, 0777);
         }
         file_put_contents('Public' . $consolidatedCssFilePath, $consolidatedContent);
@@ -1547,8 +1546,8 @@ class BlockParser
 
                 if ($isUrl == 0 && $consolidatedFileExists === false && $consolidate === true) {
                     $consolidatedContent .= ";\n" . file_get_contents('Public/' . ltrim($file, '/'));
-                } elseif($isUrl !== 0 || $consolidate !== true) {
-                    if(!$isUrl) {
+                } elseif ($isUrl !== 0 || $consolidate !== true) {
+                    if (!$isUrl) {
                         $fileHash = hash_file('crc32', 'Public/' . $file);
                     }
                     $jsReplace .= '<script type="text/javascript" src="' . $file . ($fileHash ? '?' . $fileHash : '') . '"></script>';
@@ -1556,7 +1555,7 @@ class BlockParser
             }
 
             if ($consolidate === true && (!empty($consolidatedContent) || $consolidatedFileExists)) {
-                if($consolidatedFileExists) {
+                if ($consolidatedFileExists) {
                     $jsReplace .= '<script type="text/javascript" src="' . $consolidatedJsFilePath . '"></script>';
                 } else {
                     $jsReplace .= $this->consolidateJs($consolidatedJsFilePath, $consolidatedContent);
@@ -1581,7 +1580,7 @@ class BlockParser
     private function consolidateJs($consolidatedJsFilePath, $consolidatedContent)
     {
         $dir = 'Public' . dirname($consolidatedJsFilePath);
-        if(!is_dir($dir)) {
+        if (!is_dir($dir)) {
             mkdir($dir, 0777);
         }
         file_put_contents('Public' . $consolidatedJsFilePath, $consolidatedContent);
@@ -1631,7 +1630,7 @@ class BlockParser
         $namespaces[''] = null; //add base (empty) namespace
 
         //get attributes from all namespaces
-        $attributesArray = array();
+        $attributesArray = [];
         foreach ($namespaces as $prefix => $namespace) {
             foreach ($xml->attributes($namespace) as $attributeName => $attribute) {
                 //replace characters in attribute name
@@ -1647,7 +1646,7 @@ class BlockParser
         }
 
         //get child nodes from all namespaces
-        $tagsArray = array();
+        $tagsArray = [];
         foreach ($namespaces as $prefix => $namespace) {
             foreach ($xml->children($namespace) as $childXml) {
                 //recurse into child nodes
@@ -1683,7 +1682,7 @@ class BlockParser
         }
 
         //get text content of node
-        $textContentArray = array();
+        $textContentArray = [];
         $plainText = trim((string)$xml);
         if ($plainText !== '') {
             $textContentArray[$options['textContent']] = $plainText;

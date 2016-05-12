@@ -49,7 +49,7 @@ class CustomMenu
         $newMenuItems = json_decode($blockConfig->customMenu);
 
         $iteration = function (&$dom, $newMenuItems) use (&$iteration) {
-            $childs = array();
+            $childs = [];
             foreach ($newMenuItems as $item) {
                 $element = $dom->createElement('item');
                 $element->setAttribute('id', $item->key);
@@ -90,7 +90,6 @@ class CustomMenu
         $returnChildren = new \Doctrine\Common\Collections\ArrayCollection();
 
         foreach ($obj->children() as $objData) {
-
             $id = $this->blockParser->getXmlAttr($objData, 'id');
             $menuItemTranslation = $this->db->createQueryBuilder()
                 ->select("menu, translation")

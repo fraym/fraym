@@ -168,7 +168,7 @@ class News
     {
         $url = str_ireplace($this->route->getFoundURI(), '', $this->route->getSiteBaseURI());
         // Allow news detail only on sub pages
-        if($url !== '') {
+        if ($url !== '') {
             $newsItem = $this->getCurrentNewsItem();
             if ($newsItem) {
                 $slugTitle = $this->route->createSlug($newsItem->title);
@@ -184,10 +184,10 @@ class News
     /**
      * @return bool
      */
-    function newsListRouteCheck()
+    public function newsListRouteCheck()
     {
         $url = str_ireplace($this->route->getFoundURI(), '', $this->route->getSiteBaseURI());
-        if($url !== '') {
+        if ($url !== '') {
             $filter = $this->getNewsListFilter();
             if ($filter) {
                 return true;
@@ -375,7 +375,6 @@ class News
         if ((string)$xml->view == 'detail-category') {
             return $this->newsController->renderNewsItemCategories($listPageUrl, $currentNewsItem);
         } elseif ((string)$xml->view == 'detail') {
-
             return $this->newsController->renderNews($listPageUrl, $currentNewsItem);
         } elseif ((string)$xml->view == 'detail-tag') {
             return $this->newsController->renderNewsItemTags($listPageUrl, $currentNewsItem);

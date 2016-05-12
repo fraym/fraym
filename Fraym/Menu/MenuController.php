@@ -85,7 +85,7 @@ class MenuController extends \Fraym\Core
      */
     public function getIframeContent($content, $options = array())
     {
-        $menuItems = array();
+        $menuItems = [];
         $locales = $this->db->getRepository('\Fraym\Locale\Entity\Locale')->findAll();
         foreach ($locales as $locale) {
             foreach ($locale->menuItemTranslations as $menuItemTranslation) {
@@ -196,7 +196,7 @@ class MenuController extends \Fraym\Core
      */
     private function toDynatreeArray($fileArray)
     {
-        $dynatree = array();
+        $dynatree = [];
 
         foreach ($fileArray->children as $menuItem) {
             $title = '';
@@ -277,7 +277,7 @@ class MenuController extends \Fraym\Core
                 }
                 $newMenuItem->updateEntity($menu);
 
-                $menuItemsTranslations = array();
+                $menuItemsTranslations = [];
                 foreach ($newMenuItem->translations as $translation) {
                     $menuItemsTranslations[$translation->locale->id] = $translation->id;
                 }

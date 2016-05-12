@@ -47,7 +47,7 @@ class Database
     /**
      * @var array
      */
-    private $connectionOptions = array();
+    private $connectionOptions = [];
 
     /**
      * @Inject
@@ -126,7 +126,7 @@ class Database
      */
     public function getModuleDirCache()
     {
-        return $this->core->cache->getDataCache('CACHE_DOCTRINE_MODULE_FILE') ? : array();
+        return $this->core->cache->getDataCache('CACHE_DOCTRINE_MODULE_FILE') ? : [];
     }
 
     /**
@@ -541,7 +541,7 @@ class Database
     public function getEntityStatus()
     {
         $entityClassNames = $this->entityManager->getConfiguration()->getMetadataDriverImpl()->getAllClassNames();
-        $info = array();
+        $info = [];
         foreach ($entityClassNames as $entityClassName) {
             try {
                 $this->entityManager->getClassMetadata($entityClassName);

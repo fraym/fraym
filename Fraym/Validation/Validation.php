@@ -18,17 +18,17 @@ class Validation
     /**
      * @var array
      */
-    private $rules = array();
+    private $rules = [];
 
     /**
      * @var array
      */
-    private $errorMessages = array();
+    private $errorMessages = [];
 
     /**
      * @var array
      */
-    private $fieldsArray = array();
+    private $fieldsArray = [];
 
     /**
      * @Inject
@@ -69,7 +69,7 @@ class Validation
     public function getFormFieldValidation($modelName)
     {
         $formField = $this->formField->setClassName($modelName);
-        $errorMessages = array();
+        $errorMessages = [];
         $defaultLocale = $this->locale->getDefaultLocale();
         foreach ($formField->getFields() as $field => $annotation) {
             if (isset($annotation['validation'])) {
@@ -155,7 +155,6 @@ class Validation
      */
     private function checkRule($rule, $params, $value, $foundErrors = array())
     {
-
         $errorRule = false;
 
         // convert string to array
@@ -169,11 +168,11 @@ class Validation
                 $obj = $params[0];
                 $method = $params[1];
                 $methodParams = null;
-                if(isset($params[2])) {
+                if (isset($params[2])) {
                     $methodParams = $params[2];
                 }
-                if(is_object($obj)) {
-                    if($obj->$method($value, $methodParams) === false) {
+                if (is_object($obj)) {
+                    if ($obj->$method($value, $methodParams) === false) {
                         $errorRule[][$rule] = $value;
                     }
                 }
@@ -310,7 +309,7 @@ class Validation
      */
     public function check()
     {
-        $errors = array();
+        $errors = [];
 
         foreach ($this->rules as $rules) {
             foreach ($rules as $field => $ruleConfig) {
@@ -318,7 +317,7 @@ class Validation
                 $ruleParams = $ruleConfig['params'];
 
                 if (!isset($errors[$field])) {
-                    $foundErrors = array();
+                    $foundErrors = [];
                 } else {
                     $foundErrors = $errors[$field];
                 }
@@ -342,8 +341,8 @@ class Validation
             }
         }
 
-        $this->rules = array();
-        $this->fieldsArray = array();
+        $this->rules = [];
+        $this->fieldsArray = [];
 
         if (count($errors) > 0) {
             $errors = $this->assignErrorMessagesToErrors($errors);
@@ -370,10 +369,8 @@ class Validation
     private function assignErrorMessagesToErrors($errors)
     {
         if (count($this->errorMessages) > 0) {
-
             foreach ($errors as $field => $fields) {
                 foreach ($fields as $ruleType => $ruleValue) {
-
                     $rule = key($ruleValue);
                     $ruleValue = current($ruleValue);
 
@@ -392,7 +389,6 @@ class Validation
                     }
 
                     if (isset($this->errorMessages[$field][$rule])) {
-
                         $errors[$field][$ruleType]['message'] = $msg;
                     }
                 }

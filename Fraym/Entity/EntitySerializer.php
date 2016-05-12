@@ -72,11 +72,10 @@ class EntitySerializer
     {
         $className = get_class($entity);
         $metadata = $this->em->getClassMetadata($className);
-        $data = array();
+        $data = [];
         $currentDepth++;
 
         if (($this->maxRecursionDepth === 0 || ($this->maxRecursionDepth >= $currentDepth))) {
-
             foreach ($metadata->fieldMappings as $field => $mapping) {
                 $value = $metadata->reflFields[$field]->getValue($entity);
                 if ($value instanceof \DateTime) {
@@ -105,7 +104,7 @@ class EntitySerializer
                             ) &&
                                 ($this->maxRecursionDepth === 0 || $this->maxRecursionDepth > $currentDepth)
                             ) {
-                                $data[$key] = array();
+                                $data[$key] = [];
                                 $parentEntities[] = $mapping['targetEntity'];
                                 foreach ($entity->$field as $child) {
                                     $data[$key][] = $this->serializeEntity($child, $parentEntities, $currentDepth);
@@ -151,7 +150,6 @@ class EntitySerializer
                         }
                     }
                 }
-
             }
         }
 

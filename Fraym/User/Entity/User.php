@@ -182,7 +182,7 @@ class User extends \Fraym\Entity\BaseEntity
      */
     public function getIdentifiersFromGroups()
     {
-        $groups = array();
+        $groups = [];
         foreach ($this->groups as $group) {
             $groups[] = $group->identifier;
         }

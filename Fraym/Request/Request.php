@@ -136,7 +136,8 @@ class Request
      * @return bool|mixed|\SimpleXMLElement|string
      * @throws \Exception
      */
-    public function send($url, $params = null, $verb = 'POST', $format = 'json') {
+    public function send($url, $params = null, $verb = 'POST', $format = 'json')
+    {
         $cparams = array(
             'http' => array(
                 'method' => $verb,

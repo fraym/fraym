@@ -21,7 +21,8 @@ use Fraym\Annotation\LifecycleCallback;
  * @ORM\DiscriminatorMap({"block" = "Block", "change_set" = "ChangeSet"})
  * @LifecycleCallback(postPersist={"\Fraym\Block\Block"="clearCache"}, onFlush={"\Fraym\Block\Block"="clearCache"})
  */
-class Block extends \Fraym\Entity\BaseEntity {
+class Block extends \Fraym\Entity\BaseEntity
+{
     /**
      * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
@@ -135,7 +136,7 @@ class Block extends \Fraym\Entity\BaseEntity {
     public function getConfig($isAdmin = false)
     {
         if ($this->byRef) {
-            if($isAdmin && $this->byRef->changeSets->count()) {
+            if ($isAdmin && $this->byRef->changeSets->count()) {
                 return $this->byRef->changeSets->last()->config;
             }
             return $this->byRef->config;

@@ -37,7 +37,7 @@ class BlockChangeSetManagerController extends \Fraym\Core
      */
     public function getContent()
     {
-        if($this->user->isAdmin() === false) {
+        if ($this->user->isAdmin() === false) {
             return false;
         }
 
@@ -49,16 +49,17 @@ class BlockChangeSetManagerController extends \Fraym\Core
     /**
      * @Fraym\Annotation\Route("/fraym/deploy-change-set", name="deployChangeSet", permission={"\Fraym\User\User"="isAdmin"})
      */
-    public function deployChangeSet() {
-        if($this->request->isPost()) {
+    public function deployChangeSet()
+    {
+        if ($this->request->isPost()) {
             $undo = $this->request->post('undo') === 'true' ? true : false;
 
-            if(($menu = $this->request->post('menu')) !== false) {
+            if (($menu = $this->request->post('menu')) !== false) {
                 $this->blockChangeSetManager->deployMenu($menu, $undo);
-            } else if(($blockId = $this->request->post('block')) !== false) {
+            } elseif (($blockId = $this->request->post('block')) !== false) {
                 $this->blockChangeSetManager->deployBlock($blockId, $undo);
             } else {
-                if($undo) {
+                if ($undo) {
                     $this->blockChangeSetManager->undoAll();
                 } else {
                     $this->blockChangeSetManager->deployAll();

@@ -15,8 +15,7 @@ use Stichoza\GoogleTranslate\TranslateClient;
  */
 class Translation
 {
-    private $runtimeTranslationKeys = array();
-    private $autoTranslationServiceUrl = 'http://translate.google.com/translate_a/t?client=t&hl=%s&tl=%s&sl=%s&multires=1&otf=2&pc=1&ssel=0&tsel=0&sc=1&text=';
+    private $runtimeTranslationKeys = [];
 
     /**
      * @Inject
@@ -207,6 +206,12 @@ class Translation
      */
     public function autoTranslation($str, $fromLocale = 'en', $toLocale = 'de')
     {
-        return TranslateClient::translate($fromLocale, $toLocale, $str);
+        try {
+            $translation = TranslateClient::translate($fromLocale, $toLocale, $str);
+        } catch (\Exception $e) {
+            error_log($e);
+            $translation = $str;
+        }
+        return $translation;
     }
 }

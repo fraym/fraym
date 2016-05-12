@@ -17,7 +17,7 @@ namespace Fraym\Block;
  */
 class BlockMetadata
 {
-    private $uris = array();
+    private $uris = [];
 
     /**
      * @param $uri

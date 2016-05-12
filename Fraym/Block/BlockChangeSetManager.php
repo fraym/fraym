@@ -39,7 +39,7 @@ class BlockChangeSetManager
      */
     public function getChangeSets()
     {
-        $changeSets = array();
+        $changeSets = [];
         $query = $this->db->createQueryBuilder();
 
         $results = $query
@@ -52,18 +52,18 @@ class BlockChangeSetManager
             ->getQuery()
             ->getResult();
 
-        foreach($results as $block) {
-            if(!isset($changeSets[$block->site->id])) {
-                $changeSets[$block->site->id] = array();
+        foreach ($results as $block) {
+            if (!isset($changeSets[$block->site->id])) {
+                $changeSets[$block->site->id] = [];
             }
 
             $menuItemId = $block->menuItem ? $block->menuItem->id : 0;
 
-            if(!isset($changeSets[$block->site->id][$menuItemId])) {
-                $changeSets[$block->site->id][$menuItemId] = array();
+            if (!isset($changeSets[$block->site->id][$menuItemId])) {
+                $changeSets[$block->site->id][$menuItemId] = [];
             }
             $translationId = $block->menuItemTranslation ? $block->menuItemTranslation->id : 0;
-            if(!isset($changeSets[$block->site->id][$menuItemId][$translationId])) {
+            if (!isset($changeSets[$block->site->id][$menuItemId][$translationId])) {
                 $changeSets[$block->site->id][$menuItemId][$translationId] = array(
                     'menuItem' => $block->menuItem,
                     'menuItemTranslation' => $block->menuItemTranslation,
@@ -79,31 +79,31 @@ class BlockChangeSetManager
     /**
      * @param $block
      */
-    public function deploy($block) {
-
-        if(count($block->changeSets)) {
+    public function deploy($block)
+    {
+        if (count($block->changeSets)) {
             $lastChange = clone $block->changeSets->last();
         }
 
         // New blocks
-        if(get_class($block) === 'Fraym\Block\Entity\ChangeSet') {
-            if(count($block->changeSets) === 0) {
+        if (get_class($block) === 'Fraym\Block\Entity\ChangeSet') {
+            if (count($block->changeSets) === 0) {
                 $lastChange = clone $block;
             }
-            if($lastChange->type !== Entity\ChangeSet::DELETED) {
+            if ($lastChange->type !== Entity\ChangeSet::DELETED) {
                 $this->db->remove($block);
                 $this->db->flush();
                 $block = new Entity\Block();
             }
         }
 
-        foreach($block->changeSets as $change) {
+        foreach ($block->changeSets as $change) {
             $this->db->remove($change);
         }
 
         $this->db->flush();
 
-        if($lastChange->type === Entity\ChangeSet::DELETED) {
+        if ($lastChange->type === Entity\ChangeSet::DELETED) {
             $this->db->remove($block);
         } else {
             $block->contentId = $lastChange->contentId;
@@ -115,7 +115,7 @@ class BlockChangeSetManager
             $block->byRef = $lastChange->byRef;
             $block->menuItemTranslation = $lastChange->menuItemTranslation;
             $block->extension = $lastChange->extension;
-            if(!$block->byRef) {
+            if (!$block->byRef) {
                 $block->config = $lastChange->config;
             }
 
@@ -129,11 +129,12 @@ class BlockChangeSetManager
     /**
      * @param $block
      */
-    public function undoBlock($block) {
-        foreach($block->changeSets as $change) {
+    public function undoBlock($block)
+    {
+        foreach ($block->changeSets as $change) {
             $this->db->remove($change);
         }
-        if(get_class($block) === 'Fraym\Block\Entity\ChangeSet') {
+        if (get_class($block) === 'Fraym\Block\Entity\ChangeSet') {
             $this->db->remove($block);
         }
         $this->db->flush();
@@ -144,13 +145,14 @@ class BlockChangeSetManager
      *
      * @return int
      */
-    public function deployAll() {
+    public function deployAll()
+    {
         $count = 0;
         $changeSets = $this->getChangeSets();
-        foreach($changeSets as $sites) {
-            foreach($sites as $menuItems) {
-                foreach($menuItems as $data) {
-                    foreach($data['blocks'] as $blockId => $lastChagedBlock) {
+        foreach ($changeSets as $sites) {
+            foreach ($sites as $menuItems) {
+                foreach ($menuItems as $data) {
+                    foreach ($data['blocks'] as $blockId => $lastChagedBlock) {
                         $block = $this->db->getRepository('\Fraym\Block\Entity\Block')->findOneById($blockId);
                         $this->deploy($block);
                         $count++;
@@ -166,13 +168,14 @@ class BlockChangeSetManager
      *
      * @return int
      */
-    public function undoAll() {
+    public function undoAll()
+    {
         $count = 0;
         $changeSets = $this->getChangeSets();
-        foreach($changeSets as $sites) {
-            foreach($sites as $menuItems) {
-                foreach($menuItems as $data) {
-                    foreach($data['blocks'] as $blockId => $lastChagedBlock) {
+        foreach ($changeSets as $sites) {
+            foreach ($sites as $menuItems) {
+                foreach ($menuItems as $data) {
+                    foreach ($data['blocks'] as $blockId => $lastChagedBlock) {
                         $block = $this->db->getRepository('\Fraym\Block\Entity\Block')->findOneById($blockId);
                         $this->undoBlock($block);
                         $count++;
@@ -187,15 +190,16 @@ class BlockChangeSetManager
      * @param $menu
      * @param bool $undo
      */
-    public function deployMenu($menu, $undo = false) {
+    public function deployMenu($menu, $undo = false)
+    {
         list($siteId, $menuId, $menuTranslationId) = explode(',', $menu);
         $menuTranslationId = intval($menuTranslationId);
         $changeSets = $this->getChangeSets();
 
-        if(isset($changeSets[$siteId][$menuId][$menuTranslationId])) {
-            foreach($changeSets[$siteId][$menuId][$menuTranslationId]['blocks'] as $blockId => $change) {
+        if (isset($changeSets[$siteId][$menuId][$menuTranslationId])) {
+            foreach ($changeSets[$siteId][$menuId][$menuTranslationId]['blocks'] as $blockId => $change) {
                 $block = $this->db->getRepository('\Fraym\Block\Entity\Block')->findOneById($blockId);
-                if($undo) {
+                if ($undo) {
                     $this->undoBlock($block);
                 } else {
                     $this->deploy($block);
@@ -208,9 +212,10 @@ class BlockChangeSetManager
      * @param $blockId
      * @param bool $undo
      */
-    public function deployBlock($blockId, $undo = false) {
+    public function deployBlock($blockId, $undo = false)
+    {
         $block = $this->db->getRepository('\Fraym\Block\Entity\Block')->findOneById($blockId);
-        if($undo) {
+        if ($undo) {
             $this->undoBlock($block);
         } else {
             $this->deploy($block);

@@ -68,9 +68,9 @@ class EntityManagerController extends \Fraym\Core
 
         $currentEntity = false;
         $errors = false;
-        $data = array();
-        $formFields = array();
-        $entities = array();
+        $data = [];
+        $formFields = [];
+        $entities = [];
         $modelClass = false;
         $model = false;
         $modelName = $this->request->gp('model', false);
@@ -105,7 +105,7 @@ class EntityManagerController extends \Fraym\Core
                 } elseif (isset($data['cmd']) && $data['cmd'] == 'remove' && $currentEntity) {
                     $this->db->remove($currentEntity);
                     $this->db->flush();
-                    $data = array();
+                    $data = [];
                     $currentEntity = false;
                 } elseif (isset($data['cmd']) && $data['cmd'] == 'update') {
                     $currentEntity->updateEntity($data, false);

@@ -181,7 +181,8 @@ class BlockController extends \Fraym\Core
     /**
      *
      */
-    private function clearCache() {
+    private function clearCache()
+    {
         $this->cache->clearAll();
         $this->response->sendAsJson(array('success' => true));
     }
@@ -218,7 +219,6 @@ class BlockController extends \Fraym\Core
         $menuItemTranslation = null;
 
         if (($result = $validate->check()) === true) {
-
             $extension = $this->db->getRepository('\Fraym\Block\Entity\Extension')->findOneById(
                 $blockConfigGP->id
             );
@@ -315,7 +315,7 @@ class BlockController extends \Fraym\Core
                 }
 
                 $blockConfig = $this->blockParser->getBlockConfig((string)$newBlock);
-                if($changeSet->byRef === null) {
+                if ($changeSet->byRef === null) {
                     $changeSet->config = $blockConfig;
                 } else {
                     $changeRefBlock = clone $changeSet->byRef;
@@ -400,7 +400,7 @@ class BlockController extends \Fraym\Core
             $block = $this->db->getRepository('\Fraym\Block\Entity\Block')->findOneById($id);
 
             if ($block) {
-                if($block->changeSets->count()) {
+                if ($block->changeSets->count()) {
                     $block = $block->changeSets->last();
                 }
                 $extension = $block->extension;
@@ -447,10 +447,10 @@ class BlockController extends \Fraym\Core
         $blocks = $this->request->gp('blocks', array());
 
         foreach ($blocks as $k => $block) {
-            if(isset($block['blockId'])) {
+            if (isset($block['blockId'])) {
                 $movedblock = $this->db->getRepository('\Fraym\Block\Entity\Block')->findOneById($block['blockId']);
                 if ($movedblock) {
-                    if($movedblock->changeSets->count()) {
+                    if ($movedblock->changeSets->count()) {
                         $changedBlock = clone $movedblock->changeSets->last();
                     } else {
                         $changedBlock = clone $movedblock;
@@ -478,7 +478,7 @@ class BlockController extends \Fraym\Core
     {
         $blockId = $this->request->gp('blockId', false);
         if ($blockId && ($block = $this->db->getRepository('\Fraym\Block\Entity\Block')->findOneById($blockId))) {
-            if($block->changeSets->count()) {
+            if ($block->changeSets->count()) {
                 $changedBlock = $block->changeSets->last();
             } else {
                 $changedBlock = $block;
@@ -494,7 +494,8 @@ class BlockController extends \Fraym\Core
      * @param $type
      * @return Entity\ChangeSet
      */
-    private function createChangeSet($changedBlock, $parentBlock, $type) {
+    private function createChangeSet($changedBlock, $parentBlock, $type)
+    {
         $changeSet = new \Fraym\Block\Entity\ChangeSet();
         $changeSet->contentId = $changedBlock->contentId;
         $changeSet->position = $changedBlock->position;
@@ -507,7 +508,7 @@ class BlockController extends \Fraym\Core
         $changeSet->block = $parentBlock;
         $changeSet->type = $type;
 
-        if(!$changedBlock->byRef) {
+        if (!$changedBlock->byRef) {
             $changeSet->config = $changedBlock->config;
         }
 
@@ -529,7 +530,6 @@ class BlockController extends \Fraym\Core
 
         if ($contentId && $blockId &&
             ($block = $this->db->getRepository('\Fraym\Block\Entity\Block')->findOneById($blockId))) {
-
             $menuItem = $this->db->getRepository('\Fraym\Menu\Entity\MenuItem')->findOneById($menuId);
             $blocks = $this->db->getRepository('\Fraym\Block\Entity\Block')->findBy(
                 array('menuItem' => $menuItem, 'contentId' => $contentId),
@@ -537,7 +537,7 @@ class BlockController extends \Fraym\Core
             );
 
             // Re-Order other blocks
-            foreach($blocks as $k => $b) {
+            foreach ($blocks as $k => $b) {
                 $b->position = $k+1;
             }
 

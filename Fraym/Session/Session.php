@@ -16,7 +16,7 @@ class Session
     /**
      * @var array
      */
-    private $onDestroy = array();
+    private $onDestroy = [];
 
     /**
      * @var null

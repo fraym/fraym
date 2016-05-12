@@ -71,12 +71,12 @@ class BlockXml
     /**
      * @var array
      */
-    private $permissions = array();
+    private $permissions = [];
 
     /**
      * @var array
      */
-    private $excludedDevices = array();
+    private $excludedDevices = [];
 
     /**
      * @var bool
@@ -120,12 +120,12 @@ class BlockXml
 
         $recursiv = function ($xmlObj, $children = false) use (&$recursiv) {
             $result = new \stdClass();
-            $childArr = array();
+            $childArr = [];
             foreach ($xmlObj as $elementName => $elementValue) {
                 $result->{(string)$elementName} = new \stdClass();
 
                 if (count($elementValue->attributes()) > 0) {
-                    $result->$elementName->attributes = array();
+                    $result->$elementName->attributes = [];
                     foreach ($elementValue->attributes() as $attrName => $attrVal) {
                         if (!isset($result->$elementName)) {
                             $result->$elementName = new \stdClass();

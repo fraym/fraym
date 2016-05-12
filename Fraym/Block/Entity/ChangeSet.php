@@ -33,14 +33,15 @@ class ChangeSet extends Block
      */
     protected $user;
 
-    public function getHistory() {
-        $blocks = array();
+    public function getHistory()
+    {
+        $blocks = [];
         do {
             $parent = $this->block;
-            if($parent) {
+            if ($parent) {
                 $blocks[] = $parent;
             }
-        } while($parent);
+        } while ($parent);
         return $blocks;
     }
 }

@@ -395,7 +395,7 @@ body.dragging, body.dragging * {
     border: 0;
 }
 
-#block-tabs .ui-tabs-panel {
+#add-edit-menu #block-tabs .ui-tabs-panel {
     padding: 0;
 }
 
