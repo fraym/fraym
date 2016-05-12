@@ -138,12 +138,12 @@ class Request
      */
     public function send($url, $params = null, $verb = 'POST', $format = 'json')
     {
-        $cparams = array(
-            'http' => array(
+        $cparams = [
+            'http' => [
                 'method' => $verb,
                 'ignore_errors' => true
-            )
-        );
+            ]
+        ];
         if ($params !== null) {
             $params = http_build_query($params);
             if ($verb == 'POST') {

@@ -16,7 +16,7 @@ class BlockXml
     /**
      * @var array
      */
-    private $templatesTypes = array('file', 'string');
+    private $templatesTypes = ['file', 'string'];
 
     /**
      * @var null
@@ -139,7 +139,7 @@ class BlockXml
                     $result->{(string)$elementName}->value = (string)$elementValue;
                 }
 
-                $childArr[] = array($elementName => $result->{(string)$elementName});
+                $childArr[] = [$elementName => $result->{(string)$elementName}];
             }
 
             if ($children === true) {

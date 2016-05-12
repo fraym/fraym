@@ -46,7 +46,7 @@ class BreadcrumbController extends \Fraym\Core
     {
         $menuItem = $this->route->getCurrentMenuItem();
         if ($menuItem) {
-            $menuItems = array($menuItem->getCurrentTranslation());
+            $menuItems = [$menuItem->getCurrentTranslation()];
             do {
                 $menuItem = $menuItem->parent;
                 if ($menuItem) {

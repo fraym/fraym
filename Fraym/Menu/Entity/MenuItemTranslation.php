@@ -122,7 +122,7 @@ class MenuItemTranslation extends \Fraym\Entity\BaseEntity
     public function setUrlIfEmpty()
     {
         if (empty($this->url) && $this->menuItem->parent !== null) {
-            $urls = array($this->title);
+            $urls = [$this->title];
             $menuItem = $this->menuItem;
             do {
                 $menuItem = $menuItem->parent;

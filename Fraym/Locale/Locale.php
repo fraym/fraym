@@ -60,7 +60,7 @@ class Locale
      */
     public function getDefaultLocale()
     {
-        $defaultLocale = $this->db->getRepository('\Fraym\Locale\Entity\Locale')->findOneBy(array('default' => 1));
+        $defaultLocale = $this->db->getRepository('\Fraym\Locale\Entity\Locale')->findOneBy(['default' => 1]);
         return $defaultLocale;
     }
 

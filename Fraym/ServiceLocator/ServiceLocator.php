@@ -34,7 +34,7 @@ class ServiceLocator
     public function __call($method, $param)
     {
         if (is_object($this->diContainer) && method_exists($this->diContainer, $method)) {
-            return call_user_func_array(array(&$this->diContainer, $method), $param);
+            return call_user_func_array([&$this->diContainer, $method], $param);
         }
         return null;
     }

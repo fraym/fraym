@@ -33,12 +33,12 @@ class Session
         $this->name('fraym_s');
 
         session_set_save_handler(
-            array($this, "handlerOpen"),
-            array($this, "handlerClose"),
-            array($this, "handlerRead"),
-            array($this, "handlerWrite"),
-            array($this, "handlerDestroy"),
-            array($this, "handlerGc")
+            [$this, "handlerOpen"],
+            [$this, "handlerClose"],
+            [$this, "handlerRead"],
+            [$this, "handlerWrite"],
+            [$this, "handlerDestroy"],
+            [$this, "handlerGc"]
         );
         return $this;
     }
@@ -96,7 +96,7 @@ class Session
     public function handlerDestroy($id)
     {
         foreach ($this->onDestroy as $callback) {
-            call_user_func_array($callback, array($this));
+            call_user_func_array($callback, [$this]);
         }
         $sess_file = $this->savePath . DIRECTORY_SEPARATOR . "sess_$id";
         return (@unlink($sess_file));
@@ -109,7 +109,7 @@ class Session
     public function handlerGc($maxlifetime)
     {
         foreach ($this->onDestroy as $callback) {
-            call_user_func_array($callback, array($this));
+            call_user_func_array($callback, [$this]);
         }
         $path = $this->savePath;
         foreach (glob("$path/sess_*") as $filename) {

@@ -92,7 +92,7 @@ class Mailform
      */
     public function execBlock($xml)
     {
-        $errors = array();
+        $errors = [];
         $submit = false;
         $values = $this->request->getGPAsArray();
         if ($this->request->post('mailform')) {
@@ -101,20 +101,20 @@ class Mailform
             $fields = $values['field'];
             $this->validation->setData($fields);
             $this->validation->addRule('email', 'email');
-            $errorMessages = array();
+            $errorMessages = [];
 
             foreach ($required as $field => $val) {
                 $this->validation->addRule($field, 'notEmpty');
-                $errorMessages = array_merge($errorMessages, array(
-                    $field => array($field => $this->translation->getTranslation('Please fill out the field')),
-                ));
+                $errorMessages = array_merge($errorMessages, [
+                    $field => [$field => $this->translation->getTranslation('Please fill out the field')],
+                ]);
             }
 
             $this->validation->setErrorMessages($errorMessages);
             $check = $this->validation->check();
             if ($check === true) {
                 $msg = $this->mail->getMessageInstance();
-                $msg->setFrom(array($fields['email']));
+                $msg->setFrom([$fields['email']]);
                 $msg->setSubject($this->config->get('MAILFORM_SUBJECT')->value);
                 $msg->setTo(explode(',', $this->config->get('MAILFORM_TO')->value));
 

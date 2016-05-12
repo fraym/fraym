@@ -123,7 +123,7 @@ class DynamicTemplate
      * @param null $parentKey
      * @return mixed
      */
-    private function buildSelectOptions($files, &$options = array(), $parentKey = null)
+    private function buildSelectOptions($files, &$options = [], $parentKey = null)
     {
         foreach ($files as $file) {
             if ($file['isDir'] === true) {

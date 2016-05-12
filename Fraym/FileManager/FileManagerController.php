@@ -17,14 +17,14 @@ class FileManagerController extends \Fraym\Core
     /**
      * @var array
      */
-    private $_uploadErrors = array(
+    private $_uploadErrors = [
         0 => "There is no error, the file uploaded with success",
         1 => "The uploaded file exceeds the upload_max_filesize directive in php.ini",
         2 => "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form",
         3 => "The uploaded file was only partially uploaded",
         4 => "No file was uploaded",
         6 => "Missing a temporary folder"
-    );
+    ];
 
     /**
      * @Inject
@@ -79,7 +79,7 @@ class FileManagerController extends \Fraym\Core
     /**
      * Handle file upload.
      */
-    public function upload($savePath = null, $filename = null, $callback = array())
+    public function upload($savePath = null, $filename = null, $callback = [])
     {
         $files = $this->request->files();
         $savePath = $savePath ?: $this->request->gp('path');
@@ -104,7 +104,7 @@ class FileManagerController extends \Fraym\Core
                 if ($file['error'] == '0' && move_uploaded_file($file['tmp_name'], $tempFile)) {
                     // check if all the parts present, and create the final destination file
                     if ($this->createFileFromChunks($savePath, $filename) && count($callback)) {
-                        call_user_func_array($callback, array($savePath, $filename));
+                        call_user_func_array($callback, [$savePath, $filename]);
                     }
                 } else {
                     error_log($this->_uploadErrors[$file['error']]);
@@ -262,7 +262,7 @@ class FileManagerController extends \Fraym\Core
             if (isset($pathinfo['extension']) &&
                 in_array(
                     $pathinfo['extension'],
-                    array('png', 'gif', 'jpg', 'jpeg', 'bmp', 'tiff')
+                    ['png', 'gif', 'jpg', 'jpeg', 'bmp', 'tiff']
                 )
             ) {
                 if ($cmd === 'crop') {
@@ -329,12 +329,12 @@ class FileManagerController extends \Fraym\Core
                 } elseif ($fileExists && is_dir($fileExists)) {
                     $this->copyFolder($fileExists, $fileSavePathExists);
                 } else {
-                    $this->response->sendAsJson(array('error' => true));
+                    $this->response->sendAsJson(['error' => true]);
                 }
             }
-            $this->response->sendAsJson(array('error' => false));
+            $this->response->sendAsJson(['error' => false]);
         }
-        $this->response->sendAsJson(array('error' => true));
+        $this->response->sendAsJson(['error' => true]);
     }
 
     /**
@@ -399,14 +399,14 @@ class FileManagerController extends \Fraym\Core
                 if (!empty($newName) && !is_dir($newFolderPath)) {
                     mkdir($newFolderPath);
                 } else {
-                    $this->response->sendAsJson(array('error' => true));
+                    $this->response->sendAsJson(['error' => true]);
                 }
             } elseif ($newFile && $pathExists) {
                 $newFilePath = $pathExists . DIRECTORY_SEPARATOR . $newName;
                 if (!empty($newName) && !is_dir($newFilePath)) {
                     touch($newFilePath);
                 } else {
-                    $this->response->sendAsJson(array('error' => true));
+                    $this->response->sendAsJson(['error' => true]);
                 }
             } else {
                 $file = $item->path;
@@ -415,11 +415,11 @@ class FileManagerController extends \Fraym\Core
                 if ($fileExists) {
                     rename($file, dirname($fileExists) . DIRECTORY_SEPARATOR . $newName);
                 } else {
-                    $this->response->sendAsJson(array('error' => true));
+                    $this->response->sendAsJson(['error' => true]);
                 }
             }
         }
-        $this->response->sendAsJson(array('error' => false));
+        $this->response->sendAsJson(['error' => false]);
     }
 
     /**
@@ -440,13 +440,13 @@ class FileManagerController extends \Fraym\Core
                     @unlink($file);
                 } elseif ($file && is_dir($file) && is_writeable($file)) {
                     if ($this->deleteFolder($file) === false) {
-                        $this->response->sendAsJson(array('error' => true));
+                        $this->response->sendAsJson(['error' => true]);
                     }
                 } else {
-                    $this->response->sendAsJson(array('error' => true));
+                    $this->response->sendAsJson(['error' => true]);
                 }
             }
-            $this->response->sendAsJson(array('error' => false));
+            $this->response->sendAsJson(['error' => false]);
         }
     }
 

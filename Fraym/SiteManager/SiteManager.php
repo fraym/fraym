@@ -47,7 +47,7 @@ class SiteManager
         $locales = $this->db->getRepository('\Fraym\Locale\Entity\Locale')->findAll();
         foreach ($locales as $locale) {
             foreach ($locale->menuItemTranslations as $menuItemTranslation) {
-                $menuItems[] = array($menuItemTranslation->title . " ({$locale->name})", $menuItemTranslation->id);
+                $menuItems[] = [$menuItemTranslation->title . " ({$locale->name})", $menuItemTranslation->id];
             }
         }
         return json_encode($menuItems);

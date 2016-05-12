@@ -71,9 +71,9 @@ class BugReportController extends \Fraym\Core
      */
     public function getContent()
     {
-        $values = array();
-        $errors = array();
-        $result = array();
+        $values = [];
+        $errors = [];
+        $result = [];
 
         if ($this->request->isPost()) {
             $fields = $this->request->post('field');
@@ -88,9 +88,9 @@ class BugReportController extends \Fraym\Core
 
             $check = $this->validation->check();
             if ($check === true) {
-                $params = array(
+                $params = [
                     'fields' => $fields,
-                    'client_info' => array(
+                    'client_info' => [
                         'version' => \Fraym\Core::VERSION,
                         'php_version' => phpversion(),
                         'os' => php_uname('s'),
@@ -98,8 +98,8 @@ class BugReportController extends \Fraym\Core
                         'image_processor' => IMAGE_PROCESSOR,
                         'server' => $_SERVER,
                         'env' => ENV,
-                    )
-                );
+                    ]
+                ];
                 $result = $this->request->send(self::BUGREPORT_URL, $params);
             } else {
                 $errors = $check;

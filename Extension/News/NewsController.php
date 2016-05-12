@@ -34,7 +34,7 @@ class NewsController extends \Fraym\Core
     {
         $newsListItems = $this->db->getRepository('\Extension\News\Entity\News')->findAll();
 
-        $selectedNewsItems = isset($blockConfig->listItems) ? explode(',', $blockConfig->listItems) : array();
+        $selectedNewsItems = isset($blockConfig->listItems) ? explode(',', $blockConfig->listItems) : [];
 
         $this->view->assign('selectedNewsItems', $selectedNewsItems);
         $this->view->assign('blockConfig', $blockConfig);
@@ -61,7 +61,7 @@ class NewsController extends \Fraym\Core
             );
         }
 
-        $this->view->addOutputFilter(array($this, 'addMetaTags'));
+        $this->view->addOutputFilter([$this, 'addMetaTags']);
         $this->view->assign('newsItem', $newsItem);
         $this->view->setTemplate('NewsDetail');
     }
@@ -72,17 +72,17 @@ class NewsController extends \Fraym\Core
      */
     public function addMetaTags($source)
     {
-        $replacePropertyTags = array(
+        $replacePropertyTags = [
             'og:url',
             'og:image',
             'og:description',
             'og:title',
-        );
-        $replaceItempropTags = array(
+        ];
+        $replaceItempropTags = [
             'name',
             'description',
             'image',
-        );
+        ];
 
         $source = preg_replace_callback('#<meta\s.*\/>#im', function ($match) use ($replacePropertyTags, $replaceItempropTags) {
             $xml = simplexml_load_string($match[0]);
@@ -98,7 +98,7 @@ class NewsController extends \Fraym\Core
         $url = $this->route->getRequestRoute(false, false, true);
         $image = $this->route->getHostnameWithBasePath() . '/' . substr($this->newsItem->image, 7);
         $title = $this->newsItem->title;
-        $desc = str_replace(array("\n", "\r\n", "\r"), '', strip_tags($this->newsItem->shortDescription));
+        $desc = str_replace(["\n", "\r\n", "\r"], '', strip_tags($this->newsItem->shortDescription));
 
         $source = str_ireplace('</head>', "<meta property='og:url' content='{$url}' />
         <meta property='og:image' content='{$image}' />

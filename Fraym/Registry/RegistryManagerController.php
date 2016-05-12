@@ -50,8 +50,8 @@ class RegistryManagerController extends \Fraym\Core
         }
 
         $extensions = $this->db->getRepository('\Fraym\Registry\Entity\Registry')->findBy(
-            array(),
-            array('name' => 'asc')
+            [],
+            ['name' => 'asc']
         );
 
         $unregisteredExtensions = $this->registryManager->getUnregisteredExtensions();
@@ -166,13 +166,13 @@ class RegistryManagerController extends \Fraym\Core
         $availableExtensions = new \Doctrine\Common\Collections\ArrayCollection();
         $unregisteredExtensions = $this->registryManager->getUnregisteredExtensions();
         $installedExtensions = $this->db->getRepository('\Fraym\Registry\Entity\Registry')->findBy(
-            array(),
-            array('name' => 'asc')
+            [],
+            ['name' => 'asc']
         );
 
         $extensions = $this->registryManager->repositoryRequest(
             'listModules',
-            array('searchTerm' => $searchTerm, 'offset' => 0, 'limit' => 20)
+            ['searchTerm' => $searchTerm, 'offset' => 0, 'limit' => 20]
         );
 
         foreach ($installedExtensions as $installedExtension) {
@@ -184,7 +184,7 @@ class RegistryManagerController extends \Fraym\Core
         }
 
         $this->view->assign('availableExtensions', $availableExtensions);
-        $this->view->assign('extensions', $extensions ? : array());
+        $this->view->assign('extensions', $extensions ? : []);
         return $this->view->fetch('RepositorySearch');
     }
 }

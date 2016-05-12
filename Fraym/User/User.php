@@ -78,7 +78,7 @@ class User
     public function __call($methodName, $parameters)
     {
         $userEntity = $this->getUserEntity();
-        return call_user_func_array(array($userEntity, $methodName), $parameters);
+        return call_user_func_array([$userEntity, $methodName], $parameters);
     }
 
     /**
@@ -119,7 +119,7 @@ class User
 
             if ($this->user === false && $userId !== false) {
                 $this->setUserId($userId);
-                $this->session->addOnDestroyCallback(array(&$this, 'setUserAsOffline'));
+                $this->session->addOnDestroyCallback([&$this, 'setUserAsOffline']);
             }
         }
     }
@@ -160,7 +160,7 @@ class User
      * @return bool
      */
     public function login($email, $password, $staySignedIn = false) {
-        $user = $this->db->getRepository('\Fraym\User\Entity\User')->findOneBy(array('email' => $email));
+        $user = $this->db->getRepository('\Fraym\User\Entity\User')->findOneBy(['email' => $email]);
         if ($user && $user->verifyPassword($password)) {
             $this->setUserId($user->id);
 

@@ -83,16 +83,16 @@ class MenuController extends \Fraym\Core
      * @param array $options
      * @return mixed
      */
-    public function getIframeContent($content, $options = array())
+    public function getIframeContent($content, $options = [])
     {
         $menuItems = [];
         $locales = $this->db->getRepository('\Fraym\Locale\Entity\Locale')->findAll();
         foreach ($locales as $locale) {
             foreach ($locale->menuItemTranslations as $menuItemTranslation) {
-                $menuItems[] = array(
+                $menuItems[] = [
                     $menuItemTranslation->title . " ({$locale->name})",
                     $this->route->buildFullUrl($menuItemTranslation->menuItem)
-                );
+                ];
             }
         }
         $this->view->assign('menuItems', json_encode($menuItems));
@@ -180,11 +180,11 @@ class MenuController extends \Fraym\Core
         $siteId = $this->request->gp('site_id', 0);
 
         $siteRootMenuItem = $this->db->getRepository('\Fraym\Menu\Entity\MenuItem')->findOneBy(
-            array('site' => $siteId, 'parent' => null)
+            ['site' => $siteId, 'parent' => null]
         );
         if ($siteRootMenuItem) {
             $obj = new \stdClass();
-            $obj->children = array($siteRootMenuItem);
+            $obj->children = [$siteRootMenuItem];
 
             $this->response->sendAsJson($this->toDynatreeArray($obj));
         }
@@ -205,13 +205,13 @@ class MenuController extends \Fraym\Core
                     $title = $translation->title;
                 }
             }
-            $dynatree[] = array(
+            $dynatree[] = [
                 'title' => $title,
                 'isFolder' => true,
                 'key' => $menuItem->id,
                 'parent' => $menuItem->parent ? $menuItem->parent->id : false,
                 'children' => $this->toDynatreeArray($menuItem)
-            );
+            ];
         }
 
         return $dynatree;
@@ -282,9 +282,9 @@ class MenuController extends \Fraym\Core
                     $menuItemsTranslations[$translation->locale->id] = $translation->id;
                 }
 
-                $this->response->sendAsJson(array('error' => false, 'menuId' => $newMenuItem->id, 'translations' => $menuItemsTranslations));
+                $this->response->sendAsJson(['error' => false, 'menuId' => $newMenuItem->id, 'translations' => $menuItemsTranslations]);
             } catch (\Exception $e) {
-                $this->response->sendAsJson(array('error' => true, 'message' => $e->getMessage()));
+                $this->response->sendAsJson(['error' => true, 'message' => $e->getMessage()]);
             }
         }
     }
@@ -305,9 +305,9 @@ class MenuController extends \Fraym\Core
                     }
                 }
                 $newMenuItem->updateEntity($menu);
-                $this->response->sendAsJson(array('error' => false, 'menuId' => $newMenuItem->id, 'translations' => array()));
+                $this->response->sendAsJson(['error' => false, 'menuId' => $newMenuItem->id, 'translations' => []]);
             } catch (\Exception $e) {
-                $this->response->sendAsJson(array('error' => true, 'message' => $e->getMessage()));
+                $this->response->sendAsJson(['error' => true, 'message' => $e->getMessage()]);
             }
         }
     }

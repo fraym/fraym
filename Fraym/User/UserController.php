@@ -71,7 +71,7 @@ class UserController extends \Fraym\Core
         if ($this->xml === false) {
             return $this->siteManagerController->getIframeContent(
                 $this->view->fetch('AdminLogIn'),
-                array('cssClass' => 'admin-login')
+                ['cssClass' => 'admin-login']
             );
         } else {
             $this->view->setTemplate('LogIn');
@@ -194,7 +194,7 @@ class UserController extends \Fraym\Core
         if ($this->xml === false) {
             return $this->siteManagerController->getIframeContent(
                 $this->view->fetch('AdminArea'),
-                array('cssClass' => 'admin-login')
+                ['cssClass' => 'admin-login']
             );
         } else {
             $this->view->setTemplate('LogOut');

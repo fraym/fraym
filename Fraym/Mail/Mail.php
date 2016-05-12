@@ -33,7 +33,7 @@ class Mail
     public function __call($method, $param)
     {
         if (is_object($this->messageInstance) && method_exists($this->messageInstance, $method)) {
-            return call_user_func_array(array(&$this->messageInstance, $method), $param);
+            return call_user_func_array([&$this->messageInstance, $method], $param);
         }
         throw new \Exception('Undefined method name.');
     }

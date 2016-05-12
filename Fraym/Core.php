@@ -229,13 +229,13 @@ class Core
      */
     public function init($mode = Core::ROUTE_NORMAL)
     {
-        $globalConfigs = array(
+        $globalConfigs = [
             'ENV' => self::ENV_DEVELOPMENT,
             'JS_FOLDER' => '/js',
             'CSS_FOLDER' => '/css',
             'CONSOLIDATE_FOLDER' => '/consolidated',
             'PROFILER_ENABLED' => false,
-        );
+        ];
 
         foreach ($globalConfigs as $config => $val) {
             if (!defined($config)) {
@@ -296,7 +296,7 @@ class Core
     public function createDirNameFromClassName($className)
     {
         $className = trim($className, '\\');
-        return str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, substr($className, 0, strrpos($className, '\\')));
+        return str_replace(['/', '\\'], DIRECTORY_SEPARATOR, substr($className, 0, strrpos($className, '\\')));
     }
 
     /**
@@ -328,7 +328,7 @@ class Core
             }
 
             if (strpos($value, "\r") !== false) {
-                $value = str_replace(array("\r\n", "\r"), "\n", $value);
+                $value = str_replace(["\r\n", "\r"], "\n", $value);
             }
         }
 

@@ -17,7 +17,7 @@ class Response
     /**
      * @var array
      */
-    private $httpStatusCodes = array(
+    private $httpStatusCodes = [
         100 => 'HTTP/1.1 100 Continue',
         101 => 'HTTP/1.1 101 Switching Protocols',
         200 => 'HTTP/1.1 200 OK',
@@ -58,7 +58,7 @@ class Response
         503 => 'HTTP/1.1 503 Service Unavailable',
         504 => 'HTTP/1.1 504 Gateway Time-out',
         505 => 'HTTP/1.1 505 HTTP Version Not Supported',
-    );
+    ];
 
     /**
      * @Inject
@@ -81,7 +81,7 @@ class Response
     /**
      * @param array $data
      */
-    public function sendAsJson($data = array())
+    public function sendAsJson($data = [])
     {
         $data = is_array($data) || is_object($data) ? json_encode($data) : $data;
         $this->addHTTPHeader("Content-type: application/json");

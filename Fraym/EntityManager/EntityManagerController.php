@@ -144,8 +144,8 @@ class EntityManagerController extends \Fraym\Core
         $value = $this->request->post('value');
         if (empty($value) === false && empty($field) === false) {
             $currentEntity = new $modelClass();
-            $currentEntity->updateEntity(array($field => $value));
-            $this->response->sendAsJson(array('id' => $currentEntity->id));
+            $currentEntity->updateEntity([$field => $value]);
+            $this->response->sendAsJson(['id' => $currentEntity->id]);
         }
         return false;
     }

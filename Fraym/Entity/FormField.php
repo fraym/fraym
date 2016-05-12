@@ -79,7 +79,7 @@ class FormField
                 $formFieldAnnotation = $this->buildFormFieldArray($propertyName, $formFieldAnnotation);
                 $sort = isset($formFieldAnnotation['sort']) ? $formFieldAnnotation['sort'] : [];
                 $formFieldAnnotation['annotations'] = $classAnnotations;
-                $formFieldAnnotation['options'] = $em->getRepository($value['targetEntity'])->findBy(array(), $sort);
+                $formFieldAnnotation['options'] = $em->getRepository($value['targetEntity'])->findBy([], $sort);
                 $formFieldAnnotation['model'] = '\\' . ltrim($value['targetEntity'], '\\');
                 $formFieldAnnotation['translateable'] = false;
                 $formfields[$propertyName] = $formFieldAnnotation;
@@ -112,7 +112,7 @@ class FormField
      */
     public function uniqueEntityCheck($fieldValue, $model, $fieldName)
     {
-        return $this->db->getRepository($model)->findOneBy(array($fieldName => $fieldValue)) === null;
+        return $this->db->getRepository($model)->findOneBy([$fieldName => $fieldValue]) === null;
     }
 
     /**

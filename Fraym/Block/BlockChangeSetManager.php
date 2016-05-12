@@ -64,11 +64,11 @@ class BlockChangeSetManager
             }
             $translationId = $block->menuItemTranslation ? $block->menuItemTranslation->id : 0;
             if (!isset($changeSets[$block->site->id][$menuItemId][$translationId])) {
-                $changeSets[$block->site->id][$menuItemId][$translationId] = array(
+                $changeSets[$block->site->id][$menuItemId][$translationId] = [
                     'menuItem' => $block->menuItem,
                     'menuItemTranslation' => $block->menuItemTranslation,
-                    'blocks' => array(),
-                );
+                    'blocks' => [],
+                ];
             }
             $lastChange = $block->changeSets->count() ? $block->changeSets->last() : $block;
             $changeSets[$block->site->id][$menuItemId][$translationId]['blocks'][$block->id] = $lastChange;

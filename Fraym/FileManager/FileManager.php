@@ -27,7 +27,7 @@ class FileManager
      */
     public function convertDirSeparator($path)
     {
-        return str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $path);
+        return str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path);
     }
 
     /**
@@ -63,7 +63,7 @@ class FileManager
         $dynatree = [];
 
         foreach ($fileArray as $key => $file) {
-            $dynatree[] = array(
+            $dynatree[] = [
                 'title' => $file['name'],
                 'isFolder' => $file['isDir'],
                 'key' => $key,
@@ -72,7 +72,7 @@ class FileManager
                 'storage' => isset($file['storage']) ? $file['storage'] : false,
                 'directorySeparator' => DIRECTORY_SEPARATOR,
                 'children' => $this->toDynatreeArray($file['files'])
-            );
+            ];
         }
 
         return $dynatree;
@@ -103,7 +103,7 @@ class FileManager
             $lastAccess = fileatime($storage['path']);
             $lastChange = filectime($storage['path']);
 
-            $tree[$storage['path']] = array(
+            $tree[$storage['path']] = [
                 'name' => $rootDirName,
                 'path' => $storage['path'],
                 'isDir' => is_dir($storage['path']),
@@ -118,7 +118,7 @@ class FileManager
                 'filesize' => $this->formatFileSize(filesize($storage['path'])),
                 'filesizeFormated' => filesize($storage['path']),
                 'files' => $this->getFiles($storage['path'], $pattern, $globFlags),
-            );
+            ];
         }
         return $tree;
     }
@@ -140,7 +140,7 @@ class FileManager
      */
     public function formatFileSize($size)
     {
-        $filesizename = array(" Bytes", " KB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB");
+        $filesizename = [" Bytes", " KB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB"];
         return $size ? round($size / pow(1024, ($i = floor(log($size, 1024)))), 2) . $filesizename[$i] : '0 Bytes';
     }
 
@@ -232,7 +232,7 @@ class FileManager
 
         if ($doStream == true) {
             /* extensions to stream */
-            $array_listen = array(
+            $array_listen = [
                 'mp3',
                 'm3u',
                 'm4a',
@@ -254,7 +254,7 @@ class FileManager
                 'wmv',
                 'divx',
                 'asf'
-            );
+            ];
             if (in_array($extension, $array_listen)) {
                 $contentDisposition = 'inline';
             }
@@ -371,7 +371,7 @@ class FileManager
             $lastAccess = fileatime($filename);
             $lastChange = filectime($filename);
 
-            $files[$filename] = array(
+            $files[$filename] = [
                 'name' => basename($filename),
                 'path' => realpath($filename),
                 'relativePath' => str_replace(getcwd() . DIRECTORY_SEPARATOR, '', realpath($filename)),
@@ -387,8 +387,8 @@ class FileManager
                 'permissions' => $this->getFilePermissionString($filename),
                 'filesize' => $this->formatFileSize(filesize($filename)),
                 'filesizeFormated' => filesize($filename),
-                'files' => is_dir($filename) ? $this->getFiles($filename, $pattern, $globFlags) : array(),
-            );
+                'files' => is_dir($filename) ? $this->getFiles($filename, $pattern, $globFlags) : [],
+            ];
         }
 
         return $files;

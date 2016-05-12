@@ -32,7 +32,7 @@ class HtmlEditorController extends \Fraym\Core
     public function getBlockConfig($blockConfig = null)
     {
         $locales = $this->db->getRepository('\Fraym\Locale\Entity\Locale')->findAll();
-        $htmlData = array();
+        $htmlData = [];
 
         if ($blockConfig !== null) {
             $result = $blockConfig->xpath('html');

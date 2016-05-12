@@ -49,7 +49,7 @@ class SiteManagerController extends \Fraym\Core
      */
     public function checkRoute()
     {
-        $allowCmds = array('setEditMode');
+        $allowCmds = ['setEditMode'];
         $cmd = trim($this->request->gp('cmd', ''));
 
         if (in_array($cmd, $allowCmds)) {
@@ -63,7 +63,7 @@ class SiteManagerController extends \Fraym\Core
      * @param array $options
      * @return mixed
      */
-    public function getIframeContent($content, $options = array())
+    public function getIframeContent($content, $options = [])
     {
         $this->view->assign('options', $options);
         $this->view->assign('content', $content);
@@ -77,8 +77,8 @@ class SiteManagerController extends \Fraym\Core
     public function getAdminPanel()
     {
         $extensions = $this->db->getRepository('\Fraym\SiteManager\Entity\Extension')->findBy(
-            array('active' => 1),
-            array('sorter' => 'asc')
+            ['active' => 1],
+            ['sorter' => 'asc']
         );
 
         $extensionSorted = [];
@@ -87,13 +87,13 @@ class SiteManagerController extends \Fraym\Core
             if (!isset($extensionSorted[$extension->id])) {
                 $extensionSorted[$extension->id] = [];
             }
-            $extensionSorted[$extension->id] = array(
+            $extensionSorted[$extension->id] = [
                 'name' => $this->translation->getTranslation(
                     $extension->name,
                     'SITE_EXT_' . strtoupper(str_ireplace(' ', '_', $extension->name))
                 ),
                 'iconCssClass' => $extension->iconCssClass,
-            );
+            ];
         }
 
         uasort(
@@ -108,7 +108,7 @@ class SiteManagerController extends \Fraym\Core
 
         return $this->getIframeContent(
             $this->view->fetch('AdminPanelContent'),
-            array('cssClass' => 'admin-panel')
+            ['cssClass' => 'admin-panel']
         );
     }
 

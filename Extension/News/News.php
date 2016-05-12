@@ -205,7 +205,7 @@ class News
         $slug = array_reverse(explode('/', $slug));
         if (isset($slug[0]) && isset($slug[1])) {
             if ($slug[1] === 'c' || $slug[1] === 't' || $slug[1] === 'page') {
-                return array($slug[1], urldecode($slug[0]));
+                return [$slug[1], urldecode($slug[0])];
             }
         }
         return false;
@@ -228,7 +228,7 @@ class News
     {
         $itemsPerPage = 10;
         $currentPage = 1;
-        $entryIds = empty($xml->listItems) ? array() : explode(',', trim($xml->listItems));
+        $entryIds = empty($xml->listItems) ? [] : explode(',', trim($xml->listItems));
         $sort = (string)$xml->newsListSort;
         $filter = $this->getNewsListFilter();
 
@@ -296,7 +296,7 @@ class News
         $paginator = new \Doctrine\ORM\Tools\Pagination\Paginator($newsItems, false);
 
         $c = count($paginator);
-        $pagination = array('currentPage' => $currentPage, 'count' => $c, 'itemsPerPage' => $itemsPerPage);
+        $pagination = ['currentPage' => $currentPage, 'count' => $c, 'itemsPerPage' => $itemsPerPage];
         return $this->newsController->renderNewsList($detailPageUrl, $paginator, $pagination);
     }
 
@@ -391,9 +391,9 @@ class News
         if ((string)$xml->view === 'list' && (!$currentNewsItem || (string)$xml->forceShowOnDetail == '1')) {
             return $this->newsList($xml);
         }
-        if (in_array((string)$xml->view, array('list-category', 'list-tag'))) {
+        if (in_array((string)$xml->view, ['list-category', 'list-tag'])) {
             return $this->listFilter($xml);
-        } elseif (in_array((string)$xml->view, array('detail-category', 'detail-tag', 'detail')) && $currentNewsItem) {
+        } elseif (in_array((string)$xml->view, ['detail-category', 'detail-tag', 'detail']) && $currentNewsItem) {
             return $this->newsDetail($xml, $currentNewsItem);
         }
         $this->template->setTemplate('string:');
@@ -465,7 +465,7 @@ class News
                 $matches[0]
             );
         }
-        return array();
+        return [];
     }
 
     /**

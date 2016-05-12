@@ -52,7 +52,7 @@ class Validation
             $fieldsToCheck = get_object_vars($fieldsToCheck);
         } else {
             if (!is_array($fieldsToCheck)) {
-                $fieldsToCheck = array($fieldsToCheck);
+                $fieldsToCheck = [$fieldsToCheck];
             }
         }
 
@@ -106,7 +106,7 @@ class Validation
                     }
 
                     if ($validationRule === 'unique' && !isset($this->fieldsArray['id'])) {
-                        $this->addRule($field, array($this->formField, 'uniqueEntityCheck'), array($modelName, $field));
+                        $this->addRule($field, [$this->formField, 'uniqueEntityCheck'], [$modelName, $field]);
                     } elseif ($validationRule !== 'unique') {
                         $this->addRule($field, $validationRule);
                     }
@@ -129,10 +129,10 @@ class Validation
     public function addRule($field, $rule, $params = null)
     {
         $length = count($this->rules);
-        $this->rules[$length][$field] = array(
+        $this->rules[$length][$field] = [
             'rule' => $rule,
             'params' => $params
-        );
+        ];
         return $this;
     }
 
@@ -153,7 +153,7 @@ class Validation
      * @param array $foundErrors
      * @return array|bool
      */
-    private function checkRule($rule, $params, $value, $foundErrors = array())
+    private function checkRule($rule, $params, $value, $foundErrors = [])
     {
         $errorRule = false;
 

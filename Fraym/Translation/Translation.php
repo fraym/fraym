@@ -42,7 +42,7 @@ class Translation
      * @param array $placeholder
      * @return null|string
      */
-    public function getTranslation($default, $key = null, $defaultLocale = 'en_US', $placeholder = array())
+    public function getTranslation($default, $key = null, $defaultLocale = 'en_US', $placeholder = [])
     {
         // convert objects call __toString
         $default = (string)$default;

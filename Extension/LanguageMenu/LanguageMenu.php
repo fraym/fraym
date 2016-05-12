@@ -76,7 +76,7 @@ class LanguageMenu
      */
     public function execBlock($xml)
     {
-        $languageMenu = array();
+        $languageMenu = [];
         $currentLocale = $this->locale->getLocale()->id;
         $defaultLocale = $this->locale->getDefaultLocale();
         $currentMenuItem = $this->route->getCurrentMenuItem();
@@ -84,11 +84,11 @@ class LanguageMenu
 
         foreach ($currentMenuItem->translations as $translation) {
             $url = $translation->url === '' ? '/' : $translation->url;
-            $languageMenu[$translation->locale->id] = array(
+            $languageMenu[$translation->locale->id] = [
                 'url' => $url,
                 'active' => $translation->locale->id === $currentLocale,
                 'name' => $translation->locale->name
-            );
+            ];
         }
 
         foreach ($locales as $locale) {
@@ -110,11 +110,11 @@ class LanguageMenu
                     }
                 }
 
-                $languageMenu[$locale->id] = array(
+                $languageMenu[$locale->id] = [
                     'url' => $url === '' ? '/' : $url,
                     'active' => $locale->id === $currentLocale,
                     'name' => $locale->name
-                );
+                ];
             }
         }
         $this->languageMenuController->renderHtml($languageMenu);

@@ -108,20 +108,20 @@ class InstallController extends \Fraym\Core
 
         $this->serviceLocator->set(
             'db.options',
-            array(
+            [
                 'driver' => DB_DRIVER,
                 'user' => DB_USER,
                 'password' => DB_PASS,
                 'host' => DB_HOST,
                 'dbname' => DB_NAME,
                 'charset' => DB_CHARSET
-            )
+            ]
         );
 
         try {
             $this->db->connect()->getEntityManager()->getConnection()->connect();
         } catch (\Exception $e) {
-            $this->response->sendAsJson(array('error' => $e->getMessage()));
+            $this->response->sendAsJson(['error' => $e->getMessage()]);
         }
 
         $this->response->sendAsJson();
@@ -144,14 +144,14 @@ class InstallController extends \Fraym\Core
 
             $this->serviceLocator->set(
                 'db.options',
-                array(
+                [
                     'driver' => DB_DRIVER,
                     'user' => DB_USER,
                     'password' => DB_PASS,
                     'host' => DB_HOST,
                     'dbname' => DB_NAME,
                     'charset' => DB_CHARSET
-                )
+                ]
             );
 
             $this->cache->clearAll();

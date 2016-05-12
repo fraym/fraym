@@ -89,7 +89,7 @@ class BlockParser
      *
      * @var array
      */
-    private $editModeTypes = array('module', 'content', '');
+    private $editModeTypes = ['module', 'content', ''];
 
     /**
      * @Inject
@@ -260,7 +260,7 @@ class BlockParser
     {
         return preg_replace_callback(
             '#<' . $elementName . '(?:\s+[^>]+)?>(.*?)</' . $elementName . '>#si',
-            array($this, "$callbackFunction"),
+            [$this, "$callbackFunction"],
             trim($xml)
         );
     }
@@ -515,7 +515,7 @@ class BlockParser
     private function execBlockOfTypeExtension($xml)
     {
         $ext = $this->db->getRepository('\Fraym\Block\Entity\Extension')->findOneBy(
-            array('class' => $xml->class, 'execMethod' => $xml->method)
+            ['class' => $xml->class, 'execMethod' => $xml->method]
         );
         $blockHtml = '';
         if ($ext) {
@@ -672,7 +672,7 @@ class BlockParser
                 error_log("Error loading block template with id: " . $attr);
             }
         } elseif ($attr == 'file' && !empty($template)) {
-            $templateFile = str_replace(array('\\', '/'), DIRECTORY_SEPARATOR, $template);
+            $templateFile = str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $template);
             if (is_file($templateFile) && is_readable($templateFile)) {
                 $templateContent = file_get_contents($templateFile);
                 return $templateContent;
@@ -1024,7 +1024,7 @@ class BlockParser
      */
     public function execBlockOfTypeImage($xml)
     {
-        $imageTags = array(
+        $imageTags = [
             'width' => $this->getXmlAttr($xml, 'width'),
             'height' => $this->getXmlAttr($xml, 'height'),
             'alt' => $this->getXmlAttr($xml, 'alt'),
@@ -1035,9 +1035,9 @@ class BlockParser
             'ismap' => $this->getXmlAttr($xml, 'ismap'),
             'crossoriginNew' => $this->getXmlAttr($xml, 'crossoriginNew'),
             'usemap' => $this->getXmlAttr($xml, 'usemap'),
-        );
+        ];
 
-        $placeHolderConfig = array(
+        $placeHolderConfig = [
             'phtext' => $this->getXmlAttr($xml, 'phtext'),
             'phwidth' => $this->getXmlAttr($xml, 'phwidth'),
             'phheight' => $this->getXmlAttr($xml, 'phheight'),
@@ -1045,7 +1045,7 @@ class BlockParser
             'phbgcolor' => $this->getXmlAttr($xml, 'phbgcolor'),
             'phfont' => $this->getXmlAttr($xml, 'phfont'),
             'phfontsize' => $this->getXmlAttr($xml, 'phfontsize'),
-        );
+        ];
 
         $srcOnly = $this->getXmlAttr($xml, 'srcOnly') === true ? true : false;
 
@@ -1060,13 +1060,13 @@ class BlockParser
             $fname = basename($fname);
             $fname = substr($fname, 0, strripos($fname, '.'));
 
-            $pathInfo = array(
+            $pathInfo = [
                 'extension' => trim(image_type_to_extension($info[2]), '.'),
                 'filename' => $fname,
-            );
+            ];
             $srcFilePath = $src;
         } else {
-            $src = str_replace(array('\\', '/'), DIRECTORY_SEPARATOR, $src);
+            $src = str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $src);
 
             if (empty($src)) {
                 $srcFilePath = $src = $this->createImagePlaceholder($placeHolderConfig);
@@ -1087,7 +1087,7 @@ class BlockParser
         }
 
         $imagine = $this->serviceLocator->get('Imagine');
-        $allowedMethods = array('thumbnail', 'resize', 'crop', '');
+        $allowedMethods = ['thumbnail', 'resize', 'crop', ''];
         // methods fit / resize / none
         $imageQuality = intval($this->getXmlAttr($xml, 'quality') ? : ($this->config->get('IMAGE_QUALITY')->value ? : '80'));
         $method = $this->getXmlAttr($xml, 'method') ? : '';
@@ -1131,7 +1131,7 @@ class BlockParser
                 $imageTags['height'] = $image->getSize()->getHeight();
             }
 
-            $image->save($imagePath, array('quality' => $imageQuality));
+            $image->save($imagePath, ['quality' => $imageQuality]);
         } else {
             list($width, $height) = getimagesize($imagePath);
             $imageTags['width'] = $width;
@@ -1157,7 +1157,7 @@ class BlockParser
             unlink($srcFilePath);
         }
 
-        $imagePath = '/' . str_replace(array('\\', '/'), '/', $convertedImageFileName);
+        $imagePath = '/' . str_replace(['\\', '/'], '/', $convertedImageFileName);
         return $srcOnly ? $imagePath : '<img src="' . $imagePath . '" ' . $attributes . ' />';
     }
 
@@ -1613,18 +1613,18 @@ class BlockParser
      * @param array $options
      * @return array
      */
-    public function xmlToArray($xml, $options = array())
+    public function xmlToArray($xml, $options = [])
     {
-        $defaults = array(
+        $defaults = [
             'namespaceSeparator' => ':', //you may want this to be something other than a colon
             'attributePrefix' => '@', //to distinguish between attributes and nodes with the same name
-            'alwaysArray' => array(), //array of xml tag names which should always become arrays
+            'alwaysArray' => [], //array of xml tag names which should always become arrays
             'autoArray' => true, //only create arrays for tags which appear more than once
             'textContent' => '$', //key used for the text content of elements
             'autoText' => true, //skip textContent key if node has no attributes or child nodes
             'keySearch' => false, //optional search and replace on tag and attribute names
             'keyReplace' => false //replace values for above search values (as passed to str_replace())
-        );
+        ];
         $options = array_merge($defaults, $options);
         $namespaces = $xml->getDocNamespaces();
         $namespaces[''] = null; //add base (empty) namespace
@@ -1668,7 +1668,7 @@ class BlockParser
                     //test if tags of this type should always be arrays, no matter the element count
                     $tagsArray[$childTagName] =
                         in_array($childTagName, $options['alwaysArray']) || !$options['autoArray']
-                            ? array($childProperties) : $childProperties;
+                            ? [$childProperties] : $childProperties;
                 } elseif (is_array($tagsArray[$childTagName]) &&
                     array_keys($tagsArray[$childTagName]) === range(0, count($tagsArray[$childTagName]) - 1)
                 ) {
@@ -1676,7 +1676,7 @@ class BlockParser
                     $tagsArray[$childTagName][] = $childProperties;
                 } else {
                     //key exists so convert to integer indexed array with previous value in position 0
-                    $tagsArray[$childTagName] = array($tagsArray[$childTagName], $childProperties);
+                    $tagsArray[$childTagName] = [$tagsArray[$childTagName], $childProperties];
                 }
             }
         }
@@ -1693,8 +1693,8 @@ class BlockParser
             ? array_merge($attributesArray, $tagsArray, $textContentArray) : $plainText;
 
         //return node as array
-        return array(
+        return [
             $xml->getName() => $propertiesArray
-        );
+        ];
     }
 }

@@ -221,19 +221,19 @@ class Template
      */
     public function __construct()
     {
-        $this->addPseudoFunctionName('menuItem', array(&$this, 'getMenuItem'));
-        $this->addPseudoFunctionName('i', array(&$this, 'getInstance'));
-        $this->addPseudoFunctionName('css', array(&$this, 'addCssFile'));
-        $this->addPseudoFunctionName('js', array(&$this, 'addJsFile'));
-        $this->addPseudoFunctionName('include', array(&$this, 'includeTemplate'));
-        $this->addPseudoFunctionName('shorten', array(&$this, 'shorten'));
-        $this->addPseudoFunctionName('age', array(&$this, 'age'));
-        $this->addPseudoFunctionName('isLast', array(&$this, 'isLast'));
-        $this->addPseudoFunctionName('formatCurrency', array(&$this, 'formatCurrency'));
-        $this->addPseudoFunctionName('formatDate', array(&$this->locale, 'formatDate'));
-        $this->addPseudoFunctionName('formatDateTime', array(&$this->locale, 'formatDateTime'));
-        $this->addPseudoFunctionName('_', array(&$this->translation, 'getTranslation'));
-        $this->addPseudoFunctionName('et', array(&$this->entityManager, 'getEntityTranslation'));
+        $this->addPseudoFunctionName('menuItem', [&$this, 'getMenuItem']);
+        $this->addPseudoFunctionName('i', [&$this, 'getInstance']);
+        $this->addPseudoFunctionName('css', [&$this, 'addCssFile']);
+        $this->addPseudoFunctionName('js', [&$this, 'addJsFile']);
+        $this->addPseudoFunctionName('include', [&$this, 'includeTemplate']);
+        $this->addPseudoFunctionName('shorten', [&$this, 'shorten']);
+        $this->addPseudoFunctionName('age', [&$this, 'age']);
+        $this->addPseudoFunctionName('isLast', [&$this, 'isLast']);
+        $this->addPseudoFunctionName('formatCurrency', [&$this, 'formatCurrency']);
+        $this->addPseudoFunctionName('formatDate', [&$this->locale, 'formatDate']);
+        $this->addPseudoFunctionName('formatDateTime', [&$this->locale, 'formatDateTime']);
+        $this->addPseudoFunctionName('_', [&$this->translation, 'getTranslation']);
+        $this->addPseudoFunctionName('et', [&$this->entityManager, 'getEntityTranslation']);
     }
 
     /**
@@ -472,7 +472,7 @@ class Template
      * @param bool $showError
      * @return bool|mixed|string
      */
-    public function includeTemplate($file, $vars = array(), $cacheKey = null, $showError = true)
+    public function includeTemplate($file, $vars = [], $cacheKey = null, $showError = true)
     {
         $filename = $this->getTemplateFilePath($file);
 
@@ -609,8 +609,8 @@ class Template
 
         // replace close tags
         $content = str_ireplace(
-            array('{/if}', '{/foreach}', '{/while}', '{/for}', '{/switch}', '{/function}'),
-            array('{endif}', '{endforeach}', '{endwhile}', '{endfor}', '{endswitch}', '{endfunction}'),
+            ['{/if}', '{/foreach}', '{/while}', '{/for}', '{/switch}', '{/function}'],
+            ['{endif}', '{endforeach}', '{endwhile}', '{endfor}', '{endswitch}', '{endfunction}'],
             $content
         );
 
@@ -623,7 +623,7 @@ class Template
         // check for valid objects
         $content = preg_replace_callback(
             '/\{(if|elseif|foreach|while|for|switch)[^\}]*\}/is',
-            array($this, 'regexObjectVarCheck'),
+            [$this, 'regexObjectVarCheck'],
             $content
         );
 
@@ -676,7 +676,7 @@ class Template
         );
 
         // replace object properties and methods
-        $content = preg_replace_callback('/<\?php.*?\s*\?>/is', array($this, 'regexReplacePointer'), $content);
+        $content = preg_replace_callback('/<\?php.*?\s*\?>/is', [$this, 'regexReplacePointer'], $content);
 
         return $content;
     }
@@ -740,7 +740,7 @@ class Template
         $this->template = null;
         $vars = $this->getTemplateVarString();
 
-        return $this->core->includeScript($vars . $content, array(&$this, 'errorHandler'));
+        return $this->core->includeScript($vars . $content, [&$this, 'errorHandler']);
     }
 
     /**
@@ -837,7 +837,7 @@ class Template
                         $this->moduleName
                     ) . DIRECTORY_SEPARATOR .
                     basename(
-                        str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $templateFile)
+                        str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $templateFile)
                     )
             )
             ) {
@@ -967,7 +967,7 @@ class Template
      * @param bool $truncate
      * @return $this
      */
-    public function setKeywords($words = array(), $truncate = false)
+    public function setKeywords($words = [], $truncate = false)
     {
         if ($truncate) {
             $this->keywords = [];

@@ -148,7 +148,7 @@ class RegistryManager
         $properties = $reflRegClass->getProperties(\ReflectionProperty::IS_PUBLIC);
         $result = [];
         foreach ($properties as $property) {
-            $result[$property->getName()] = $property->getValue(new \Fraym\Annotation\Registry(array()));
+            $result[$property->getName()] = $property->getValue(new \Fraym\Annotation\Registry([]));
         }
         return $result;
     }
@@ -174,8 +174,8 @@ class RegistryManager
                 if ($classAnnotation) {
                     if ($classAnnotation->afterRegister) {
                         call_user_func_array(
-                            array($this->serviceLocator->get($class), $classAnnotation->afterRegister),
-                            array($classAnnotation)
+                            [$this->serviceLocator->get($class), $classAnnotation->afterRegister],
+                            [$classAnnotation]
                         );
                     }
                 }
@@ -252,8 +252,8 @@ class RegistryManager
 
         if ($classAnnotation->onUpdate) {
             call_user_func_array(
-                array($this->serviceLocator->get($registry->className), $classAnnotation->onUpdate),
-                array($classAnnotation, $registry)
+                [$this->serviceLocator->get($registry->className), $classAnnotation->onUpdate],
+                [$classAnnotation, $registry]
             );
         }
     }
@@ -298,7 +298,7 @@ class RegistryManager
     {
         $download = $this->repositoryRequest(
             'getDownloadLink',
-            array('repositoryKey' => $repositoryKey)
+            ['repositoryKey' => $repositoryKey]
         );
 
         $extensionContent = file_get_contents($download->downloadLink);
@@ -345,7 +345,7 @@ class RegistryManager
     {
         $this->loadComposer();
         if (isset($extension->composer) && isset($extension->composer['require'])) {
-            $input = new \Symfony\Component\Console\Input\ArrayInput(array('command' => 'require', 'packages' => $extension->composer['require']));
+            $input = new \Symfony\Component\Console\Input\ArrayInput(['command' => 'require', 'packages' => $extension->composer['require']]);
             $application = new \Composer\Console\Application();
             $application->setAutoExit(false);
             $application->run($input);
@@ -358,7 +358,7 @@ class RegistryManager
     public function composerUpdate()
     {
         $this->loadComposer();
-        $input = new \Symfony\Component\Console\Input\ArrayInput(array('command' => 'update'));
+        $input = new \Symfony\Component\Console\Input\ArrayInput(['command' => 'update']);
         $application = new \Composer\Console\Application();
         $application->setAutoExit(false);
         $application->run($input);
@@ -389,7 +389,7 @@ class RegistryManager
         }
 
         if (isset($extension['composer']) && isset($extension['composer']['require'])) {
-            $input = new \Symfony\Component\Console\Input\ArrayInput(array('command' => 'remove', 'packages' => $extension['composer']['require']));
+            $input = new \Symfony\Component\Console\Input\ArrayInput(['command' => 'remove', 'packages' => $extension['composer']['require']]);
             $application = new \Composer\Console\Application();
             $application->setAutoExit(false);
             $application->run($input);
@@ -426,8 +426,8 @@ class RegistryManager
 
             if ($extension->onRegister) {
                 call_user_func_array(
-                    array($this->serviceLocator->get($class), $extension->onRegister),
-                    array($extension, $oldRegistryEntry)
+                    [$this->serviceLocator->get($class), $extension->onRegister],
+                    [$extension, $oldRegistryEntry]
                 );
             }
 
@@ -476,8 +476,8 @@ class RegistryManager
             $this->removeEntities($extension);
             if (isset($extension->onUnregister)) {
                 call_user_func_array(
-                    array($this->serviceLocator->get($className), $extension->onUnregister),
-                    array($extension)
+                    [$this->serviceLocator->get($className), $extension->onUnregister],
+                    [$extension]
                 );
             }
 
@@ -658,20 +658,20 @@ class RegistryManager
     /**
      * API request do get all modules
      */
-    public function repositoryRequest($cmd = 'listModules', $params = array())
+    public function repositoryRequest($cmd = 'listModules', $params = [])
     {
-        $query = array(
+        $query = [
             'cmd' => $cmd,
             'channel' => 'stable',
-            'client_info' => array(
+            'client_info' => [
                 'version' => \Fraym\Core::VERSION,
                 'php_version' => phpversion(),
                 'os' => php_uname('s'),
                 'apc_enabled' => APC_ENABLED,
                 'image_processor' => IMAGE_PROCESSOR,
                 'env' => ENV,
-            )
-        );
+            ]
+        ];
 
         $query = array_merge($query, $params);
         return $this->sendRepositoryRequest($query);
@@ -708,6 +708,6 @@ class RegistryManager
             }
         }
 
-        return $this->repositoryRequest('getUpdates', array('extensions' => $extensionsKeys));
+        return $this->repositoryRequest('getUpdates', ['extensions' => $extensionsKeys]);
     }
 }

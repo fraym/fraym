@@ -68,7 +68,7 @@ class EntitySerializer
      * @param int $currentDepth
      * @return array
      */
-    protected function serializeEntity($entity, $parentEntities = array(), $currentDepth = 0)
+    protected function serializeEntity($entity, $parentEntities = [], $currentDepth = 0)
     {
         $className = get_class($entity);
         $metadata = $this->em->getClassMetadata($className);
@@ -119,7 +119,7 @@ class EntitySerializer
                     } elseif ($mapping['isOwningSide'] &&
                         in_array(
                             $mapping['type'],
-                            array(ClassMetadata::TO_ONE, ClassMetadata::MANY_TO_ONE)
+                            [ClassMetadata::TO_ONE, ClassMetadata::MANY_TO_ONE]
                         )
                     ) {
                         if (null !== $metadata->reflFields[$field]->getValue($entity)) {

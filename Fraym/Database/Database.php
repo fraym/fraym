@@ -86,7 +86,7 @@ class Database
             $this->connect();
         }
         if (is_object($this->entityManager) && method_exists($this->entityManager, $method)) {
-            return call_user_func_array(array(&$this->entityManager, $method), $param);
+            return call_user_func_array([&$this->entityManager, $method], $param);
         }
         return null;
     }
@@ -242,7 +242,7 @@ class Database
         );
 
         $this->eventManager->addEventListener(
-            array(
+            [
                 \Doctrine\ORM\Events::preRemove,
                 \Doctrine\ORM\Events::postRemove,
                 \Doctrine\ORM\Events::prePersist,
@@ -251,7 +251,7 @@ class Database
                 \Doctrine\ORM\Events::postUpdate,
                 \Doctrine\ORM\Events::postLoad,
                 \Doctrine\ORM\Events::onFlush,
-            ),
+            ],
             $this->eventListener
         );
         return $this;
@@ -261,18 +261,18 @@ class Database
      * @Inject({"connectionOptions" = "db.options"})
      * @param array $connectionOptions
      */
-    public function __construct($connectionOptions = array())
+    public function __construct($connectionOptions = [])
     {
 
         if (count($connectionOptions) == 0) {
-            $connectionOptions = array(
+            $connectionOptions = [
                 'driver' => 'pdo_mysql',
                 'user' => DB_USER,
                 'password' => DB_PASS,
                 'host' => DB_HOST,
                 'dbname' => DB_NAME,
                 'charset' => 'UTF8',
-            );
+            ];
         }
 
         $this->connectionOptions = $connectionOptions;
@@ -346,7 +346,7 @@ class Database
      * @param array $params
      * @return mixed
      */
-    public function queryDql($dqlQuery, $params = array())
+    public function queryDql($dqlQuery, $params = [])
     {
         $query = $this->entityManager->createQuery($dqlQuery);
         if (count($params) > 0) {
@@ -363,7 +363,7 @@ class Database
      *
      * @return object
      */
-    public function query($query, $var = array())
+    public function query($query, $var = [])
     {
         $sth = $this->exec($query, $var);
         $result = $sth->fetchAll($this->fetchMode);
@@ -376,7 +376,7 @@ class Database
      * @param array $var
      * @return bool
      */
-    public function exec($query, $var = array())
+    public function exec($query, $var = [])
     {
         $sth = $this->pdo->prepare($query);
         $result = $sth->execute($var);
@@ -393,7 +393,7 @@ class Database
      *
      * @return array
      */
-    public function queryCol($query, $var = array(), $col = 0)
+    public function queryCol($query, $var = [], $col = 0)
     {
         $sth = $this->exec($query, $var);
         $result = $sth->fetchColumn($col);
@@ -409,7 +409,7 @@ class Database
      *
      * @return string|null
      */
-    public function queryOne($query, $var = array())
+    public function queryOne($query, $var = [])
     {
         $sth = $this->exec($query, $var);
         $result = $sth->fetchAll();
@@ -426,7 +426,7 @@ class Database
      *
      * @return object
      */
-    public function queryRow($query, $var = array())
+    public function queryRow($query, $var = [])
     {
         $sth = $this->exec($query, $var);
         $result = $sth->fetchAll($this->fetchMode);
@@ -444,7 +444,7 @@ class Database
      *
      * @return object
      */
-    public function getColInfo($query, $var = array(), $col = 0)
+    public function getColInfo($query, $var = [], $col = 0)
     {
         $sth = $this->exec($query, $var);
         return $sth->getColumnMeta($col);
@@ -463,7 +463,7 @@ class Database
             $validator = new \Doctrine\ORM\Tools\SchemaValidator($this->entityManager);
             return $validator->validateMapping();
         } catch (\Exception $exception) {
-            return array(array($exception->getMessage()));
+            return [[$exception->getMessage()]];
         }
     }
 

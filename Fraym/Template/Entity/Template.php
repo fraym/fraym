@@ -48,7 +48,7 @@ class Template extends \Fraym\Entity\BaseEntity
 
     public function getHtml()
     {
-        $filePath = realpath(str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $this->filePath));
+        $filePath = realpath(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $this->filePath));
         if ($filePath) {
             if (is_file($filePath) && is_readable($filePath)) {
                 return file_get_contents($filePath);

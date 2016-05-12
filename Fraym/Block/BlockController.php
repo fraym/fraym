@@ -130,15 +130,15 @@ class BlockController extends \Fraym\Core
         $contentId = $this->request->gp('contentId');
 
         $blockTemplates = $this->db->getRepository('\Fraym\Block\Entity\Template')->findBy(
-            array(),
-            array('name' => 'asc')
+            [],
+            ['name' => 'asc']
         );
         $extensions = $this->db->getRepository('\Fraym\Block\Entity\Extension')->findBy(
-            array(),
-            array('name' => 'asc')
+            [],
+            ['name' => 'asc']
         );
-        $users = $this->db->getRepository('\Fraym\User\Entity\User')->findBy(array(), array('username' => 'asc'));
-        $userGroups = $this->db->getRepository('\Fraym\User\Entity\Group')->findBy(array(), array('name' => 'asc'));
+        $users = $this->db->getRepository('\Fraym\User\Entity\User')->findBy([], ['username' => 'asc']);
+        $userGroups = $this->db->getRepository('\Fraym\User\Entity\Group')->findBy([], ['name' => 'asc']);
         $this->view->assign('blockTemplates', $blockTemplates);
         $this->view->assign('users', $users);
         $this->view->assign('userGroups', $userGroups);
@@ -184,7 +184,7 @@ class BlockController extends \Fraym\Core
     private function clearCache()
     {
         $this->cache->clearAll();
-        $this->response->sendAsJson(array('success' => true));
+        $this->response->sendAsJson(['success' => true]);
     }
 
     /**
@@ -197,9 +197,9 @@ class BlockController extends \Fraym\Core
             $value = $this->block->inEditMode() ? 0 : 1;
         }
         if ($this->block->setEditMode($value)) {
-            $this->response->sendAsJson(array('success' => true));
+            $this->response->sendAsJson(['success' => true]);
         }
-        $this->response->sendAsJson(array('success' => false));
+        $this->response->sendAsJson(['success' => false]);
     }
 
     /**
@@ -326,11 +326,11 @@ class BlockController extends \Fraym\Core
                 $this->db->flush();
 
                 $data = $this->prepareBlockOutput($changeSet);
-                $this->response->sendAsJson(array('data' => $data, 'blockId' => $block->id));
+                $this->response->sendAsJson(['data' => $data, 'blockId' => $block->id]);
             }
         }
 
-        $this->response->sendAsJson(array('error' => $result));
+        $this->response->sendAsJson(['error' => $result]);
     }
 
     /**
@@ -444,7 +444,7 @@ class BlockController extends \Fraym\Core
      */
     private function moveBlockToView()
     {
-        $blocks = $this->request->gp('blocks', array());
+        $blocks = $this->request->gp('blocks', []);
 
         foreach ($blocks as $k => $block) {
             if (isset($block['blockId'])) {
@@ -460,14 +460,14 @@ class BlockController extends \Fraym\Core
                     $changedBlock->position = intval($k);
                     $this->createChangeSet($changedBlock, $movedblock, \Fraym\Block\Entity\ChangeSet::MOVED);
                 } else {
-                    $this->response->sendAsJson(array('success' => false));
+                    $this->response->sendAsJson(['success' => false]);
                 }
             } else {
-                $this->response->sendAsJson(array('success' => false));
+                $this->response->sendAsJson(['success' => false]);
             }
         }
 
-        $this->response->sendAsJson(array('success' => true));
+        $this->response->sendAsJson(['success' => true]);
     }
 
 
@@ -484,7 +484,7 @@ class BlockController extends \Fraym\Core
                 $changedBlock = $block;
             }
             $this->createChangeSet($changedBlock, $block, \Fraym\Block\Entity\ChangeSet::DELETED);
-            $this->response->sendAsJson(array('success' => true));
+            $this->response->sendAsJson(['success' => true]);
         }
     }
 
@@ -532,8 +532,8 @@ class BlockController extends \Fraym\Core
             ($block = $this->db->getRepository('\Fraym\Block\Entity\Block')->findOneById($blockId))) {
             $menuItem = $this->db->getRepository('\Fraym\Menu\Entity\MenuItem')->findOneById($menuId);
             $blocks = $this->db->getRepository('\Fraym\Block\Entity\Block')->findBy(
-                array('menuItem' => $menuItem, 'contentId' => $contentId),
-                array('position' => 'asc')
+                ['menuItem' => $menuItem, 'contentId' => $contentId],
+                ['position' => 'asc']
             );
 
             // Re-Order other blocks
@@ -568,10 +568,10 @@ class BlockController extends \Fraym\Core
                 $this->createChangeSet($changedBlock, $block, \Fraym\Block\Entity\ChangeSet::MOVED);
             }
             $this->db->flush();
-            $this->response->sendAsJson(array('success' => true, 'data' => $this->prepareBlockOutput($changedBlock)));
+            $this->response->sendAsJson(['success' => true, 'data' => $this->prepareBlockOutput($changedBlock)]);
         }
         $this->response->sendAsJson(
-            array('success' => false, 'message' => $this->translation->getTranslation('Paste error, please reload the page and copy again.'))
+            ['success' => false, 'message' => $this->translation->getTranslation('Paste error, please reload the page and copy again.')]
         );
     }
 

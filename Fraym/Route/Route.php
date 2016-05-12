@@ -234,7 +234,7 @@ class Route
             $this->addVirtualRoute(
                 'siteManagerExt_' . $extsension->id,
                 '/fraym/admin/extension/' . $extsension->id,
-                array($extsension->class, $extsension->method)
+                [$extsension->class, $extsension->method]
             );
         }
         return $this;
@@ -258,7 +258,7 @@ class Route
                 $key = $annotation->name;
                 $regex = $annotation->regex;
                 $permission = $annotation->permission;
-                $contextCallback = empty($annotation->contextCallback) ? array() : array($class, $annotation->contextCallback);
+                $contextCallback = empty($annotation->contextCallback) ? [] : [$class, $annotation->contextCallback];
                 $callback = null;
 
                 $this->addVirtualRoute(
@@ -313,7 +313,7 @@ class Route
                             $key = $methodAnnotation->name;
                             $regex = $methodAnnotation->regex;
                             $permission = $methodAnnotation->permission;
-                            $callback = array($class, $method);
+                            $callback = [$class, $method];
                             $contextCallback = null;
 
                             $this->addVirtualRoute(
@@ -459,7 +459,7 @@ class Route
     {
         if (!$this->siteMenu) {
             $this->siteMenu = $this->db->getRepository('\Fraym\Menu\Entity\MenuItem')->findOneBy(
-                array('parent' => null, 'site' => $this->getCurrentMenuItem()->site->id, 'active' => 1, 'visible' => 1)
+                ['parent' => null, 'site' => $this->getCurrentMenuItem()->site->id, 'active' => 1, 'visible' => 1]
             );
         }
         return $this->siteMenu;
@@ -481,7 +481,7 @@ class Route
      * @param array $contextCallback
      * @param array $permission
      */
-    public function addVirtualRoute($key, $route, $callback, $contextCallback = null, $regex = false, $permission = array())
+    public function addVirtualRoute($key, $route, $callback, $contextCallback = null, $regex = false, $permission = [])
     {
         $stdClass = new \stdClass();
         $stdClass->route = $route;
@@ -527,8 +527,8 @@ class Route
             $callbackResult = false;
 
             if (is_array($data->route)) {
-                $callback = array($this->serviceLocator->get(key($data->route)), reset($data->route));
-                $callbackResult = call_user_func_array($callback, array($data, $requestRouteWithoutBase));
+                $callback = [$this->serviceLocator->get(key($data->route)), reset($data->route)];
+                $callbackResult = call_user_func_array($callback, [$data, $requestRouteWithoutBase]);
             } else {
                 $route = rtrim($siteBaseUri, '/') . $data->route;
             }
@@ -548,7 +548,7 @@ class Route
                 if (count($data->permission) === 0 || $allowAccess) {
                     if ($inContext && is_array($data->contextCallback)) {
                         if (count($data->contextCallback) === 2) {
-                            $menuItemTranslation = call_user_func(array($this->serviceLocator->get($data->contextCallback[0]), $data->contextCallback[1]));
+                            $menuItemTranslation = call_user_func([$this->serviceLocator->get($data->contextCallback[0]), $data->contextCallback[1]]);
                             if ($menuItemTranslation) {
                                 $this->template->setMainTemplate($menuItemTranslation->menuItem->template->html);
                             }
@@ -779,7 +779,7 @@ class Route
     public function getAddionalURIParams()
     {
         $addional_uri = trim($this->getAddionalURI(), '?');
-        $addional_uri = str_replace(array('=', '&'), '/', $addional_uri);
+        $addional_uri = str_replace(['=', '&'], '/', $addional_uri);
         $addional_uri = trim($addional_uri, '/');
         $addional_uri = explode('/', $addional_uri);
 
