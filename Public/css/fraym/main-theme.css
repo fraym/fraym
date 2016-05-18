@@ -1354,7 +1354,7 @@ body .navbar .navbar-nav.side-nav .user-status .user .status ul > li .dropdown-m
     -ms-border-radius: 4px 0 0 4px !important;
     -o-border-radius: 4px 0 0 4px !important;
     border-radius: 4px 0 0 4px !important;
-    color: #d5d5d5 !important;
+    color: #000 !important;
     -webkit-transition: all .1s linear;
     transition: all .1s linear;
 }

@@ -43,6 +43,13 @@ final class FormField extends Annotation
     public $validation = [];
 
     /**
+     * Field options for select, multiselect, radio or checkbox
+     *
+     * @var array
+     */
+    public $options = [];
+
+    /**
      * is field editable
      *
      * @var bool

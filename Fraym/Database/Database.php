@@ -301,7 +301,6 @@ class Database
             throw new \Exception('Default locale not found! Fraym is not correctly installed, please reinstall Fraym.');
         }
         $translatableListener = new \Gedmo\Translatable\TranslatableListener;
-
         $translatableListener->setDefaultLocale($defaultLocale->locale);
         $translatableListener->setAnnotationReader($this->cachedAnnotationReader);
         $translatableListener->setTranslationFallback(true);

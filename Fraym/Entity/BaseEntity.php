@@ -66,9 +66,9 @@ class BaseEntity
 
             if (isset($formFields[$prop]) && $formFields[$prop]['translateable'] === true && is_array($val)) {
                 $repository = $em->getRepository('Gedmo\\Translatable\\Entity\\Translation');
-                $newEntity->$prop = reset($val);
+                $newEntity->__set($prop, reset($val));
                 foreach ($val as $locale => $translation) {
-                    $repository->translate($newEntity, $prop, $locale, empty($translation) ? null : $translation);
+                    $repository->translate($newEntity, $prop, $locale, $translation);
                 }
             } else {
                 if (is_string($val) || is_numeric($val)) {
@@ -105,7 +105,7 @@ class BaseEntity
 
         // clear all array collections
         foreach ($tmpAssocMappings as $prop => $val) {
-            if (isset($obj[$prop]) && is_object($newEntity->{$prop}) &&
+            if (is_object($newEntity->{$prop}) &&
                 ('Doctrine\ORM\PersistentCollection' == get_class($newEntity->{$prop}) ||
                     'Doctrine\Common\Collections\ArrayCollection' == get_class($newEntity->{$prop}))
             ) {

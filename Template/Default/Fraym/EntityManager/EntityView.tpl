@@ -3,6 +3,7 @@
         <div class="col-md-8">
             <div class="col-md-8">
                 <form id="entityForm" class="form-horizontal clearfix" action="" method="post" autocomplete="off" role="form">
+
                         <div class="form-group">
                             <label for="id">{_('Type', 'FRAYM_TYPE')}</label>
 
@@ -41,6 +42,7 @@
                         {/if}
 
                         {include('Fraym/FormField/Form.tpl', array('formFields' => $formFields, 'errors' => $errors, 'entity' => $currentEntity, 'data' => $data, 'locales' => $locales))}
+                    <div class="head-buttons">
                         <div class="pull-right">
                             {if ($data && $data.id) || ($currentEntity && $currentEntity.id)}
                                 <button type="button" onclick="$('[name=cmd]').val('remove');this.form.submit();" class="btn btn-danger">{_('Delete', 'FRAYM_DELETE')}</button>
@@ -49,6 +51,7 @@
                                 <button type="submit" class="btn">{_('Save', 'FRAYM_SAVE')}</button>
                             {/if}
                         </div>
+                    </div>
                 </form>
             </div>
         </div>

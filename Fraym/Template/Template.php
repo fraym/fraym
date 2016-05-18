@@ -14,6 +14,154 @@ namespace Fraym\Template;
  */
 class Template
 {
+    const DISABLED_FUNCTIONS = array(
+        'shell_exec',
+        'apache_child_terminate',
+        'apache_setenv',
+        'define_syslog_variables',
+        'escapeshellarg',
+        'escapeshellcmd',
+        'eval',
+        'exec',
+        'mail',
+        'bzopen',
+        'gzopen',
+        'call_user_func',
+        'Java',
+        'COM',
+        'assert',
+        'str_repeat',
+        'unserialize',
+        'curl_exec',
+        'curl_init',
+        'mysql_connect',
+        'call_user_func_array',
+        'register_tick_function',
+        'register_shutdown_function',
+        'set_error_handler',
+        'set_exception_handler',
+        'session_set_save_handler',
+        'sqlite_create_aggregate',
+        'sqlite_create_function',
+        'preg_replace_callback',
+        'spl_autoload_register',
+        'iterator_apply',
+        'ReflectionFunction',
+        'extract',
+        'parse_str',
+        'putenv',
+        'file_exists',
+        'ftp_nb_get',
+        'fp',
+        'fput',
+        'header',
+        'ini_set',
+        'ftp_connect',
+        'ftp_exec',
+        'ftp_get',
+        'ftp_login',
+        'ftp_nb_fput',
+        'ftp_put',
+        'ftp_raw',
+        'ftp_rawlist',
+        'highlight_file',
+        'include_once',
+        'require_once',
+        'require',
+        'ini_alter',
+        'ini_get_all',
+        'ini_get',
+        'ini_restore',
+        'inject_code',
+        'mysql_pconnect',
+        'openlog',
+        'passthru',
+        'php_uname',
+        'phpAds_remoteInfo',
+        'phpAds_XmlRpc',
+        'phpAds_xmlrpcDecode',
+        'phpAds_xmlrpcEncode',
+        'popen',
+        'getenv',
+        'lchgrp',
+        'lchown',
+        'phpinfo',
+        'rmdir',
+        'create_function',
+        'posix_getpwuid',
+        'pcntl_exec',
+        'posix_kill',
+        'posix_mkfifo',
+        'posix_setpgid',
+        'posix_setsid',
+        'posix_setuid',
+        'posix_uname',
+        'proc_close',
+        'proc_get_status',
+        'proc_nice',
+        'proc_terminate',
+        'proc_open',
+        'get_cfg_var',
+        'get_current_user',
+        'getcwd',
+        'pfsockopen',
+        'fsockopen',
+        'syslog',
+        'system',
+        'xmlrpc_entity_decode',
+        'fopen',
+        'chmod',
+        'chgrp',
+        'chown',
+        'delete',
+        'copy',
+        'rename',
+        'fgetc',
+        'fgetcsv',
+        'file_get_contents',
+        'file_put_contents',
+        'fread',
+        'fscanf',
+        'fstat',
+        'link',
+        'symlink',
+        'tmpfile',
+        'readfile',
+        'file',
+        'readlink',
+        'tempnam',
+        'popen',
+        'parse_ini_file',
+        'parse_ini_string',
+        'touch',
+        'mkdir',
+        'unlink',
+        'move_uploaded_file',
+        'glob',
+        'imagepng',
+        'imagewbmp',
+        'image2wbmp',
+        'imagejpeg',
+        'imagexbm',
+        'imagegif',
+        'imagegd',
+        'imagegd2',
+        'imagecreatefromgif',
+        'imagecreatefromjpeg',
+        'imagecreatefrompng',
+        'imagecreatefromwbmp',
+        'imagecreatefromxbm',
+        'imagecreatefromxpm',
+        'exif_read_data',
+        'read_exif_data',
+        'exif_thumbnail',
+        'exif_imagetype',
+        'exif_imagetype',
+        'exif_imagetype',
+        'highlight_file',
+        'show_source',
+    );
+
     /**
      * @var null
      */
@@ -133,7 +281,7 @@ class Template
      *
      * @var array
      */
-    private $pseudoFunctions = [];
+    private $templateFunctions = [];
 
     /**
      * @Inject
@@ -216,24 +364,34 @@ class Template
         $this->cachingDisabled = $cachingDisabled;
     }
 
+    public function disabledFunctions()
+    {
+        error_log('Dangerous function call in template!');
+    }
+
     /**
      * Add the default custom template functions
      */
     public function __construct()
     {
-        $this->addPseudoFunctionName('menuItem', [&$this, 'getMenuItem']);
-        $this->addPseudoFunctionName('i', [&$this, 'getInstance']);
-        $this->addPseudoFunctionName('css', [&$this, 'addCssFile']);
-        $this->addPseudoFunctionName('js', [&$this, 'addJsFile']);
-        $this->addPseudoFunctionName('include', [&$this, 'includeTemplate']);
-        $this->addPseudoFunctionName('shorten', [&$this, 'shorten']);
-        $this->addPseudoFunctionName('age', [&$this, 'age']);
-        $this->addPseudoFunctionName('isLast', [&$this, 'isLast']);
-        $this->addPseudoFunctionName('formatCurrency', [&$this, 'formatCurrency']);
-        $this->addPseudoFunctionName('formatDate', [&$this->locale, 'formatDate']);
-        $this->addPseudoFunctionName('formatDateTime', [&$this->locale, 'formatDateTime']);
-        $this->addPseudoFunctionName('_', [&$this->translation, 'getTranslation']);
-        $this->addPseudoFunctionName('et', [&$this->entityManager, 'getEntityTranslation']);
+        // Disabled PHP functions in templates
+        foreach (self::DISABLED_FUNCTIONS as $function) {
+            $this->addTemplateFunction($function, [&$this, 'disabledFunctions']);
+        }
+
+        $this->addTemplateFunction('menuItem', [&$this, 'getMenuItem']);
+        $this->addTemplateFunction('i', [&$this, 'getInstance']);
+        $this->addTemplateFunction('css', [&$this, 'addCssFile']);
+        $this->addTemplateFunction('js', [&$this, 'addJsFile']);
+        $this->addTemplateFunction('include', [&$this, 'includeTemplate']);
+        $this->addTemplateFunction('shorten', [&$this, 'shorten']);
+        $this->addTemplateFunction('age', [&$this, 'age']);
+        $this->addTemplateFunction('isLast', [&$this, 'isLast']);
+        $this->addTemplateFunction('formatCurrency', [&$this, 'formatCurrency']);
+        $this->addTemplateFunction('formatDate', [&$this->locale, 'formatDate']);
+        $this->addTemplateFunction('formatDateTime', [&$this->locale, 'formatDateTime']);
+        $this->addTemplateFunction('_', [&$this->translation, 'getTranslation']);
+        $this->addTemplateFunction('et', [&$this->entityManager, 'getEntityTranslation']);
     }
 
     /**
@@ -241,7 +399,8 @@ class Template
      * @param string $symbol
      * @return mixed
      */
-    public function formatCurrency($number, $symbol = '') {
+    public function formatCurrency($number, $symbol = '')
+    {
         $fmt = new NumberFormatter($this->locale->getLocale()->locale, NumberFormatter::CURRENCY);
         return $fmt->formatCurrency($number, $symbol);
     }
@@ -309,9 +468,9 @@ class Template
      * @param  $realFunction
      * @return void
      */
-    public function addPseudoFunctionName($pseudoFunctionName, $realFunction)
+    public function addTemplateFunction($pseudoFunctionName, $realFunction)
     {
-        $this->pseudoFunctions[$pseudoFunctionName] = $realFunction;
+        $this->templateFunctions[$pseudoFunctionName] = $realFunction;
         return $this;
     }
 
@@ -419,7 +578,6 @@ class Template
             is_null($var) ||
             is_callable($var)
         ) {
-
             return $var;
         }
 
@@ -428,10 +586,9 @@ class Template
             $name = (string)$name;
             if (is_object($value) || is_callable($value)) {
                 $object->{$name} = $value;
-            } else if($name !== null && $name !== '') {
+            } elseif ($name !== null && $name !== '') {
                 $object->{$name} = $this->arrayToObject($value);
             }
-
         }
         return $object;
     }
@@ -542,7 +699,7 @@ class Template
     private function replaceCustomTemplateFunctions($content)
     {
         // replace the custom template function
-        foreach ($this->pseudoFunctions as $pseudoFunction => &$realFunction) {
+        foreach ($this->templateFunctions as $pseudoFunction => &$realFunction) {
             // '{' . $realFunction . '($3)}',
             $func = function ($match) use (&$realFunction, $pseudoFunction) {
                 if (isset($match[0]) && isset($match[3])) {
@@ -569,6 +726,7 @@ class Template
                 $content
             );
 
+
             $func = function ($match) use (&$realFunction, $pseudoFunction) {
                 if (isset($match[0]) && isset($match[4])) {
                     $pseudoFunctionName = 'PSEUDOFUNC_TEMP_' . $pseudoFunction;
@@ -578,14 +736,12 @@ class Template
                             return call_user_func_array($realFunction, func_get_args());
                         }
                     );
-                    return preg_replace('/\b' . $match[4] . '\b/', "$$pseudoFunctionName", $match[0], 1);
+                    return preg_replace('/\b' . $match[3] . '\b/', "$$pseudoFunctionName", $match[0], 1);
                 }
             };
 
             $content = preg_replace_callback(
-                '/{(if|elseif|foreach|while|for|switch)\s+(((' . preg_quote(
-                    $pseudoFunction
-                ) . ')(\((.*?)\))[^\}]*))\}/is',
+                '/\{[^\}]*(((\b' . preg_quote($pseudoFunction) . '\b)(\((.*?)\))[^\}]*))\}/',
                 $func,
                 $content
             );
@@ -690,7 +846,7 @@ class Template
      */
     public function errorHandler($code, $text, $file, $line)
     {
-        if($code !== E_NOTICE && $code !== E_USER_NOTICE) {
+        if ($code !== E_NOTICE && $code !== E_USER_NOTICE) {
             ob_clean();
             error_log("$text $file $line");
             $lines = explode("\n", $this->currentTemplateContent);
@@ -705,15 +861,17 @@ class Template
     /**
      * @param string $tpl
      */
-    public function setMainTemplate($tpl) {
+    public function setMainTemplate($tpl)
+    {
         $this->mainTemplate = $tpl;
     }
 
     /**
      * @return string
      */
-    public function getMainTemplate() {
-        if(empty($this->mainTemplate)) {
+    public function getMainTemplate()
+    {
+        if (empty($this->mainTemplate)) {
             return $this->route->getCurrentMenuItemTranslation()->menuItem->template ?
                 $this->route->getCurrentMenuItemTranslation()->menuItem->template->html :
                 $this->getDefaultMenuItemTemplate();
@@ -899,7 +1057,8 @@ class Template
     /**
      * Render the main template
      */
-    public function renderMainTemplate() {
+    public function renderMainTemplate()
+    {
         $this->renderString($this->getMainTemplate());
     }
 
@@ -1114,7 +1273,7 @@ class Template
      */
     public function addHeadData($string, $key = null)
     {
-        if($key) {
+        if ($key) {
             $this->headData[$key] = $string;
         } else {
             $this->headData[] = $string;
@@ -1129,7 +1288,7 @@ class Template
      */
     public function addFootData($string, $key = null)
     {
-        if($key) {
+        if ($key) {
             $this->footData[$key] = $string;
         } else {
             $this->footData[] = $string;

@@ -39,7 +39,23 @@ class EntityManager
         if (is_object($entity)) {
             $repository = $this->db->getRepository('\Gedmo\Translatable\Entity\Translation');
             $translations = $repository->findTranslations($entity);
-            return isset($translations[$locale][$propertyName]) ? $translations[$locale][$propertyName] : $entity->$propertyName;
+
+            $property = new \ReflectionProperty($entity, $propertyName);
+            $annotation = $this->db->getAnnotationReader()->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Column');
+
+            $value = isset($translations[$locale][$propertyName]) ? $translations[$locale][$propertyName] : $entity->$propertyName;
+
+            if (is_string($value) && $annotation->type === 'array') {
+                $value = unserialize($value);
+            } elseif (is_string($value) && $annotation->type === 'date') {
+                $value = \DateTime::createFromFormat('Y-m-d', $value);
+            } elseif (is_string($value) && $annotation->type === 'datetime') {
+                $value = \DateTime::createFromFormat('Y-m-d H:i:s', $value);
+            } elseif (is_bool($value) === false && ($annotation->type === 'boolean' || $annotation->type === 'bool')) {
+                $value = $value == 1 ? true : ($value === null ? null : false);
+            }
+
+            return $value;
         }
 
         return $defaultValue;

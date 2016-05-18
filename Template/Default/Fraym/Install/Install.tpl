@@ -143,7 +143,7 @@
 
                 <div class="form-group">
                     <label>E-mail address:</label>
-                    <input class="form-control" name="user[email]" type="email" value="{if isset($post.user) && $post.user.email}{$post.user.email}{else}admin@yourwebsite.com{/if}" placeholder="admin@yourhostname.com" required>
+                    <input class="form-control" name="user[email]" type="email" value="{if isset($post.user) && $post.user.email}{$post.user.email}{else}admin@example.org{/if}" placeholder="admin@yourhostname.com" required>
                 </div>
 
                 <div class="form-group">

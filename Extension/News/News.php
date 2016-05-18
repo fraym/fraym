@@ -59,6 +59,15 @@ use Fraym\Block\BlockMetadata;
  *                      }
  *                   },
  *           },
+ *           {
+ *           "className"="\Extension\News\Entity\Test",
+ *           "name"="Test",
+ *           "group"={
+ *                      "\Fraym\EntityManager\Entity\Group"={
+ *                          "name"="News"
+ *                      }
+ *                   },
+ *           },
  *       },
  * },
  * files={

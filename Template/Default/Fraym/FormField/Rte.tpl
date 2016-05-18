@@ -1,6 +1,5 @@
 <label for="{$propertyName}_{$entity.id}">{$field.label}{if call_user_func_array($field->hasValidation, array('notEmpty'))}<span class="required">*</span>{/if}</label>
 
-
 {if $field.translateable}
     {foreach $locales as $locale}
         {@$localeString = $locale.locale}

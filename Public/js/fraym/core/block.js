@@ -692,6 +692,14 @@ Core.Block = {
 		var dialog = $newDialog.dialog(settings);
 		var titlebar = dialog.parents('.ui-dialog').find('.ui-dialog-titlebar');
 
+		$(window).bind('mouseover', function(e){
+			if(e.target.tagName === 'IFRAME') {
+				$('body').css({overflow: 'hidden'});
+			} else {
+				$('body').css({overflow: 'visible'});
+			}
+		});
+
 		$('<div class="ui-dialog-titlebar-buttons"></div>')
 			.append(titlebar.find('button'))
 			.prepend($('<button class="ui-dialog-titlebar-refresh-iframe ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only"><span class="ui-button-text">refresh</span><span class="ui-button-icon-primary ui-icon ui-icon-arrowrefresh-1-w"></span></button>')

@@ -594,8 +594,7 @@ class Route
     public function loadSite()
     {
         // Connect database after tring to load the cache
-        $this->db->connect();
-        $this->db->setUpTranslateable()->setUpSortable();
+        $this->db->connect()->setUpTranslateable()->setUpSortable();
 
         $this->renderSite($this->parseRoute());
     }

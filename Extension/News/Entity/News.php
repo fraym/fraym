@@ -9,9 +9,7 @@ namespace Extension\News\Entity;
 
 use \Doctrine\ORM\Mapping as ORM;
 use Fraym\Annotation\FormField;
-use Fraym\Annotation\LifecycleCallback;
 use \Gedmo\Mapping\Annotation as Gedmo;
-use \Gedmo\Translatable\Translatable;
 
 /**
  * Class News
