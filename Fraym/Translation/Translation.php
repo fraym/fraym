@@ -63,7 +63,7 @@ class Translation
         if (isset($this->runtimeTranslationKeys[$keyLower])) {
             $translationString = $this->runtimeTranslationKeys[$keyLower];
         } elseif ($locale) {
-            if ($defaultLocale !== $locale->locale) {
+            if ($defaultLocale !== $locale->locale || $this->config->get('TRANSLATION_ADD_DEFAULT_TO_DB')->value == '1') {
                 // Get the translation entity
                 $translation = $this->getTranslationEntity($key, $locale->locale, $default, $defaultLocale);
                 $translationString = $translation->value;

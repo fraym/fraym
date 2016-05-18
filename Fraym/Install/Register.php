@@ -213,6 +213,11 @@ return [
             'description' => 'Set to 1 for enable auto translation or to 0 to disable auto translation.',
             'deletable' => false
         ],
+        'TRANSLATION_ADD_DEFAULT_TO_DB' => [
+            'value' => '0',
+            'description' => 'Set to 1 for adding all default translations texts to the database.',
+            'deletable' => false
+        ],
         'IMAGE_PATH' => [
             'value' => 'images/deposit',
             'description' => 'The save path of the converted images.',

@@ -6,6 +6,7 @@
  * @license   http://www.opensource.org/licenses/gpl-license.php GNU General Public License, version 2 or later (see the LICENSE file)
  */
 namespace Fraym\Entity;
+use Fraym\Validation\Validation;
 
 /**
  * Class FormField
@@ -139,12 +140,15 @@ class FormField
     public function getErrorMessage($prop, $value, $modelName, $validationRule)
     {
         $className = str_ireplace('\\', '_', $modelName);
-        return str_ireplace(
-            "#{$prop}",
-            "{$value}",
-            $this->translation->getTranslation(
-                'FIELD_ERROR' . strtoupper($className) . '_' . strtoupper($prop) . '_' . strtoupper($validationRule)
-            )
+        $messages = Validation::DEFAULT_ERROR_TRANSLATIONS;
+        $rule = strtoupper($validationRule);
+        $key = 'FIELD_ERROR' . strtoupper($className) . '_' . strtoupper($prop) . '_' . $rule;
+        
+        $default = isset($messages[$rule]) ? $messages[strtoupper($validationRule)] : $key;
+
+        return $this->translation->getTranslation(
+            $default,
+            $key
         );
     }
 

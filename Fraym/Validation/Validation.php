@@ -14,6 +14,20 @@ namespace Fraym\Validation;
  */
 class Validation
 {
+    const DEFAULT_ERROR_TRANSLATIONS = array(
+        'NOTEMPTY' => 'Field must not be empty.',
+        'MINLENGTH' => 'Max length of {maxLength} chars.',
+        'MAXLENGTH' => 'Max length of {maxLength} chars.',
+        'DATE' => 'Enter a date.',
+        'EMAIL' => 'Enter a valid email.',
+        'EMAILRFC' => 'Enter a valid email.',
+        'URL' => 'Enter a valid URL.',
+        'IP' => 'Enter a valid IP address.',
+        'ALPHANUMERIC' => 'Only alphanumeric chars allowed.',
+        'NUMERIC' => 'Only numbers are allowed.',
+        'DECIMAL' => 'Only decimal numbers are allowed.',
+        'COLOR' => 'Enter a hex color code.',
+    );
 
     /**
      * @var array
@@ -186,13 +200,13 @@ class Validation
 
             case 'minLength':
                 if (strlen($value) < intval($params)) {
-                    $errorRule[]['minLength'] = intval($params);
+                    $errorRule[][$rule] = intval($params);
                 }
                 break;
 
             case 'maxLength':
                 if (strlen($value) > intval($params)) {
-                    $errorRule[]['maxLength'] = intval($params);
+                    $errorRule[][$rule] = intval($params);
                 }
                 break;
 

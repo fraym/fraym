@@ -1181,6 +1181,9 @@ table td.right, table th.right {
     padding-bottom: 50px;
 }
 
+#entityForm .error {
+    padding-top: 5px;
+}
 
 #entityForm .head-buttons {
     position: fixed;

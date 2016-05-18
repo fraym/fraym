@@ -3,7 +3,6 @@
         <div class="col-md-8">
             <div class="col-md-8">
                 <form id="entityForm" class="form-horizontal clearfix" action="" method="post" autocomplete="off" role="form">
-
                         <div class="form-group">
                             <label for="id">{_('Type', 'FRAYM_TYPE')}</label>
 
@@ -57,6 +56,7 @@
         </div>
     </div>
 </div>
+
 <script type="text/javascript">
     $(function(){
         $('select#id, select#model').change(function(){
@@ -72,7 +72,7 @@
 
         $('#entityForm select:not([multiple])').attr('data-placeholder', '{_('- Please select -', 'FRAYM_PLEASE_SELECT_PLACEHOLDER')}').chosen({ width:'100%', allow_single_deselect:true });
 
-        {if $model.id && is_array($errors)}
+        {if $model.id && $errors !== false && count((array)$errors)}
             Core.Notification.show('error', '{_('The entry was not saved - Please check the marked fields.', 'FRAYM_CHECK_MARKED_FIELDS')}');
         {/if}
     });
