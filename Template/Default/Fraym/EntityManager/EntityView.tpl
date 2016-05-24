@@ -26,7 +26,7 @@
                                 <select name="id" id="id" style="width:100%;">
                                     <option value="">{_('[New]', 'FRAYM_[NEW]')}</option>
                                     {foreach $entities as $item}
-                                        <option value="{$item.id}" {if $currentEntity && $currentEntity.id == $item.id}selected{/if}>{$item}</option>
+                                        <option value="{$item.id}" {if $currentEntity && $currentEntity.id == $item.id}selected{/if}>{$item} (ID: {$item.id})</option>
                                     {/foreach}
                                 </select>
 

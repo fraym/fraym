@@ -45,6 +45,11 @@ class Database
     private $cachedAnnotationReader = false;
 
     /**
+     * @var \Gedmo\Translatable\TranslatableListener
+     */
+    private $translatableListener = null;
+
+    /**
      * @var array
      */
     private $connectionOptions = [];
@@ -82,7 +87,7 @@ class Database
      */
     public function __call($method, $param)
     {
-        if(!is_object($this->entityManager)) {
+        if (!is_object($this->entityManager)) {
             $this->connect();
         }
         if (is_object($this->entityManager) && method_exists($this->entityManager, $method)) {
@@ -101,8 +106,8 @@ class Database
             GLOB_ONLYDIR
         );
 
-        foreach($entities as $k => $entity) {
-            if(preg_match('@^.*/(tests|test)/?.*$@i', $entity)) {
+        foreach ($entities as $k => $entity) {
+            if (preg_match('@^.*/(tests|test)/?.*$@i', $entity)) {
                 unset($entities[$k]);
             }
         }
@@ -263,7 +268,6 @@ class Database
      */
     public function __construct($connectionOptions = [])
     {
-
         if (count($connectionOptions) == 0) {
             $connectionOptions = [
                 'driver' => 'pdo_mysql',
@@ -300,13 +304,21 @@ class Database
         if ($defaultLocale === null) {
             throw new \Exception('Default locale not found! Fraym is not correctly installed, please reinstall Fraym.');
         }
-        $translatableListener = new \Gedmo\Translatable\TranslatableListener;
-        $translatableListener->setDefaultLocale($defaultLocale->locale);
-        $translatableListener->setAnnotationReader($this->cachedAnnotationReader);
-        $translatableListener->setTranslationFallback(true);
-        $translatableListener->setPersistDefaultLocaleTranslation(true);
-        $this->eventManager->addEventSubscriber($translatableListener);
+        $this->translatableListener = new \Gedmo\Translatable\TranslatableListener;
+        $this->translatableListener->setDefaultLocale($defaultLocale->locale);
+        $this->translatableListener->setAnnotationReader($this->cachedAnnotationReader);
+        $this->translatableListener->setTranslationFallback(true);
+        $this->translatableListener->setPersistDefaultLocaleTranslation(true);
+        $this->eventManager->addEventSubscriber($this->translatableListener);
         return $this;
+    }
+
+    /**
+     * @param string $locale
+     */
+    public function setTranslatableLocale($locale = 'en_US')
+    {
+        $this->translatableListener->setTranslatableLocale($locale);
     }
 
     /**

@@ -729,6 +729,7 @@ class Route
         try {
             $this->currentMenuItemTranslation = $menuItemTranslation;
             $this->currentMenuItem = $menuItemTranslation->menuItem;
+            $this->db->setTranslatableLocale($menuItemTranslation->locale->locale);
             $this->locale->setLocale($menuItemTranslation->locale);
             $this->template->setSiteTemplateDir($menuItemTranslation->menuItem->site->templateDir);
 

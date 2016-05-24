@@ -52,6 +52,12 @@ class DynamicTemplate
 
     /**
      * @Inject
+     * @var \Fraym\ServiceLocator\ServiceLocator
+     */
+    protected $serviceLocator;
+
+    /**
+     * @Inject
      * @var \Fraym\Request\Request
      */
     public $request;
@@ -96,13 +102,28 @@ class DynamicTemplate
     public function execBlock($xml)
     {
         $template = null;
+        $dataSource = null;
         $locale = $this->locale->getLocale();
         $variables = unserialize((string)$xml->dynamicTemplateConfig);
-        $variables = isset($variables->{$locale->id}) ? $variables->{$locale->id} : $variables;
+
         if (!empty((string)$xml->dynamicTemplate)) {
             $template = $this->getTemplatePath() . DIRECTORY_SEPARATOR . (string)$xml->dynamicTemplate;
         }
-        $this->dynamicTemplateController->render($template, $variables);
+
+        $obj = $this->getTemplateXmlObject((string)$xml->dynamicTemplate);
+        
+        if (isset($obj->dataSource)) {
+            $dataSource = $obj->dataSource;
+            $class = (string)$dataSource->class;
+            $method = (string)$dataSource->method;
+
+            if (method_exists($class, $method)) {
+                $classObj = $this->serviceLocator->get($class);
+                $dataSource = $classObj->$method($locale->id, $variables);
+            }
+        }
+
+        $this->dynamicTemplateController->render($template, $locale->id, $variables, $dataSource);
     }
 
     /**
@@ -193,18 +214,32 @@ class DynamicTemplate
             $variables = unserialize((string)$xml->dynamicTemplateConfig);
         }
 
+        $localeResult = $this->db->getRepository('\Fraym\Locale\Entity\Locale')->findAll();
+
+        foreach ($localeResult as $locale) {
+            $locales[] = $locale->toArray(1);
+        }
+
+        $obj = $this->getTemplateXmlObject($template);
+
+        return $this->dynamicTemplateController->renderConfig((string)$obj->template, $locales, $variables);
+    }
+
+    /**
+     * @param $template
+     * @return \SimpleXMLElement
+     */
+    private function getTemplateXmlObject($template)
+    {
         $template = $this->getTemplatePath() . DIRECTORY_SEPARATOR . $template;
 
         $templateContent = file_get_contents($template);
         $blocks = $this->blockParser->getAllBlocks($templateContent);
-        $localeResult = $this->db->getRepository('\Fraym\Locale\Entity\Locale')->findAll();
-        foreach($localeResult as $locale) {
-            $locales[] = $locale->toArray(1);
-        }
+
         foreach ($blocks as $block) {
             $obj = $this->blockParser->getXmlObjectFromString($block);
             if ($this->blockParser->getXmlAttr($obj, 'type') === 'config') {
-                return $this->dynamicTemplateController->renderConfig((string)$obj->template, $locales, $variables);
+                return $obj;
             }
         }
     }

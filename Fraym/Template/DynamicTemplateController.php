@@ -45,23 +45,29 @@ class DynamicTemplateController extends \Fraym\Core
 
     /**
      * @param $html
+     * @param $locales
      * @param $variables
      */
-    public function renderConfig($html, $variables)
+    public function renderConfig($html, $locales, $variables)
     {
+        $this->view->assign('locales', $locales);
         $this->view->assign('config', $variables);
         $this->view->render("string:$html");
     }
 
     /**
      * @param $template
+     * @param $locale
      * @param $variables
+     * @param $dataSource
      */
-    public function render($template, $variables)
+    public function render($template, $locale, $variables, $dataSource = null)
     {
         $this->view->assign('refreshBlock', $this->block->inEditMode() && $this->request->isXmlHttpRequest());
+        $this->view->assign('locale', $locale);
+        $this->view->assign('dataSource', $dataSource);
         $this->view->assign('config', $variables);
-        if(!empty($template)) {
+        if (!empty($template)) {
             $this->view->setTemplate($template);
         } else {
             $this->view->setTemplate("string:");
