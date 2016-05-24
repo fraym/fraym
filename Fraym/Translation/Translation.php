@@ -136,8 +136,12 @@ class Translation
             $repository->translate($translation, 'value', $locale, $value);
         }
 
-        $em->persist($translation);
-        $em->flush();
+        try {
+            $em->persist($translation);
+            $em->flush();
+        } catch (\Exception $e) {
+            error_log($e);
+        }
 
         return $translation;
     }

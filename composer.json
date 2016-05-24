@@ -15,6 +15,7 @@
     ],
     "autoload": {
         "psr-4": {
+            "Hook\\": "Hook/",
             "Fraym\\": "Fraym/",
             "Extension\\": "Extension/"
         },

@@ -78,29 +78,6 @@ class MenuController extends \Fraym\Core
         }
     }
 
-    /**
-     * @param $content
-     * @param array $options
-     * @return mixed
-     */
-    public function getIframeContent($content, $options = [])
-    {
-        $menuItems = [];
-        $locales = $this->db->getRepository('\Fraym\Locale\Entity\Locale')->findAll();
-        foreach ($locales as $locale) {
-            foreach ($locale->menuItemTranslations as $menuItemTranslation) {
-                $menuItems[] = [
-                    $menuItemTranslation->title . " ({$locale->name})",
-                    $this->route->buildFullUrl($menuItemTranslation->menuItem)
-                ];
-            }
-        }
-        $this->view->assign('menuItems', json_encode($menuItems));
-        $this->view->assign('options', $options);
-        $this->view->assign('content', $content);
-        return $this->view->fetch('Iframe');
-    }
-
     public function getBlockConfig()
     {
         $sites = $this->db->getRepository('\Fraym\Site\Entity\Site')->findAll();

@@ -30,9 +30,7 @@ use Fraym\Annotation\Registry;
  *      }
  * },
  * files={
- *      "Extension/Mailform/*",
  *      "Extension/Mailform/",
- *      "Template/Default/Extension/Mailform/*",
  *      "Template/Default/Extension/Mailform/"
  * },
  * config={

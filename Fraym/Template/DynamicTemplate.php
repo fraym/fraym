@@ -63,6 +63,12 @@ class DynamicTemplate
     public $fileManager;
 
     /**
+     * @Inject
+     * @var \Fraym\Locale\Locale
+     */
+    public $locale;
+
+    /**
      * @param $blockId
      * @param BlockXml $blockXML
      * @return BlockXml
@@ -70,7 +76,6 @@ class DynamicTemplate
     public function saveBlockConfig($blockId, \Fraym\Block\BlockXml $blockXML)
     {
         $blockConfig = $this->request->getGPAsObject();
-
         $customProperties = new \Fraym\Block\BlockXmlDom();
         $element = $customProperties->createElement('dynamicTemplateConfig');
         $element->appendChild($customProperties->createCDATASection(serialize($blockConfig->config)));
@@ -90,8 +95,10 @@ class DynamicTemplate
      */
     public function execBlock($xml)
     {
-        $variables = unserialize((string)$xml->dynamicTemplateConfig);
         $template = null;
+        $locale = $this->locale->getLocale();
+        $variables = unserialize((string)$xml->dynamicTemplateConfig);
+        $variables = isset($variables->{$locale->id}) ? $variables->{$locale->id} : $variables;
         if (!empty((string)$xml->dynamicTemplate)) {
             $template = $this->getTemplatePath() . DIRECTORY_SEPARATOR . (string)$xml->dynamicTemplate;
         }
@@ -104,6 +111,7 @@ class DynamicTemplate
     public function getBlockConfig($blockId = null)
     {
         $configXml = null;
+
         if ($blockId) {
             $block = $this->db->getRepository('\Fraym\Block\Entity\Block')->findOneById($blockId);
             if ($block->changeSets->count()) {
@@ -189,10 +197,14 @@ class DynamicTemplate
 
         $templateContent = file_get_contents($template);
         $blocks = $this->blockParser->getAllBlocks($templateContent);
+        $localeResult = $this->db->getRepository('\Fraym\Locale\Entity\Locale')->findAll();
+        foreach($localeResult as $locale) {
+            $locales[] = $locale->toArray(1);
+        }
         foreach ($blocks as $block) {
             $obj = $this->blockParser->getXmlObjectFromString($block);
             if ($this->blockParser->getXmlAttr($obj, 'type') === 'config') {
-                return $this->dynamicTemplateController->renderConfig((string)$obj->template, $variables);
+                return $this->dynamicTemplateController->renderConfig((string)$obj->template, $locales, $variables);
             }
         }
     }

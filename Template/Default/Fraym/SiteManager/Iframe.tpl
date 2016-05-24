@@ -101,6 +101,7 @@
         FileManager.fileViewerSrc = '//{i('Fraym\Route\Route')->getSiteBaseURI(false)}{i('Fraym\Route\Route')->getVirtualRoute('fileViewer')->route}?locale={i('Fraym\Registry\Config')->get('ADMIN_LOCALE_ID')->value}';
         FileManager.fileManagerSrc = '//{i('Fraym\Route\Route')->getSiteBaseURI(false)}{i('Fraym\Route\Route')->getVirtualRoute('fileManager')->route}?locale={i('Fraym\Registry\Config')->get('ADMIN_LOCALE_ID')->value}';
         Core.Menu.selectionSrc = '//{i('Fraym\Route\Route')->getSiteBaseURI(false)}{i('Fraym\Route\Route')->getVirtualRoute('menuSelection')->route}?locale={i('Fraym\Registry\Config')->get('ADMIN_LOCALE_ID')->value}';
+        Core.locales = {json_encode($locales)};
     </script>
 
 </head>

@@ -40,6 +40,6 @@
    		DeleteBlock: '{_('Delete block', 'FRAYM_ADMIN_CONTEXT_MENU_DELETE_BLOCK')}'
    	}
    };
-
+   Core.locales = {json_encode($locales)};
    Core.Admin.BLOCK_EDIT_SRC = '//{i('Fraym\Route\Route')->getSiteBaseURI(false)}{i('Fraym\Route\Route')->getVirtualRoute('block')->route}?locale={i('Fraym\Registry\Config')->get('ADMIN_LOCALE_ID')->value}';
 </script>

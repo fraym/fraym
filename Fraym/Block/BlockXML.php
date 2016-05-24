@@ -106,7 +106,7 @@ class BlockXml
             $dom->loadXML('<?xml version="1.0" encoding="utf-8"?><block>' . $this->customProperty . '</block>');
         } elseif ($blockString !== '') {
             // load exsiting
-            $dom->loadXML($blockString);
+            $dom->loadXML('<?xml version="1.0" encoding="utf-8"?><block>' . $blockString . '</block>');
         }
         return $dom;
     }

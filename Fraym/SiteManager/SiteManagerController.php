@@ -65,6 +65,12 @@ class SiteManagerController extends \Fraym\Core
      */
     public function getIframeContent($content, $options = [])
     {
+        $locales = [];
+        $localeResult = $this->db->getRepository('\Fraym\Locale\Entity\Locale')->findAll();
+        foreach($localeResult as $locale) {
+            $locales[$locale->id] = $locale->toArray(1);
+        }
+        $this->view->assign('locales', $locales);
         $this->view->assign('options', $options);
         $this->view->assign('content', $content);
         return $this->view->fetch('Iframe');

@@ -30,9 +30,7 @@ use Fraym\Annotation\Registry;
  *      }
  * },
  * files={
- *      "Extension/LanguageMenu/*",
  *      "Extension/LanguageMenu/",
- *      "Template/Default/Extension/LanguageMenu/*",
  *      "Template/Default/Extension/LanguageMenu/"
  * }
  * )

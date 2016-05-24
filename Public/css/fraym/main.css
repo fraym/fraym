@@ -319,6 +319,12 @@ html {
     display: none;
 }
 
+#dynamicTemplateConfig .tab-content {
+    padding: 10px;
+    border: 1px solid #DDD;
+    border-top: 0;
+}
+
 .edit-view-content {
     position: relative;
 

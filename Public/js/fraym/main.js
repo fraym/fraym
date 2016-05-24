@@ -5,9 +5,11 @@
  * @license   http://www.opensource.org/licenses/gpl-license.php GNU General Public License, version 2 or later (see the LICENSE file)
  */
 var Core = {
+    
+    locales: [],
 
     getAjaxRequestUri: function() {
-	    return base_path + menu_path + (menu_path.charAt(menu_path.length-1) == '/' ? '' : '/') + 'ajax';
+	    return '/ajax';
     },
 
     encodeQueryData: function (data)

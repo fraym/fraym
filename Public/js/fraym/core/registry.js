@@ -87,20 +87,20 @@ Core.Registry = {
 		e.preventDefault();
 		var repositoryKey = $(this).data('update');
 		Core.Registry.request(
-		{
-			cmd: 'downloadExtension',
-			repositoryKey: repositoryKey
-		},
-		function () {
-			Core.Registry.request(
 			{
-				cmd: 'updateExtension',
+				cmd: 'downloadExtension',
 				repositoryKey: repositoryKey
 			},
 			function () {
-				window.location.reload();
+				Core.Registry.request(
+					{
+						cmd: 'updateExtension',
+						repositoryKey: repositoryKey
+					},
+					function () {
+						window.location.reload();
+					});
 			});
-		});
 	},
 
 	request: function (options, successCallback, errorCallback) {
@@ -113,10 +113,14 @@ Core.Registry = {
 			data: options,
 			type: 'post',
 			complete: function (jqXHR, textStatus) {
-				successCallback(jqXHR, textStatus);
+				if(successCallback) {
+					successCallback(jqXHR, textStatus);
+				}
 			},
 			error: function (jqXHR, textStatus, errorThrown) {
-				errorCallback(jqXHR, textStatus, errorThrown);
+				if(errorCallback) {
+					errorCallback(jqXHR, textStatus, errorThrown);
+				}
 				$('body').unmask();
 			}
 		});

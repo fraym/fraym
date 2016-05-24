@@ -19,15 +19,10 @@ use Fraym\Annotation\Registry;
  * website="http://www.fraym.org",
  * repositoryKey="FRAYM_EXT_DEFAULT_THEME",
  * files={
- *      "Extension/Theme/Default/*",
- *      "Extension/Theme/Default/",
- *      "Template/Default/Extension/Theme/Default/*",
- *      "Template/Default/Extension/Theme/Default/",
- *      "Public/js/default_theme/*",
+ *      "Extension/Theme/DefaultTheme/",
+ *      "Template/Default/Extension/Theme/DefaultTheme/",
  *      "Public/js/default_theme/",
- *      "Public/css/default_theme/*",
  *      "Public/css/default_theme/",
- *      "Public/images/default_theme/*",
  *      "Public/images/default_theme/"
  * },
  * entity={

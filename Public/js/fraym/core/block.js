@@ -9,9 +9,9 @@ Core.Block = {
 	url: '',
 	CodeMirror: false,
 	contextMenuItemsDisabled: {},
-    dialogContentId: '',
-    dialogBlockId: '',
-    dialogWithIframe: false,
+	dialogContentId: '',
+	dialogBlockId: '',
+	dialogWithIframe: false,
 
 	History: {
 
@@ -157,7 +157,7 @@ Core.Block = {
 			});
 			$.each($clone.find('input[type=text],textarea'), function(){
 				$(this).val('');
-				$(this).attr('name', $(this).attr('name').replace('[1]', '[' + count + ']'));
+				$(this).attr('name', $(this).attr('name').replace('][1]', '][' + count + ']'));
 			});
 			$clone.insertAfter($('[data-repeat="' + $(this).attr('data-repeat-add') + '"]').last());
 			Core.Block.initElements();
@@ -238,7 +238,7 @@ Core.Block = {
 			$selectFileBtn.click(inputEvent);
 		});
 
-		$('body').on('mousedown', 'select[data-menuselection]', inputEvent);
+		$('body').off('mousedown', 'select[data-menuselection]').on('mousedown', 'select[data-menuselection]', inputEvent);
 
 		FileManager.initFilePathInput();
 	},
@@ -309,27 +309,27 @@ Core.Block = {
 			});
 
 			$('body').on('mouseenter', Core.$.BLOCK_HOLDER + ':not(' + Core.$.BLOCK_CONTAINER + ')', function (e) {
-                if(e.shiftKey == false) {
+				if(e.shiftKey == false) {
 					if($(this).hasClass('changeset')) {
 						$(this).css({borderColor: 'rgba(255, 165, 0, 1.0)'});
 					} else {
 						$(this).css({borderColor: 'rgba(23, 184, 19, 1.0)'});
 					}
 
-                    $(this).find(Core.$.BLOCK_INFO).css({opacity: '1'}).show();
-                }
+					$(this).find(Core.$.BLOCK_INFO).css({opacity: '1'}).show();
+				}
 			});
 
 			$('body').on('mouseleave', Core.$.BLOCK_HOLDER + ':not(' + Core.$.BLOCK_CONTAINER + ')', function (e) {
-                if(e.shiftKey == false) {
+				if(e.shiftKey == false) {
 					if($(this).hasClass('changeset')) {
 						$(this).css({borderColor: 'rgba(255, 165, 0, 0)'});
 					} else {
 						$(this).css({borderColor: 'rgba(23, 184, 19, 0)'});
 					}
 
-                    $(this).find(Core.$.BLOCK_INFO).css({opacity: '0'}).hide();
-                }
+					$(this).find(Core.$.BLOCK_INFO).css({opacity: '0'}).hide();
+				}
 			});
 		} else {
 			$(Core.$.BLOCK_HOLDER + ':not(' + Core.$.BLOCK_CONTAINER + ')').css({borderColor: 'rgba(23, 184, 19, 1.0)'});
@@ -385,7 +385,9 @@ Core.Block = {
 	initIframeContent: function () {
 		// init tabs on block dialog
 		$(Core.$.BLOCK_TABS).tabs();
-        $('select:not(.default)').chosen();
+		$('select:not(.default)').chosen({
+			search_contains: true
+		});
 
 		$('.overlay-save').click(function (e) {
 			e.preventDefault();
@@ -402,33 +404,33 @@ Core.Block = {
 		FileManager.initFilePathInput();
 
 		$('form#block-add-edit-form').formSubmit({
-                url: Core.getAjaxRequestUri(),
-                'beforeSubmit': function(f) {
-					Core.Block.replaceRteLinks();
-					$(Core.Block).trigger('saveBlockConfig');
-                },
-                'onSuccess': function (json) {
-                    $(Core.Block).trigger('blockConfigSaved');
-                    if (json && json.data) {
-                        if ($(Core.$.BLOCK_CURRENT_INPUT).val() == '') {
-                            window.parent.$('#' + $(Core.$.BLOCK_CURRENT_CONTENTID_INPUT).val()).prepend(json.data);
-                            window.parent.Core.Block.initBlockActions();
-                        } else {
-                            Core.Block.replaceBlock($(Core.$.BLOCK_CURRENT_INPUT).val(), json.data);
-                        }
-                        $(Core.$.BLOCK_CURRENT_INPUT).val(json.blockId);
-                        $(Core.$.BLOCK_CURRENT_VIEW).html(json.blockId);
-                    } else {
-                        Block.showMessage('Error check your config');
-                    }
+			url: Core.getAjaxRequestUri(),
+			'beforeSubmit': function(f) {
+				Core.Block.replaceRteLinks();
+				$(Core.Block).trigger('saveBlockConfig');
+			},
+			'onSuccess': function (json) {
+				$(Core.Block).trigger('blockConfigSaved');
+				if (json && json.data) {
+					if ($(Core.$.BLOCK_CURRENT_INPUT).val() == '') {
+						window.parent.$('#' + $(Core.$.BLOCK_CURRENT_CONTENTID_INPUT).val()).prepend(json.data);
+						window.parent.Core.Block.initBlockActions();
+					} else {
+						Core.Block.replaceBlock($(Core.$.BLOCK_CURRENT_INPUT).val(), json.data);
+					}
+					$(Core.$.BLOCK_CURRENT_INPUT).val(json.blockId);
+					$(Core.$.BLOCK_CURRENT_VIEW).html(json.blockId);
+				} else {
+					Block.showMessage('Error check your config');
+				}
 
-                    if($('form').data('closeonsuccess') == true) {
-                        window.parent.$(Core.$.BLOCK_OVERLAY).dialog('close');
-                    }
-					Core.Block.replaceRteBlockLinks();
-                },
-                dataType: 'json'
-            });
+				if($('form').data('closeonsuccess') == true) {
+					window.parent.$(Core.$.BLOCK_OVERLAY).dialog('close');
+				}
+				Core.Block.replaceRteBlockLinks();
+			},
+			dataType: 'json'
+		});
 
 		if ($(Core.$.BLOCK_DATETIME_INPUT).length) {
 			$(Core.$.BLOCK_DATETIME_INPUT).datetimepicker({dateFormat: 'yy-mm-dd'});
@@ -455,7 +457,7 @@ Core.Block = {
 				styleActiveLine: true,
 				tabMode: "indent",
 				matchTags: {bothTags: true},
-                extraKeys: {"Ctrl-J": "toMatchingTag"}
+				extraKeys: {"Ctrl-J": "toMatchingTag"}
 			});
 			Core.Block.CodeMirror.on("change", function(cm, change) {
 				$("#templateContent").val(cm.getValue());
@@ -611,22 +613,22 @@ Core.Block = {
 					name: Core.getBaseWindow().Core.Translation.ContextMenu.AddBlock,
 					icon: "edit",
 					disabled: function(key, opt) {
-	                    return !!Core.Block.contextMenuItemsDisabled[key];
-				    }
+						return !!Core.Block.contextMenuItemsDisabled[key];
+					}
 				},
 				"paste": {
 					name: Core.getBaseWindow().Core.Translation.ContextMenu.PasteBlock,
 					icon: "paste",
 					disabled: function(key, opt) {
-	                    return !!Core.Block.contextMenuItemsDisabled[key];
-				    }
+						return !!Core.Block.contextMenuItemsDisabled[key];
+					}
 				},
 				"pasteAsRef": {
 					name: Core.getBaseWindow().Core.Translation.ContextMenu.PasteAsRefBlock,
 					icon: "paste",
 					disabled: function(key, opt) {
-	                    return !!Core.Block.contextMenuItemsDisabled[key];
-				    }
+						return !!Core.Block.contextMenuItemsDisabled[key];
+					}
 				}
 			}
 		});
@@ -645,16 +647,16 @@ Core.Block = {
 	},
 
 	loadConfig: function (data) {
-        $('body').mask({
-            spinner: { lines: 10, length: 5, width: 3, radius: 10}
-        });
+		$('body').mask({
+			spinner: { lines: 10, length: 5, width: 3, radius: 10}
+		});
 		$.ajax({
 			url: Core.getAjaxRequestUri(),
 			dataType: 'json',
 			data: $.extend({cmd: 'getBlockConfig'}, data),
 			type: 'post',
 			success: function (json, textStatus, jqXHR) {
-                $('body').unmask();
+				$('body').unmask();
 
 				if (json != null) {
 					Core.Block.loadDefaultConfig(json);
@@ -665,7 +667,7 @@ Core.Block = {
 					$(Core.$.BLOCK_IFRAME).contents().find('#extension option:first').prop('selected', 'selected');
 					Core.showMessage(Core.getBaseWindow().Core.Translation.Global.PermissionDenied);
 				}
-                $('select').trigger("chosen:updated");
+				$('select').trigger("chosen:updated");
 			}
 		});
 	},

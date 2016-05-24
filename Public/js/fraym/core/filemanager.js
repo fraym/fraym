@@ -67,6 +67,7 @@ var FileManager = {
 			var parentNode = FileManager.getRootFromNode(node);
 			var path = node.data.path;
 			$('body').mask();
+
 			$.ajax({
 				url: window.location.href,
 				dataType: 'json',
@@ -74,7 +75,7 @@ var FileManager = {
 				type: 'post',
 				success: function (jsonObj, textStatus, jqXHR) {
 					if (jsonObj) {
-						FileManager.buildDetailView(jsonObj);
+						FileManager.buildDetailView(jsonObj, parentNode.data.storage);
 					}
 					$('body').unmask();
 				}
@@ -652,7 +653,7 @@ var FileManager = {
 		}
 	},
 
-	buildDetailView: function (jsonObj) {
+	buildDetailView: function (jsonObj, storage) {
 		$(FileManager.selectors.fileItem).remove();
 		$.each(jsonObj, function () {
 			var obj = this;
@@ -663,9 +664,8 @@ var FileManager = {
 			if (obj.isDir) {
 				$file.addClass('folder');
 			}
-
 			if (Core.inArray(obj.extension, FileManager.previewIconFileExtensions)) {
-				$file.css('background-image', 'url(' + window.location.pathname + '?cmd=getPreviewIcon&path=' + Core.urlEncode(obj.path) + '&storage=' + Core.urlEncode(FileManager.getRootFromActiveNode().data.storage) + ')');
+				$file.css('background-image', 'url(' + window.location.pathname + '?cmd=getPreviewIcon&path=' + Core.urlEncode(obj.path) + '&storage=' + Core.urlEncode(storage) + ')');
 			}
 
 			$fileName.html(obj.name);

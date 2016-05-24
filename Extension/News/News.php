@@ -71,9 +71,7 @@ use Fraym\Block\BlockMetadata;
  *       },
  * },
  * files={
- *      "Extension/News/*",
  *      "Extension/News/",
- *      "Template/Default/Extension/News/*",
  *      "Template/Default/Extension/News/"
  * }
  * )

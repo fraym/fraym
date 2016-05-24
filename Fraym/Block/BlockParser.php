@@ -492,9 +492,6 @@ class BlockParser
             case 'javascript':
                 $blockHtml = $this->execBlockOfTypeJavascript($xml);
                 break;
-            case 'dcontent':
-                $blockHtml = $this->execBlockOfTypeDynamicContent($xml);
-                break;
             default: // extensions & custom block types
 
                 if (isset($this->customBlockTypes[$blockType])) {
@@ -514,22 +511,23 @@ class BlockParser
      */
     private function execBlockOfTypeExtension($xml)
     {
-        $ext = $this->db->getRepository('\Fraym\Block\Entity\Extension')->findOneBy(
-            ['class' => $xml->class, 'execMethod' => $xml->method]
-        );
         $blockHtml = '';
-        if ($ext) {
-            $class = $ext->class;
-            if (class_exists($class)) {
-                $classInstance = $this->serviceLocator->get($class, '\\');
-                $function = $ext->execMethod;
-                $return = $classInstance->$function($xml);
-                if ($return !== false) {
-                    $blockHtml = $this->setBlockTemplateWrap($xml);
+        if(is_object($xml)) {
+            $ext = $this->db->getRepository('\Fraym\Block\Entity\Extension')->findOneBy(
+                ['class' => $xml->class, 'execMethod' => $xml->method]
+            );
+            if ($ext) {
+                $class = $ext->class;
+                if (class_exists($class)) {
+                    $classInstance = $this->serviceLocator->get($class, '\\');
+                    $function = $ext->execMethod;
+                    $return = $classInstance->$function($xml);
+                    if ($return !== false) {
+                        $blockHtml = $this->setBlockTemplateWrap($xml);
+                    }
                 }
             }
         }
-
         return $blockHtml;
     }
 

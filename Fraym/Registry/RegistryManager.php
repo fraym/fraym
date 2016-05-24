@@ -375,16 +375,18 @@ class RegistryManager
         $composerRequires = [];
 
         foreach ($this->getExtensions() as $ext) {
-            if ($extension['repositoryKey'] !== $ext['repositoryKey']) {
+            if ($extension['repositoryKey'] !== $ext['repositoryKey'] && isset($ext['composer']['require'])) {
                 foreach ($ext['composer']['require'] as $package) {
                     $composerRequires[$package] = $package;
                 }
             }
         }
 
-        foreach ($extension['composer']['require'] as $k => $package) {
-            if (isset($composerRequires[$package])) {
-                unset($extension['composer']['require'][$k]);
+        if(isset($extension['composer']['require'])) {
+            foreach ($extension['composer']['require'] as $k => $package) {
+                if (isset($composerRequires[$package])) {
+                    unset($extension['composer']['require'][$k]);
+                }
             }
         }
 
@@ -485,7 +487,7 @@ class RegistryManager
         }
         return false;
     }
-    
+
     /**
      * @param $extension
      * @return $this

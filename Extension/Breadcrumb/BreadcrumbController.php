@@ -29,9 +29,7 @@ use Fraym\Annotation\Registry;
  *      }
  * },
  * files={
- *      "Extension/Breadcrumb/*",
  *      "Extension/Breadcrumb/",
- *      "Template/Default/Extension/Breadcrumb/*",
  *      "Template/Default/Extension/Breadcrumb/"
  * }
  * )

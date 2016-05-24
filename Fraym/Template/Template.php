@@ -376,22 +376,23 @@ class Template
     {
         // Disabled PHP functions in templates
         foreach (self::DISABLED_FUNCTIONS as $function) {
-            $this->addTemplateFunction($function, [&$this, 'disabledFunctions']);
+            $this->addFunction($function, [&$this, 'disabledFunctions']);
         }
 
-        $this->addTemplateFunction('menuItem', [&$this, 'getMenuItem']);
-        $this->addTemplateFunction('i', [&$this, 'getInstance']);
-        $this->addTemplateFunction('css', [&$this, 'addCssFile']);
-        $this->addTemplateFunction('js', [&$this, 'addJsFile']);
-        $this->addTemplateFunction('include', [&$this, 'includeTemplate']);
-        $this->addTemplateFunction('shorten', [&$this, 'shorten']);
-        $this->addTemplateFunction('age', [&$this, 'age']);
-        $this->addTemplateFunction('isLast', [&$this, 'isLast']);
-        $this->addTemplateFunction('formatCurrency', [&$this, 'formatCurrency']);
-        $this->addTemplateFunction('formatDate', [&$this->locale, 'formatDate']);
-        $this->addTemplateFunction('formatDateTime', [&$this->locale, 'formatDateTime']);
-        $this->addTemplateFunction('_', [&$this->translation, 'getTranslation']);
-        $this->addTemplateFunction('et', [&$this->entityManager, 'getEntityTranslation']);
+        $this->addFunction('menuItem', [&$this, 'getMenuItem']);
+        $this->addFunction('i', [&$this, 'getInstance']);
+        $this->addFunction('css', [&$this, 'addCssFile']);
+        $this->addFunction('js', [&$this, 'addJsFile']);
+        $this->addFunction('include', [&$this, 'includeTemplate']);
+        $this->addFunction('shorten', [&$this, 'shorten']);
+        $this->addFunction('age', [&$this, 'age']);
+        $this->addFunction('isLast', [&$this, 'isLast']);
+        $this->addFunction('isFirst', [&$this, 'isFirst']);
+        $this->addFunction('formatCurrency', [&$this, 'formatCurrency']);
+        $this->addFunction('formatDate', [&$this->locale, 'formatDate']);
+        $this->addFunction('formatDateTime', [&$this->locale, 'formatDateTime']);
+        $this->addFunction('_', [&$this->translation, 'getTranslation']);
+        $this->addFunction('et', [&$this->entityManager, 'getEntityTranslation']);
     }
 
     /**
@@ -416,6 +417,21 @@ class Template
     {
         $array = (array)$array;
         end($array);
+        $key = key($array);
+        return $key === $propKey;
+    }
+
+    /**
+     * Template function to check if a array item is the first
+     *
+     * @param $array
+     * @param $propKey
+     * @return bool
+     */
+    public function isFirst($array, $propKey)
+    {
+        $array = (array)$array;
+        reset($array);
         $key = key($array);
         return $key === $propKey;
     }
@@ -468,7 +484,7 @@ class Template
      * @param  $realFunction
      * @return void
      */
-    public function addTemplateFunction($pseudoFunctionName, $realFunction)
+    public function addFunction($pseudoFunctionName, $realFunction)
     {
         $this->templateFunctions[$pseudoFunctionName] = $realFunction;
         return $this;
@@ -700,7 +716,9 @@ class Template
     {
         // replace the custom template function
         foreach ($this->templateFunctions as $pseudoFunction => &$realFunction) {
-            // '{' . $realFunction . '($3)}',
+
+            $GLOBALS['PSEUDOFUNC_TEMP_' . $pseudoFunction] = $realFunction;
+
             $func = function ($match) use (&$realFunction, $pseudoFunction) {
                 if (isset($match[0]) && isset($match[3])) {
                     $pseudoFunctionName = 'PSEUDOFUNC_TEMP_' . $pseudoFunction;
@@ -770,8 +788,14 @@ class Template
             $content
         );
 
-        // replace template functions with open function tag - Add function_exists to prevent double assign of template functions
-        $content = preg_replace('/\{((function)\s+([^\}]*)\([^\}]*\)([^\}]*))\}/is', '<?php if(function_exists($3) === false) { $1 { ?>', $content, -1, $cc);
+        $pseudoFunctionName = '';
+        foreach ($this->templateFunctions as $pseudoFunction => $realFunction) {
+            $pseudoFunctionName .= '$PSEUDOFUNC_TEMP_' . $pseudoFunction . ' = $GLOBALS["PSEUDOFUNC_TEMP_' . $pseudoFunction . '"];';
+        }
+
+        $content = preg_replace_callback('/\{((function)\s+([^\}]*)\(([^\}]*)\)([^\}]*))\}/is', function($found) use ($pseudoFunctionName) {
+            return '<?php if(function_exists(\'' . $found[3] . '\') === false) { function ' . $found[3] . '(' . $found[4] . ') { ' . $pseudoFunctionName . ' ?>';
+        }, $content);
 
         // replace function close tag
         $content = preg_replace('/{endfunction}/is', '<?php } } ?>', $content);
@@ -816,7 +840,21 @@ class Template
 
         // replace php tags
         $content = preg_replace(
-            '/\{((if|elseif|foreach|while|for|switch)([^\}]*))\}/is',
+            '/\{((foreach)(\s?\(?\s?([^\}]*)\s+as\s+[^\}]*))\}/is',
+            '<?php if(is_array($4) || is_object($4)) { $2($3): ?>',
+            $content
+        );
+
+        // replace php close tags
+        $content = preg_replace(
+            '/\{(endforeach[^\s]*)\}/is',
+            '<?php $1; } ?>',
+            $content
+        );
+
+        // replace php tags
+        $content = preg_replace(
+            '/\{((if|elseif|while|for|switch)([^\}]*))\}/is',
             '<?php $2($3): ?>',
             $content
         );
@@ -826,7 +864,7 @@ class Template
 
         // replace php close tags
         $content = preg_replace(
-            '/\{(endif|endforeach|endwhile|endfor|endswitch[^\s][^\}]*)\}/is',
+            '/\{(endif|endwhile|endfor|endswitch[^\s][^\}]*)\}/is',
             '<?php $1; ?>',
             $content
         );

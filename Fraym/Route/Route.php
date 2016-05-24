@@ -572,9 +572,8 @@ class Route
      */
     public function loadRoutes()
     {
-        if ($this->core->isCLI() === false && $this->cache->isCachingActive()) {
+        if ($this->core->isCLI() === false && $this->cache->isCachingActive() && $this->user->isAdmin() === false) {
             if (($routes = $this->cache->getDataCache('routes')) === false) {
-                $this->initExtensionRoutes();
                 $this->initAnnotationRoutes();
                 $this->cache->setDataCache('routes', $this->virutalRoutes);
             } else {

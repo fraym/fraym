@@ -40,11 +40,8 @@ use Fraym\Annotation\Registry;
  *      },
  * },
  * files={
- *      "Extension/BugReport/*",
  *      "Extension/BugReport/",
- *      "Template/Default/Extension/BugReport/*",
  *      "Template/Default/Extension/BugReport/",
- *      "Public/js/fraym/extension/BugReport/*",
  *      "Public/js/fraym/extension/BugReport/",
  * }
  * )

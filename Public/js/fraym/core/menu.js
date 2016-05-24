@@ -285,8 +285,16 @@ Core.Menu = {
             $(Core.Block).bind('blockConfigLoaded', function (e, json) {
                 if (typeof json.xml != 'undefined' && typeof json.xml.menuItems != 'undefined') {
 
-                    var menuItems = json.config.toString().replace(/menuItems/g, 'ul').replace(/item/g, 'li').replace(/ id/g, ' class="folder" id');
-                    var ul = $(menuItems).filter('ul');
+                    var menuItems = json.config.toString().replace(/menuItems/g, 'div').replace(/item/g, 'span').replace(/ id/g, ' class="folder" id');
+
+                    var div = $(menuItems).filter('div');
+                    div.find('span').filter(function() {
+                        return $(this).parent('div').length === 0
+                    }).wrapAll('<div/>');
+
+                    var menuItemsUl = div.wrap('<div/>').parent().html().toString().replace(/div/g, 'ul').replace(/span/g, 'li');
+                    var ul = $(menuItemsUl);
+
                     var siteId = $(ul).attr('site');
                     $('#site option[value="' + siteId + '"]').prop('selected', 'selected');
                     $('#site').change();
