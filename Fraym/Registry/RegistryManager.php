@@ -269,6 +269,9 @@ class RegistryManager
         $files = [];
 
         foreach ($classAnnotation->files as $path) {
+            if(is_dir($path)) {
+                $path .= '*';
+            }
             $files = array_merge($files, $this->fileManager->findFiles($path));
         }
 

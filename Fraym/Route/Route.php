@@ -654,6 +654,11 @@ class Route
                 return $this->menuItemNotFound();
             }
 
+            // Redirect URL to correct uri with or withour slash
+            if ($this->getRequestRoute(true) !== '/' && $this->getFoundURI(false) === trim($this->getRequestRoute(false, false), '/') && $this->getFoundURI(false) !== $this->getRequestRoute(false, false)) {
+                $this->redirectToURL($this->getFoundURI(true));
+            }
+
             if ($this->getFoundURI(false) === trim($this->getRequestRoute(false, false), '/') || $this->getVirtualRouteContent(true)) {
                 $this->siteManager->addAdminPanel();
                 $tpl->renderMainTemplate();

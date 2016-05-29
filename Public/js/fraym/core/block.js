@@ -263,6 +263,10 @@ Core.Block = {
 		Core.Block.initBlockActions();
 		Core.Block.History.init();
 
+		if(Core.Admin.EDIT_MODE) {
+			$('body', Core.getBaseWindow().document).addClass('fraym-edit-mode');
+		}
+
 		if(typeof $.cookie != 'undefined') {
 			if(typeof $.cookie('copy') != 'undefined') {
 				Core.Block.copyBlock($.cookie('copy'));

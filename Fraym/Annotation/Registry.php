@@ -106,34 +106,6 @@ final class Registry extends Annotation
     public $name = '';
 
     /**
-     * Package description
-     *
-     * @var string
-     */
-    public $description = '';
-
-    /**
-     * Package version
-     *
-     * @var string
-     */
-    public $version = '';
-
-    /**
-     * Package author
-     *
-     * @var string
-     */
-    public $author = '';
-
-    /**
-     * Package website
-     *
-     * @var string
-     */
-    public $website = '';
-
-    /**
      * Unique repository key
      *
      * @var string

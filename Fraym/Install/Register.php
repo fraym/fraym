@@ -2,9 +2,6 @@
 
 return [
     'name' => 'Fraym Core',
-    'version' => '1.0.0',
-    'author' => 'Fraym.org',
-    'website' => 'http://www.fraym.org',
     'updateEntity' => [
         '\Fraym\SiteManager\Entity\Extension' => [
             [
@@ -215,7 +212,7 @@ return [
         ],
         'TRANSLATION_ADD_DEFAULT_TO_DB' => [
             'value' => '0',
-            'description' => 'Set to 1 for adding all default translations texts to the database.',
+            'description' => 'Set to 1 for adding all default translation texts to the database.',
             'deletable' => false
         ],
         'IMAGE_PATH' => [
@@ -230,20 +227,13 @@ return [
         ],
     ],
     'files' => [
-        'Fraym/*',
         'Fraym/',
-        'Template/Default/Fraym/*',
         'Template/Default/Fraym/',
-        'Test/Fraym/*',
         'Test/Fraym/',
-        'Public/images/fraym/*',
         'Public/images/fraym/',
-        'Public/css/fraym/*',
         'Public/css/fraym/',
         'Public/fonts/arial.ttf',
-        'Public/css/install/*',
         'Public/css/install/',
-        'Public/js/fraym/*',
         'Public/js/fraym/',
         'Public/index.php',
         'Public/install.php',
@@ -255,9 +245,10 @@ return [
         'README.txt',
     ],
     'deletable' => false,
-    'repositoryKey' => 'FRAYM',
+    'repositoryKey' => 'fraym/fraym',
     'composer' => [
         'require' => [
+            'fraym/composer-installers',
             'doctrine/orm',
             'php-di/php-di',
             'beberlei/DoctrineExtensions',
@@ -267,6 +258,7 @@ return [
             'swiftmailer/swiftmailer',
             'ocramius/proxy-manager',
             'gedmo/doctrine-extensions',
+            'knplabs/packagist-api',
         ]
     ],
 ];

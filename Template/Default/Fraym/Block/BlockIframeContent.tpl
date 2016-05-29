@@ -1,4 +1,4 @@
-<form id="block-add-edit-form" autocomplete="Off" action="" class="form-horizontal">
+<form id="block-add-edit-form" autocomplete="Off" action="">
     <input type="hidden" value="saveBlockConfig" name="cmd"/>
     <input type="hidden" value="" name="currentBlockId"/>
     <input type="hidden" value="" name="menuId"/>

@@ -6,16 +6,17 @@
  */
 
 Core.Admin = {
-    PERMISSION_DENIED: '',
-    BLOCK_EDIT_SRC: '',
-    BLOCK_MENU_SRC: '',
+	PERMISSION_DENIED: '',
+	BLOCK_EDIT_SRC: '',
+	BLOCK_MENU_SRC: '',
+	EDIT_MODE: false,
 
-    init: function() {
-        Core.Admin.initPanel();
-	    $('body').on('mousemove', '[data-toggle="tooltip"]', function(){
-		    $(this).tooltip();
-	    });
-	    $('#clearcache').click(function (e) {
+	init: function() {
+		Core.Admin.initPanel();
+		$('body').on('mousemove', '[data-toggle="tooltip"]', function(){
+			$(this).tooltip();
+		});
+		$('#clearcache').click(function (e) {
 			e.preventDefault();
 			$.ajax({
 				url:parent.window.Core.getAjaxRequestUri(),
@@ -27,7 +28,7 @@ Core.Admin = {
 				}
 			});
 		});
-    },
+	},
 
 	iFrameInit: function() {
 		var parentWindow = Core.getBaseWindow();
@@ -35,7 +36,7 @@ Core.Admin = {
 		if(parentWindow.Core.Block.dialogWithIframe) {
 
 			$(Core.$.BLOCK_CURRENT_INPUT).val(parentWindow.Core.Block.dialogBlockId);
-	        $(Core.$.BLOCK_CURRENT_VIEW).html(parentWindow.Core.Block.dialogBlockId);
+			$(Core.$.BLOCK_CURRENT_VIEW).html(parentWindow.Core.Block.dialogBlockId);
 			$('#selected-content-id').html(parentWindow.Core.Block.dialogContentId);
 			$('input[name=contentId]').val(parentWindow.Core.Block.dialogContentId);
 			$('input[name=contentId]').val(parentWindow.Core.Block.dialogContentId);
@@ -54,47 +55,47 @@ Core.Admin = {
 		return false;
 	},
 
-    isPanelOpen: false,
+	isPanelOpen: false,
 
-    initPanel:function () {
+	initPanel:function () {
 
 		$('body').prepend($('#blockConfigMenu'));
-        $('[data-url]').click(function (e) {
-            e.preventDefault();
-            parent.window.Core.Block.showDialog({title: $(this).find('span.title').html()}, $(this).data('url'));
-	        if(!$("#navigation").hasClass('collapsed')) {
-		        $(".sidebar-collapse a").click();
-            }
-        });
+		$('[data-url]').click(function (e) {
+			e.preventDefault();
+			parent.window.Core.Block.showDialog({title: $(this).find('span.title').html()}, $(this).data('url'));
+			if(!$("#navigation").hasClass('collapsed')) {
+				$(".sidebar-collapse a").click();
+			}
+		});
 
-        $('[data-id="block-edit-mode"]').click(function (e) {
-            e.preventDefault();
-            var editMode = $(this).attr('data-editmode') == '1' ? 0 : 1;
+		$('[data-id="block-edit-mode"]').click(function (e) {
+			e.preventDefault();
+			var editMode = $(this).attr('data-editmode') == '1' ? 0 : 1;
 			Core.Admin.setEditMode(editMode);
-        });
+		});
 
 
-	    $(".sidebar-collapse a").on("click", function () {
-    		$("#navigation").toggleClass("collapsed");
-    		$(".sidebar-collapse").toggleClass("active");
-		    if($("#navigation").hasClass('collapsed')) {
-			    Core.Admin.closePanel();
-		    } else {
-			    Core.Admin.openPanel();
-		    }
-    	 });
+		$(".sidebar-collapse a").on("click", function () {
+			$("#navigation").toggleClass("collapsed");
+			$(".sidebar-collapse").toggleClass("active");
+			if($("#navigation").hasClass('collapsed')) {
+				Core.Admin.closePanel();
+			} else {
+				Core.Admin.openPanel();
+			}
+		});
 
-	    var $adminPanelIframe = $(Core.$.BLOCK_CONFIG_MENU).find('iframe');
-        if($adminPanelIframe.length) {
-	        $adminPanelIframe.slimScroll({width: '250px', height: $(window).height()});
-	        $adminPanelIframe.load(function(){
-		        $adminPanelIframe.show();
-		        var height = $adminPanelIframe.contents().find('body').height();
-		        $adminPanelIframe.height(height);
-		        $adminPanelIframe.css({'max-height': $(document).height()});
-	        });
-        }
-    },
+		var $adminPanelIframe = $(Core.$.BLOCK_CONFIG_MENU).find('iframe');
+		if($adminPanelIframe.length) {
+			$adminPanelIframe.slimScroll({width: '250px', height: $(window).height()});
+			$adminPanelIframe.load(function(){
+				$adminPanelIframe.show();
+				var height = $adminPanelIframe.contents().find('body').height();
+				$adminPanelIframe.height(height);
+				$adminPanelIframe.css({'max-height': $(document).height()});
+			});
+		}
+	},
 
 	openPanel: function() {
 		Core.Admin.isPanelOpen = true;
@@ -113,13 +114,13 @@ Core.Admin = {
 
 		$('[data-id="block-edit-mode"]').attr('disabled', 'disabled');
 		$.ajax({
-		      url:parent.window.Core.getAjaxRequestUri(),
-		      dataType:'json',
-		      data:{cmd:'setEditMode', value:active},
-		      type:'post',
-		      success:function (data, textStatus, jqXHR) {
-		          parent.window.location.reload();
-		      }
-		 });
+			url:parent.window.Core.getAjaxRequestUri(),
+			dataType:'json',
+			data:{cmd:'setEditMode', value:active},
+			type:'post',
+			success:function (data, textStatus, jqXHR) {
+				parent.window.location.reload();
+			}
+		});
 	}
 };

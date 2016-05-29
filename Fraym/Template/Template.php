@@ -918,6 +918,15 @@ class Template
     }
 
     /**
+     * @return string
+     */
+    private function getDefaultMenuItemTemplate() {
+        $this->setView(self::class);
+        $templateFile = $this->getTemplateFilePath('NoTemplate');
+        return file_get_contents($templateFile);
+    }
+
+    /**
      * @param null $content
      * @return string
      */

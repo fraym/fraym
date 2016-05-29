@@ -21,25 +21,25 @@
 {js('fraym/selector_config.js')}
 
 <div id="blockConfigMenu">
-    <iframe seamless allowtransparency="true" frameborder="0" src="//{i('Fraym\Route\Route')->getSiteBaseURI(false)}{i('Fraym\Route\Route')->getVirtualRoute('adminPanel')->route}?locale={i('Fraym\Registry\Config')->get('ADMIN_LOCALE_ID')->value}"></iframe>
+	<iframe seamless allowtransparency="true" frameborder="0" src="//{i('Fraym\Route\Route')->getSiteBaseURI(false)}{i('Fraym\Route\Route')->getVirtualRoute('adminPanel')->route}?locale={i('Fraym\Registry\Config')->get('ADMIN_LOCALE_ID')->value}"></iframe>
 </div>
 
 
 <script type="text/javascript">
-   Core.Translation = {
-   	Global: {
-   		PermissionDenied: '{_('Permission denied!', 'FRAYM_PERMISSION_DENIED')}'
-   	},
-   	ContextMenu: {
-   		AddBlock: '{_('Add block', 'FRAYM_ADMIN_CONTEXT_MENU_ADD_BLOCK')}',
-   		EditBlock: '{_('Edit block', 'FRAYM_ADMIN_CONTEXT_MENU_EDIT_BLOCK')}',
-   		CutBlock: '{_('Cut block', 'FRAYM_ADMIN_CONTEXT_MENU_CUT_BLOCK')}',
-   		CopyBlock: '{_('Copy block', 'FRAYM_ADMIN_CONTEXT_MENU_COPY_BLOCK')}',
-   		PasteBlock: '{_('Paste block', 'FRAYM_ADMIN_CONTEXT_MENU_PASTE_BLOCK')}',
-   		PasteAsRefBlock: '{_('Paste as referance', 'FRAYM_ADMIN_CONTEXT_MENU_PASTE_REF_BLOCK')}',
-   		DeleteBlock: '{_('Delete block', 'FRAYM_ADMIN_CONTEXT_MENU_DELETE_BLOCK')}'
-   	}
-   };
-   Core.locales = {json_encode($locales)};
-   Core.Admin.BLOCK_EDIT_SRC = '//{i('Fraym\Route\Route')->getSiteBaseURI(false)}{i('Fraym\Route\Route')->getVirtualRoute('block')->route}?locale={i('Fraym\Registry\Config')->get('ADMIN_LOCALE_ID')->value}';
+	Core.Translation = {
+		Global: {
+			PermissionDenied: '{_('Permission denied!', 'FRAYM_PERMISSION_DENIED')}'
+		},
+		ContextMenu: {
+			AddBlock: '{_('Add block', 'FRAYM_ADMIN_CONTEXT_MENU_ADD_BLOCK')}',
+			EditBlock: '{_('Edit block', 'FRAYM_ADMIN_CONTEXT_MENU_EDIT_BLOCK')}',
+			CutBlock: '{_('Cut block', 'FRAYM_ADMIN_CONTEXT_MENU_CUT_BLOCK')}',
+			CopyBlock: '{_('Copy block', 'FRAYM_ADMIN_CONTEXT_MENU_COPY_BLOCK')}',
+			PasteBlock: '{_('Paste block', 'FRAYM_ADMIN_CONTEXT_MENU_PASTE_BLOCK')}',
+			PasteAsRefBlock: '{_('Paste as referance', 'FRAYM_ADMIN_CONTEXT_MENU_PASTE_REF_BLOCK')}',
+			DeleteBlock: '{_('Delete block', 'FRAYM_ADMIN_CONTEXT_MENU_DELETE_BLOCK')}'
+		}
+	};
+	Core.Admin.EDIT_MODE = {if $inEditMode}true{else}false{/if};
+	Core.Admin.BLOCK_EDIT_SRC = '//{i('Fraym\Route\Route')->getSiteBaseURI(false)}{i('Fraym\Route\Route')->getVirtualRoute('block')->route}?locale={i('Fraym\Registry\Config')->get('ADMIN_LOCALE_ID')->value}';
 </script>
