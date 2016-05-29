@@ -41,12 +41,11 @@ class FileManager
 
         foreach ($storages as $path) {
             $key = basename($path);
-            $realPath = realpath($path);
-            if ($realPath) {
+            if (is_dir($path)) {
                 if (!isset($storagesGroup[$key])) {
                     $storagesGroup[$key] = [];
                 }
-                $storagesGroup[$key]['path'] = $realPath;
+                $storagesGroup[$key]['path'] = $path;
                 $storagesGroup[$key]['storage'] = md5($path);
                 $storagesGroup[$key]['isRelative'] = substr($path, 0, 1) === '/' ? false : true;
             }
@@ -160,7 +159,7 @@ class FileManager
                 $pathWithoutStorage = ltrim(str_replace($storageData['path'], '', $path), DIRECTORY_SEPARATOR);
                 $file = $storageData['path'] . DIRECTORY_SEPARATOR . $pathWithoutStorage;
 
-                if (is_dir($file) || is_file($file)) {
+                if (is_dir($file) || is_file($file) || is_link($file)) {
                     return $file;
                 }
             }
@@ -373,9 +372,9 @@ class FileManager
 
             $files[$filename] = [
                 'name' => basename($filename),
-                'path' => realpath($filename),
-                'relativePath' => str_replace(getcwd() . DIRECTORY_SEPARATOR, '', realpath($filename)),
-                'publicPath' => str_replace($_SERVER['DOCUMENT_ROOT'], '', realpath($filename)),
+                'path' => $filename,
+                'relativePath' => str_replace(getcwd() . DIRECTORY_SEPARATOR, '', $filename),
+                'publicPath' => str_replace($_SERVER['DOCUMENT_ROOT'], '', $filename),
                 'lastAccessTimeStamp' => $lastAccess,
                 'isDir' => is_dir($filename),
                 'directorySeparator' => DIRECTORY_SEPARATOR,

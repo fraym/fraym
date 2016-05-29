@@ -14,9 +14,6 @@ namespace Fraym\Registry;
  */
 class RegistryManager
 {
-    const REPOSITORY_URL = 'http://fraym.org/repository';
-    const UPDATE_SCHEMA_TRIGGER_FILE = '.UPDATE_SCHEMA';
-
     /**
      * @Inject
      * @var \Fraym\FileManager\FileManager
@@ -60,7 +57,7 @@ class RegistryManager
     protected $serviceLocator;
 
     /**
-     * @var null
+     * @var null|\Fraym\Cache\Cache
      */
     private $cache = null;
 
@@ -101,12 +98,6 @@ class RegistryManager
             $this->core->getApplicationDir() . "/Fraym/Annotation/Registry.php"
         );
 
-        // For extension update, run always update schema
-        if (is_file(self::UPDATE_SCHEMA_TRIGGER_FILE)) {
-            $this->db->connect()->updateSchema();
-            unlink(self::UPDATE_SCHEMA_TRIGGER_FILE);
-        }
-
         return $this;
     }
 
@@ -128,7 +119,7 @@ class RegistryManager
                 dirname($reflClass->getFileName()) . DIRECTORY_SEPARATOR . $classAnnotation->file;
 
             if (is_file($filePath)) {
-                $config = require($filePath);
+                $config = require_once($filePath);
                 if (is_array($config)) {
                     $config = array_merge($this->getRegistryProperties(), $config);
                     return (object)$config;
@@ -161,9 +152,8 @@ class RegistryManager
         $unregisteredExtensions = $this->getUnregisteredExtensions();
 
         foreach ($unregisteredExtensions as $class => $classAnnotation) {
-            require_once($classAnnotation['file']);
             if (class_exists($class)) {
-                $this->registerClass($class, $classAnnotation['file']);
+                $this->registerClass($class);
             }
         }
 
@@ -199,6 +189,18 @@ class RegistryManager
     }
 
     /**
+     * @param $unregisteredExtensions
+     */
+    public function updateUnregisteredExtensions($unregisteredExtensions)
+    {
+        $packages = [];
+        foreach ($unregisteredExtensions as $extension) {
+            $packages[] = $extension['repositoryKey'];
+        }
+        $this->composerUpdate($packages);
+    }
+
+    /**
      * @return array
      */
     public function getExtensions()
@@ -228,8 +230,15 @@ class RegistryManager
                             '\Fraym\Registry\Entity\Registry'
                         )->findOneByClassName($class);
                         $extensions[$class] = (array)$classAnnotation;
-                        $extensions[$class]['file'] = $file;
-                        $extensions[$class]['fileHash'] = md5($file);
+                        $package = $this->getPackage($classAnnotation->repositoryKey);
+                        if ($package) {
+                            $package = $this->getLatestPackageVersion($package);
+                            $extensions[$class]['package'] = $package->getName();
+                            $extensions[$class]['description'] = $package->getDescription();
+                            $extensions[$class]['version'] = $package->getVersion();
+                            $extensions[$class]['homepage'] = $package->getHomepage();
+                            $extensions[$class]['author'] = $this->getAuthorsFromPackage($package);
+                        }
                         $extensions[$class]['registred'] = $registryEntry !== null;
                     }
                 }
@@ -239,16 +248,84 @@ class RegistryManager
     }
 
     /**
+     * @param $package
+     * @return string
+     */
+    public function getAuthorsFromPackage($package)
+    {
+        $authors = $package->getAuthors();
+        $return = [];
+        if ($authors) {
+            foreach ($authors as $author) {
+                $return[] = $author->getName() . ($author->getRole() ? ' (' . $author->getRole() . ')' : '');
+            }
+        }
+        return implode(', ', $return);
+    }
+
+    /**
+     * @param $package
+     * @return null
+     */
+    public function getLatestPackageVersion($package)
+    {
+        $latest = null;
+        foreach ($package->getVersions() as $key => $versionPackage) {
+            if (!$latest || ($latest && $latest->getVersion() === 'dev-master') || ($key !== 'dev-master' && version_compare($versionPackage->getVersion(), $latest->getVersion()) > 0)) {
+                $latest = clone $versionPackage;
+            }
+        }
+        return $latest;
+    }
+
+    /**
+     * @param $searchTerm
+     * @return array
+     */
+    public function searchPackage($searchTerm)
+    {
+        $client = new \Packagist\Api\Client();
+        $packages = [];
+        try {
+            $result = $client->search($searchTerm, array('type' => 'fraym-extension'));
+            foreach ($result as $packageResult) {
+                $package = $this->getPackage($packageResult->getName());
+                $packageLatestVersion = $this->getLatestPackageVersion($package);
+                $packageLatestVersion->author = $this->getAuthorsFromPackage($packageLatestVersion);
+                $packages[] = $packageLatestVersion;
+            }
+        } catch (\Exception $e) {
+        }
+        return $packages;
+    }
+
+    /**
+     * @param $packageName
+     * @return mixed
+     */
+    public function getPackage($packageName)
+    {
+        $package = null;
+        if(!empty($packageName)) {
+            try {
+                $client = new \Packagist\Api\Client();
+                $package = $client->get($packageName);
+            } catch (\Exception $e) {
+            }
+        }
+        return $package;
+    }
+
+    /**
      * @param $repositoryKey
      */
     public function updateExtension($repositoryKey)
     {
         $registry = $this->db->getRepository('\Fraym\Registry\Entity\Registry')->findOneByRepositoryKey($repositoryKey);
 
-        $reflClass = new \ReflectionClass($registry->className);
         $classAnnotation = $this->getRegistryConfig($registry->className);
 
-        $this->registerClass($registry->className, $reflClass->getFileName(), $registry);
+        $this->registerClass($registry->className, $registry);
 
         if ($classAnnotation->onUpdate) {
             call_user_func_array(
@@ -269,7 +346,7 @@ class RegistryManager
         $files = [];
 
         foreach ($classAnnotation->files as $path) {
-            if(is_dir($path)) {
+            if (is_dir($path)) {
                 $path .= '*';
             }
             $files = array_merge($files, $this->fileManager->findFiles($path));
@@ -299,35 +376,7 @@ class RegistryManager
      */
     public function downloadExtension($repositoryKey)
     {
-        $download = $this->repositoryRequest(
-            'getDownloadLink',
-            ['repositoryKey' => $repositoryKey]
-        );
-
-        $extensionContent = file_get_contents($download->downloadLink);
-        $tmpFile = tempnam(sys_get_temp_dir(), 'ext');
-        file_put_contents($tmpFile, $extensionContent);
-        $zip = new \ZipArchive;
-        if ($zip->open($tmpFile) === true) {
-            if ($zip->extractTo('./') === false) {
-                error_log('Zip error!');
-            }
-            $zip->close();
-            unlink($tmpFile);
-
-            $this->forceSchemaUpdate();
-
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * @return int
-     */
-    private function forceSchemaUpdate()
-    {
-        return file_put_contents(self::UPDATE_SCHEMA_TRIGGER_FILE, 0755);
+        $this->composerRequire([$repositoryKey]);
     }
 
     /**
@@ -342,26 +391,26 @@ class RegistryManager
     }
 
     /**
-     * @param $extension
+     * @param $extensions
      */
-    public function composerRequire($extension)
+    public function composerRequire(array $extensions)
     {
         $this->loadComposer();
-        if (isset($extension->composer) && isset($extension->composer['require'])) {
-            $input = new \Symfony\Component\Console\Input\ArrayInput(['command' => 'require', 'packages' => $extension->composer['require']]);
-            $application = new \Composer\Console\Application();
-            $application->setAutoExit(false);
-            $application->run($input);
-        }
+        $input = new \Symfony\Component\Console\Input\ArrayInput(['command' => 'require', 'packages' => $extensions]);
+        $application = new \Composer\Console\Application();
+        $application->setAutoExit(false);
+        $application->run($input);
     }
 
     /**
      * Update composer dependencies
+     * 
+     * @param array $packages
      */
-    public function composerUpdate()
+    public function composerUpdate($packages = [])
     {
         $this->loadComposer();
-        $input = new \Symfony\Component\Console\Input\ArrayInput(['command' => 'update']);
+        $input = new \Symfony\Component\Console\Input\ArrayInput(['command' => 'update', 'packages' => $packages]);
         $application = new \Composer\Console\Application();
         $application->setAutoExit(false);
         $application->run($input);
@@ -375,48 +424,23 @@ class RegistryManager
     public function composerRemove($extension)
     {
         $this->loadComposer();
-        $composerRequires = [];
-
-        foreach ($this->getExtensions() as $ext) {
-            if ($extension['repositoryKey'] !== $ext['repositoryKey'] && isset($ext['composer']['require'])) {
-                foreach ($ext['composer']['require'] as $package) {
-                    $composerRequires[$package] = $package;
-                }
-            }
-        }
-
-        if(isset($extension['composer']['require'])) {
-            foreach ($extension['composer']['require'] as $k => $package) {
-                if (isset($composerRequires[$package])) {
-                    unset($extension['composer']['require'][$k]);
-                }
-            }
-        }
-
-        if (isset($extension['composer']) && isset($extension['composer']['require'])) {
-            $input = new \Symfony\Component\Console\Input\ArrayInput(['command' => 'remove', 'packages' => $extension['composer']['require']]);
-            $application = new \Composer\Console\Application();
-            $application->setAutoExit(false);
-            $application->run($input);
-            $this->composerUpdate();
-        }
+        $input = new \Symfony\Component\Console\Input\ArrayInput(['command' => 'remove', 'packages' => [$extension['repositoryKey']]]);
+        $application = new \Composer\Console\Application();
+        $application->setAutoExit(false);
+        $application->run($input);
+        $this->core->cache->clearAll();
     }
 
     /**
      * @param $class
-     * @param $file
      * @param null $oldRegistryEntry
      * @return bool
      */
-    public function registerClass($class, $file, $oldRegistryEntry = null)
+    public function registerClass($class, $oldRegistryEntry = null)
     {
-        require_once($file);
+        $classAnnotation = $this->getRegistryConfig($class);
 
-        $extension = $this->getRegistryConfig($class);
-
-        if ($extension) {
-            $this->composerRequire($extension);
-
+        if ($classAnnotation) {
             $registryEntry = $this->db->getRepository('\Fraym\Registry\Entity\Registry')->findOneByClassName($class);
 
             $this->db->updateSchema();
@@ -425,14 +449,14 @@ class RegistryManager
                 $registryEntry = new \Fraym\Registry\Entity\Registry();
             }
 
-            $registryEntry = $this->updateRegistryEntry($registryEntry, $class, $extension);
+            $registryEntry = $this->updateRegistryEntry($registryEntry, $class, $classAnnotation);
 
-            $this->createEntities($registryEntry, $extension, $oldRegistryEntry);
+            $this->createEntities($registryEntry, $classAnnotation, $oldRegistryEntry);
 
-            if ($extension->onRegister) {
+            if ($classAnnotation->onRegister) {
                 call_user_func_array(
-                    [$this->serviceLocator->get($class), $extension->onRegister],
-                    [$extension, $oldRegistryEntry]
+                    [$this->serviceLocator->get($class), $classAnnotation->onRegister],
+                    [$classAnnotation, $oldRegistryEntry]
                 );
             }
 
@@ -453,10 +477,12 @@ class RegistryManager
         $registryEntry->className = $className;
         $registryEntry->deletable = $classAnnotation->deletable;
         $registryEntry->name = $classAnnotation->name;
-        $registryEntry->version = $classAnnotation->version;
-        $registryEntry->author = $classAnnotation->author;
-        $registryEntry->website = $classAnnotation->website;
         $registryEntry->repositoryKey = $classAnnotation->repositoryKey;
+
+        if($package = $this->getPackage($classAnnotation->repositoryKey)) {
+            $package = $this->getLatestPackageVersion($package);
+            $registryEntry->version = $package->getVersion();
+        }
 
         $this->db->persist($registryEntry);
         $this->db->flush();
@@ -489,22 +515,6 @@ class RegistryManager
             return true;
         }
         return false;
-    }
-
-    /**
-     * @param $extension
-     * @return $this
-     */
-    public function removeExtensionFiles($extension)
-    {
-        foreach ($extension['files'] as $file) {
-            if (is_file($file)) {
-                unlink($file);
-            } elseif (is_dir($file)) {
-                $this->fileManager->deleteFolder($file);
-            }
-        }
-        return $this;
     }
 
     /**
@@ -661,38 +671,6 @@ class RegistryManager
     }
 
     /**
-     * API request do get all modules
-     */
-    public function repositoryRequest($cmd = 'listModules', $params = [])
-    {
-        $query = [
-            'cmd' => $cmd,
-            'channel' => 'stable',
-            'client_info' => [
-                'version' => \Fraym\Core::VERSION,
-                'php_version' => phpversion(),
-                'os' => php_uname('s'),
-                'apc_enabled' => APC_ENABLED,
-                'image_processor' => IMAGE_PROCESSOR,
-                'env' => ENV,
-            ]
-        ];
-
-        $query = array_merge($query, $params);
-        return $this->sendRepositoryRequest($query);
-    }
-
-    /**
-     * @param null $params
-     * @return bool|mixed|\SimpleXMLElement|string
-     */
-    public function sendRepositoryRequest($params = null)
-    {
-        $url = self::REPOSITORY_URL;
-        return $this->request->send($url, $params);
-    }
-
-    /**
      * @return \Doctrine\Common\Annotations\CachedReader
      */
     public function getAnnotationReader()
@@ -708,11 +686,48 @@ class RegistryManager
     {
         $extensionsKeys = [];
         foreach ($extensions as $extension) {
-            if ($extension->repositoryKey) {
-                $extensionsKeys[$extension->repositoryKey] = $extension->version;
+            $package = $this->getPackage($extension->repositoryKey);
+            if($package) {
+                $package = $this->getLatestPackageVersion($package);
+                if(version_compare($package->getVersion(), $extension->version) > 0) {
+                    $extensionsKeys[$extension->repositoryKey] = $package;
+                }
             }
         }
 
-        return $this->repositoryRequest('getUpdates', ['extensions' => $extensionsKeys]);
+        return $extensionsKeys;
+    }
+
+    /**
+     * @param $package
+     * @param $version
+     * @return null
+     */
+    public function getPackageByVersion($package, $version) {
+        foreach($package->getVersions() as $packageVersion) {
+            if($packageVersion->getVersion() === $version) {
+                return $packageVersion;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @param $extensions
+     * @return array
+     */
+    public function getExtensionPackages($extensions) {
+        $packages = [];
+        foreach($extensions as $extension) {
+            $package = $this->getPackage($extension->repositoryKey);
+            if($package) {
+                $package = $this->getPackageByVersion($package, $extension->version);
+                $package->author = $this->getAuthorsFromPackage($package);
+                $packages[$extension->repositoryKey] = $package;
+            } else {
+                $packages[$extension->repositoryKey] = null;
+            }
+        }
+        return $packages;
     }
 }

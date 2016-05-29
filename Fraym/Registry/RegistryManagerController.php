@@ -49,25 +49,16 @@ class RegistryManagerController extends \Fraym\Core
             $this->response->finish();
         }
 
-        $extensions = $this->db->getRepository('\Fraym\Registry\Entity\Registry')->findBy(
-            [],
-            ['name' => 'asc']
-        );
-
-        $unregisteredExtensions = $this->registryManager->getUnregisteredExtensions();
-
-        $extensionUpdates = new \Doctrine\Common\Collections\ArrayCollection();
-
+        $extensions = $this->db->getRepository('\Fraym\Registry\Entity\Registry')->findBy([], ['name' => 'asc']);
         $updates = $this->registryManager->getUpdates($extensions);
-        if (is_object($updates)) {
-            foreach ($updates as $k => $update) {
-                $extensionUpdates->set($k, $update);
-            }
-        }
+        $extensionPackages = $this->registryManager->getExtensionPackages($extensions);
+        $unregisteredExtensions = $this->registryManager->getUnregisteredExtensions();
+        $this->registryManager->updateUnregisteredExtensions($unregisteredExtensions);
 
         $this->view->assign('unregisteredExtensions', $unregisteredExtensions);
         $this->view->assign('extensions', $extensions);
-        $this->view->assign('extensionUpdates', $extensionUpdates);
+        $this->view->assign('extensionPackages', $extensionPackages, false);
+        $this->view->assign('extensionUpdates', $updates, false);
         return $this->siteManagerController->getIframeContent($this->view->fetch('Extension'));
     }
 
@@ -77,11 +68,11 @@ class RegistryManagerController extends \Fraym\Core
     public function installExtension()
     {
         set_time_limit(0);
-        $extensionHash = $this->request->post('extensionHash', null);
+        $repositoryKey = $this->request->post('repositoryKey', null);
         $unregisteredExtensions = $this->registryManager->getUnregisteredExtensions();
         foreach ($unregisteredExtensions as $class => $extension) {
-            if ($extension['fileHash'] === $extensionHash) {
-                $this->registryManager->registerClass($class, $extension['file']);
+            if ($extension['repositoryKey'] === $repositoryKey) {
+                $this->registryManager->registerClass($class);
                 return $this->response->sendAsJson();
             }
         }
@@ -105,11 +96,11 @@ class RegistryManagerController extends \Fraym\Core
     public function removeExtension()
     {
         set_time_limit(0);
-        $extensionHash = $this->request->post('extensionHash', null);
+        $repositoryKey = $this->request->post('repositoryKey', null);
         $unregisteredExtensions = $this->registryManager->getUnregisteredExtensions();
         foreach ($unregisteredExtensions as $class => $extension) {
-            if ($extension['fileHash'] === $extensionHash) {
-                $this->registryManager->removeExtensionFiles($extension);
+            if ($extension['repositoryKey'] === $repositoryKey) {
+                $this->registryManager->composerRemove($extension);
             }
         }
         $this->response->finish();
@@ -163,16 +154,12 @@ class RegistryManagerController extends \Fraym\Core
     public function repositorySearch()
     {
         $searchTerm = $this->request->post('term', '');
+        $extensions = $this->registryManager->searchPackage($searchTerm);
         $availableExtensions = new \Doctrine\Common\Collections\ArrayCollection();
         $unregisteredExtensions = $this->registryManager->getUnregisteredExtensions();
         $installedExtensions = $this->db->getRepository('\Fraym\Registry\Entity\Registry')->findBy(
             [],
             ['name' => 'asc']
-        );
-
-        $extensions = $this->registryManager->repositoryRequest(
-            'listModules',
-            ['searchTerm' => $searchTerm, 'offset' => 0, 'limit' => 20]
         );
 
         foreach ($installedExtensions as $installedExtension) {

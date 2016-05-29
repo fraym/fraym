@@ -60,23 +60,6 @@ class Registry extends \Fraym\Entity\BaseEntity
     protected $version;
 
     /**
-     * @var string $author
-     *
-     * @ORM\Column(name="author", type="string", length=255, nullable=false)
-     */
-    protected $author;
-
-    /**
-     * @ORM\Column(name="website", type="string", length=255, nullable=true)
-     */
-    protected $website;
-
-    /**
-     * @ORM\Column(name="documentationLink", type="string", length=255, nullable=true)
-     */
-    protected $documentationLink;
-
-    /**
      * @ORM\OneToMany(targetEntity="\Fraym\Registry\Entity\Config", mappedBy="registry", orphanRemoval=true)
      * @ORM\OrderBy({"name" = "ASC"})
      */

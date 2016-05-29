@@ -50,13 +50,6 @@ final class Registry extends Annotation
     public $files = [];
 
     /**
-     * Composer vendor dependencies
-     *
-     * @var array
-     */
-    public $composer = [];
-
-    /**
      * Callback function that is called after registration
      *
      * @var null

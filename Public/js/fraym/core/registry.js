@@ -32,11 +32,11 @@ Core.Registry = {
 
 	installExtension: function (e) {
 		e.preventDefault();
-		var extensionHash = $(this).data('install');
+		var repositoryKey = $(this).data('install');
 		Core.Registry.request(
 			{
 				cmd: 'installExtension',
-				extensionHash: extensionHash
+				repositoryKey: repositoryKey
 			},
 			function () {
 				window.location.reload();
@@ -58,11 +58,11 @@ Core.Registry = {
 
 	removeExtension: function (e) {
 		e.preventDefault();
-		var extensionHash = $(this).data('remove');
+		var repositoryKey = $(this).data('remove');
 		Core.Registry.request(
 			{
 				cmd: 'removeExtension',
-				extensionHash: extensionHash
+				repositoryKey: repositoryKey
 			},
 			function () {
 				window.location.reload();

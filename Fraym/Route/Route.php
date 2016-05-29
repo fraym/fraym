@@ -766,7 +766,7 @@ class Route
             return false;
         }
         $this->siteManager->addAdminPanel();
-        return $this->template->renderString($this->currentMenuItem->template->html);
+        return $this->template->renderString($this->template->getMainTemplate());
     }
 
     /**

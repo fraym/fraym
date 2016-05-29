@@ -245,20 +245,5 @@ return [
         'README.txt',
     ],
     'deletable' => false,
-    'repositoryKey' => 'fraym/fraym',
-    'composer' => [
-        'require' => [
-            'fraym/composer-installers',
-            'doctrine/orm',
-            'php-di/php-di',
-            'beberlei/DoctrineExtensions',
-            'werkint/jsmin',
-            'imagine/imagine',
-            'stichoza/google-translate-php',
-            'swiftmailer/swiftmailer',
-            'ocramius/proxy-manager',
-            'gedmo/doctrine-extensions',
-            'knplabs/packagist-api',
-        ]
-    ],
+    'repositoryKey' => 'fraym/fraym'
 ];
