@@ -36,11 +36,6 @@ if (\Fraym\Core::ENV_STAGING === ENV || \Fraym\Core::ENV_PRODUCTION === ENV) {
 } else {
     error_reporting(-1);
     ini_set("display_errors", 1);
-    if (APC_ENABLED && \Fraym\Core::ENV_TESTING === ENV) {
-        $cache = new Doctrine\Common\Cache\ApcCache();
-    } else {
-        $cache = new Doctrine\Common\Cache\ArrayCache();
-    }
     define('GLOBAL_CACHING_ENABLED', false);
 }
 
@@ -64,7 +59,7 @@ $builder->addDefinitions([
 ]);
 
 if (APC_ENABLED) {
-    $cache = new Doctrine\Common\Cache\ApcCache();
+    $cache = new Doctrine\Common\Cache\ApcuCache();
 } else {
     $cache = new Doctrine\Common\Cache\ArrayCache();
 }

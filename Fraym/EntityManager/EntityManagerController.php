@@ -72,6 +72,7 @@ class EntityManagerController extends \Fraym\Core
         $formFields = [];
         $entities = [];
         $modelClass = false;
+        $saveError = false;
         $model = false;
         $modelName = $this->request->gp('model', false);
 
@@ -93,29 +94,33 @@ class EntityManagerController extends \Fraym\Core
 
             $validation = $this->validation->setData($data)->getFormFieldValidation($modelClass);
 
-            if ($id = $this->request->post('id')) {
-                $currentEntity = $this->db->getRepository($modelClass)->findOneById($id);
+            try {
+                if ($id = $this->request->post('id')) {
+                    $currentEntity = $this->db->getRepository($modelClass)->findOneById($id);
 
-                if (isset($data['cmd']) &&
-                    $data['cmd'] == 'update' &&
-                    $currentEntity &&
-                    ($errors = $validation->check()) === true
-                ) {
-                    $currentEntity->updateEntity($data);
-                } elseif (isset($data['cmd']) && $data['cmd'] == 'remove' && $currentEntity) {
-                    $this->db->remove($currentEntity);
-                    $this->db->flush();
-                    $data = [];
-                    $currentEntity = false;
-                } elseif (isset($data['cmd']) && $data['cmd'] == 'update') {
-                    $currentEntity->updateEntity($data, false);
-                }
+                    if (isset($data['cmd']) &&
+                        $data['cmd'] == 'update' &&
+                        $currentEntity &&
+                        ($errors = $validation->check()) === true
+                    ) {
+                        $currentEntity->updateEntity($data);
+                    } elseif (isset($data['cmd']) && $data['cmd'] == 'remove' && $currentEntity) {
+                        $this->db->remove($currentEntity);
+                        $this->db->flush();
+                        $data = [];
+                        $currentEntity = false;
+                    } elseif (isset($data['cmd']) && $data['cmd'] == 'update') {
+                        $currentEntity->updateEntity($data, false);
+                    }
 
-            } else {
-                if (isset($data['cmd']) && $data['cmd'] == 'new' && ($errors = $validation->check()) === true) {
-                    $currentEntity = new $modelClass();
-                    $currentEntity->updateEntity($data);
+                } else {
+                    if (isset($data['cmd']) && $data['cmd'] == 'new' && ($errors = $validation->check()) === true) {
+                        $currentEntity = new $modelClass();
+                        $currentEntity->updateEntity($data);
+                    }
                 }
+            } catch(\Exception $e) {
+                $saveError = true;
             }
         }
         if ($modelClass && $model) {
@@ -125,6 +130,7 @@ class EntityManagerController extends \Fraym\Core
 
         $this->view->assign('locales', $this->locale->getLocales());
         $this->view->assign('data', $data);
+        $this->view->assign('saveError', $saveError);
         $this->view->assign('errors', $errors);
         $this->view->assign('currentEntity', $currentEntity);
         $this->view->assign('entities', $entities);

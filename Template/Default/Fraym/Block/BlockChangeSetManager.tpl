@@ -47,6 +47,7 @@
         {else}
             <br/>
             <div class="alert alert-info" role="alert">{_('No changes')}</div>
+            <p><strong>{_('After the deploy: Please reload the main window to reload all blocks!')}</strong></p>
         {/if}
     </div>
 </div>

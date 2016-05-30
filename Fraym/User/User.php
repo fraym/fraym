@@ -185,16 +185,16 @@ class User
             return $this;
         }
 
-        $this->userId = $userId;
-        $this->session->set('userId', $this->userId);
-
-        if ($this->user) {
+        if ($this->user && $this->userId === false) {
             $this->isLoggedIn = true;
             $this->user->isOnline = true;
             $this->user->lastLogin = new \DateTime();
             $this->db->persist($this->user);
             $this->db->flush();
         }
+
+        $this->userId = $userId;
+        $this->session->set('userId', $this->userId);
 
         return $this;
     }

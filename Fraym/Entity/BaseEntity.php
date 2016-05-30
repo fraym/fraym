@@ -42,114 +42,118 @@ class BaseEntity
             return false;
         }
 
-        $obj = (array)$obj;
+        try {
+            $obj = (array)$obj;
 
-        /**
-         * @var \Fraym\Database\Database $em
-         */
-        $em = $this->getServiceLocator()->get('Fraym\Database\Database');
-        /**
-         * @var \Fraym\FormField\FormField $formField
-         */
-        $formField = $this->getServiceLocator()->get('Fraym\Entity\FormField');
-        $className = get_class($this);
-        $newEntity = $this;
-        $tmpFieldMappings = $em->getClassMetadata($className)->fieldMappings;
-        $tmpAssocMappings = $em->getClassMetadata($className)->associationMappings;
-        $tmpAssocMappingClass = lcfirst(basename(str_replace('\\', '/', $className)));
-        $formFields = $formField->setClassName($className)->getFields();
+            /**
+             * @var \Fraym\Database\Database $em
+             */
+            $em = $this->getServiceLocator()->get('Fraym\Database\Database');
+            /**
+             * @var \Fraym\FormField\FormField $formField
+             */
+            $formField = $this->getServiceLocator()->get('Fraym\Entity\FormField');
+            $className = get_class($this);
+            $newEntity = $this;
+            $tmpFieldMappings = $em->getClassMetadata($className)->fieldMappings;
+            $tmpAssocMappings = $em->getClassMetadata($className)->associationMappings;
+            $tmpAssocMappingClass = lcfirst(basename(str_replace('\\', '/', $className)));
+            $formFields = $formField->setClassName($className)->getFields();
 
-        foreach ($obj as $prop => $val) {
-            if ($prop === 'id') {
-                continue;
-            }
-
-            if (isset($formFields[$prop]) && $formFields[$prop]['translateable'] === true && is_array($val)) {
-                $repository = $em->getRepository('Gedmo\\Translatable\\Entity\\Translation');
-                $newEntity->__set($prop, reset($val));
-                foreach ($val as $locale => $translation) {
-                    $repository->translate($newEntity, $prop, $locale, $translation);
+            foreach ($obj as $prop => $val) {
+                if ($prop === 'id') {
+                    continue;
                 }
-            } else {
-                if (is_string($val) || is_numeric($val)) {
 
-                    /**
-                     * Set string values
-                     */
-                    if (isset($tmpFieldMappings[$prop])) {
-                        if ($tmpFieldMappings[$prop]['unique'] === true &&
-                            $tmpFieldMappings[$prop]['nullable'] === true &&
-                            $val === '') {
-                            $val = null;
-                        }
-                        if (array_key_exists($prop, $tmpFieldMappings)) {
-                            $newEntity->__set($prop, $val);
-                        }
+                if (isset($formFields[$prop]) && $formFields[$prop]['translateable'] === true && is_array($val)) {
+                    $repository = $em->getRepository('Gedmo\\Translatable\\Entity\\Translation');
+                    $newEntity->__set($prop, reset($val));
+                    foreach ($val as $locale => $translation) {
+                        $repository->translate($newEntity, $prop, $locale, $translation);
                     }
-
-                    /**
-                     * Set ManyToOne Entity
-                     */
-                    if (isset($tmpAssocMappings[$prop])) {
-                        if (array_key_exists($prop, $tmpAssocMappings)) {
-                            $targetEntityClass = $tmpAssocMappings[$prop]['targetEntity'];
-                            $relationEntity = $em->getRepository($targetEntityClass)->findOneById($val);
-                            if ($relationEntity) {
-                                $newEntity->__set($prop, $relationEntity);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // clear all array collections
-        foreach ($tmpAssocMappings as $prop => $val) {
-            if (is_object($newEntity->{$prop}) &&
-                ('Doctrine\ORM\PersistentCollection' == get_class($newEntity->{$prop}) ||
-                    'Doctrine\Common\Collections\ArrayCollection' == get_class($newEntity->{$prop}))
-            ) {
-                $newEntity->{$prop}->clear();
-            }
-        }
-
-        /**
-         * OneToMany and ManyToMany
-         */
-        foreach ($obj as $prop => $val) {
-            if (is_array($val) && isset($tmpAssocMappings[$prop])) {
-                $targetEntityClass = $tmpAssocMappings[$prop]['targetEntity'];
-                if (isset($newEntity->{$prop}) && $tmpAssocMappings[$prop]['type'] === 2) {
-                    // ManyToOne update
-                    $newEntity->{$prop}->updateEntity($val);
                 } else {
-                    foreach ($val as $val2) {
-                        if (is_array($val2) && isset($val2['id'])) {
-                            $entity = $em->getRepository($targetEntityClass)->findOneById($val2['id']);
-                            if ($entity) {
-                                $entity->updateEntity($val2);
+                    if (is_string($val) || is_numeric($val)) {
+
+                        /**
+                         * Set string values
+                         */
+                        if (isset($tmpFieldMappings[$prop])) {
+                            if ($tmpFieldMappings[$prop]['unique'] === true &&
+                                $tmpFieldMappings[$prop]['nullable'] === true &&
+                                $val === '') {
+                                $val = null;
                             }
-                        } elseif (is_array($val2)) {
-                            $newSubEntity = new $targetEntityClass();
-                            $newSubEntity->{$tmpAssocMappingClass} = $newEntity;
-                            $newSubEntity->updateEntity($val2);
-                            $newEntity->{$prop}->add($newSubEntity);
-                        } else {
-                            $entity = $em->getRepository($targetEntityClass)->findOneById($val2);
-                            if ($entity) {
-                                $newEntity->{$prop}->add($entity);
+                            if (array_key_exists($prop, $tmpFieldMappings)) {
+                                $newEntity->__set($prop, $val);
+                            }
+                        }
+
+                        /**
+                         * Set ManyToOne Entity
+                         */
+                        if (isset($tmpAssocMappings[$prop])) {
+                            if (array_key_exists($prop, $tmpAssocMappings)) {
+                                $targetEntityClass = $tmpAssocMappings[$prop]['targetEntity'];
+                                $relationEntity = $em->getRepository($targetEntityClass)->findOneById($val);
+                                if ($relationEntity) {
+                                    $newEntity->__set($prop, $relationEntity);
+                                }
                             }
                         }
                     }
                 }
             }
-        }
 
-        if ($flush) {
-            if (\Doctrine\ORM\UnitOfWork::STATE_MANAGED !== $em->getUnitOfWork()->getEntityState($newEntity) || \Doctrine\ORM\UnitOfWork::STATE_NEW !== $em->getUnitOfWork()->getEntityState($newEntity)) {
-                $em->persist($newEntity);
+            // clear all array collections
+            foreach ($tmpAssocMappings as $prop => $val) {
+                if (is_object($newEntity->{$prop}) &&
+                    ('Doctrine\ORM\PersistentCollection' == get_class($newEntity->{$prop}) ||
+                        'Doctrine\Common\Collections\ArrayCollection' == get_class($newEntity->{$prop}))
+                ) {
+                    $newEntity->{$prop}->clear();
+                }
             }
-            $em->flush();
+
+            /**
+             * OneToMany and ManyToMany
+             */
+            foreach ($obj as $prop => $val) {
+                if (is_array($val) && isset($tmpAssocMappings[$prop])) {
+                    $targetEntityClass = $tmpAssocMappings[$prop]['targetEntity'];
+                    if (isset($newEntity->{$prop}) && $tmpAssocMappings[$prop]['type'] === 2) {
+                        // ManyToOne update
+                        $newEntity->{$prop}->updateEntity($val);
+                    } else {
+                        foreach ($val as $val2) {
+                            if (is_array($val2) && isset($val2['id'])) {
+                                $entity = $em->getRepository($targetEntityClass)->findOneById($val2['id']);
+                                if ($entity) {
+                                    $entity->updateEntity($val2);
+                                }
+                            } elseif (is_array($val2)) {
+                                $newSubEntity = new $targetEntityClass();
+                                $newSubEntity->{$tmpAssocMappingClass} = $newEntity;
+                                $newSubEntity->updateEntity($val2);
+                                $newEntity->{$prop}->add($newSubEntity);
+                            } else {
+                                $entity = $em->getRepository($targetEntityClass)->findOneById($val2);
+                                if ($entity) {
+                                    $newEntity->{$prop}->add($entity);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if ($flush) {
+                if (\Doctrine\ORM\UnitOfWork::STATE_MANAGED !== $em->getUnitOfWork()->getEntityState($newEntity) || \Doctrine\ORM\UnitOfWork::STATE_NEW !== $em->getUnitOfWork()->getEntityState($newEntity)) {
+                    $em->persist($newEntity);
+                }
+                $em->flush();
+            }
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
         }
 
         return true;

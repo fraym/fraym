@@ -2,26 +2,6 @@
 
 return [
     'name' => 'Fraym Core',
-    'updateEntity' => [
-        '\Fraym\SiteManager\Entity\Extension' => [
-            [
-                'class' => '\Fraym\Menu\MenuController',
-                'method' => 'getContent',
-            ],
-            [
-                'class' => '\Fraym\EntityManager\EntityManagerController',
-                'method' => 'getContent',
-            ],
-            [
-                'class' => '\Fraym\FileManager\FileManagerController',
-                'method' => 'getContent',
-            ],
-            [
-                'name' => 'Extension Manager',
-                'class' => '\Fraym\Registry\RegistryManagerController',
-            ],
-        ],
-    ],
     'entity' => [
         '\Fraym\SiteManager\Entity\Extension' => [
             [

@@ -79,6 +79,11 @@ class Database
     protected $eventListener;
 
     /**
+     * @var \Doctrine\ORM\Mapping\Driver\AnnotationDriver
+     */
+    protected $annotationDriver;
+
+    /**
      * Call default doctrine entity manager methods
      *
      * @param $method
@@ -212,7 +217,7 @@ class Database
 
         $annotationReader = new \Doctrine\Common\Annotations\AnnotationReader();
         $this->cachedAnnotationReader = new \Doctrine\Common\Annotations\CachedReader($annotationReader, $cache);
-        $annotationDriver = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($annotationReader, $modelDirs);
+        $this->annotationDriver = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($annotationReader, $modelDirs);
 
         /**
          * Ignore PHP-DI Annotation
@@ -220,7 +225,7 @@ class Database
         $annotationReader->addGlobalIgnoredName('Injectable');
         $annotationReader->addGlobalIgnoredName('Inject');
 
-        $config->setMetadataDriverImpl($annotationDriver);
+        $config->setMetadataDriverImpl($this->annotationDriver);
         $config->setQueryCacheImpl($cache);
         $config->setResultCacheImpl($cache);
         $config->setProxyDir($applicationDir . DIRECTORY_SEPARATOR . CACHE_DOCTRINE_PROXY_PATH);
@@ -513,6 +518,11 @@ class Database
      */
     public function updateSchema($safeMode = true, $outputPathAndFilename = null)
     {
+        // Generate new module dir cache
+        $this->createModuleDirCache();
+        // Add new entity paths
+        $this->annotationDriver->addPaths($this->getModuleDirCache());
+        
         if ($outputPathAndFilename === null) {
             return $this->getSchemaTool()->updateSchema(
                 $this->entityManager->getMetadataFactory()->getAllMetadata(),

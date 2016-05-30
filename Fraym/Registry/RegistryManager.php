@@ -114,12 +114,13 @@ class RegistryManager
         );
 
         if (is_object($classAnnotation) && $classAnnotation->file !== null) {
+
             $filePath = substr($classAnnotation->file, 0, 1) === '/' ?
                 $classAnnotation->file :
                 dirname($reflClass->getFileName()) . DIRECTORY_SEPARATOR . $classAnnotation->file;
 
             if (is_file($filePath)) {
-                $config = require_once($filePath);
+                $config = require($filePath);
                 if (is_array($config)) {
                     $config = array_merge($this->getRegistryProperties(), $config);
                     return (object)$config;
@@ -442,6 +443,8 @@ class RegistryManager
 
         if ($classAnnotation) {
             $registryEntry = $this->db->getRepository('\Fraym\Registry\Entity\Registry')->findOneByClassName($class);
+            // Clear cache to generate new entity folders
+            $this->core->cache->clearAll();
 
             $this->db->updateSchema();
 
@@ -482,6 +485,8 @@ class RegistryManager
         if($package = $this->getPackage($classAnnotation->repositoryKey)) {
             $package = $this->getLatestPackageVersion($package);
             $registryEntry->version = $package->getVersion();
+        } else {
+            $registryEntry->version = '0.0.0';
         }
 
         $this->db->persist($registryEntry);
@@ -503,7 +508,6 @@ class RegistryManager
 
             $unregisteredExtensions = $this->getUnregisteredExtensions();
             $extension = $unregisteredExtensions[$className];
-            $this->composerRemove($extension);
             $this->removeEntities($extension);
             if (isset($extension->onUnregister)) {
                 call_user_func_array(
@@ -557,6 +561,7 @@ class RegistryManager
                 } elseif ($oldRegistryEntry === null) {
                     foreach ($entries as $entryData) {
                         $entryDataWithSubEntries = $this->getSubEntries($entryData, $registry);
+
                         if ($this->getEntity($className, $entryDataWithSubEntries) === null) {
                             $entry = new $className();
                             $entryDataWithSubEntries['registry'] = $registry->id;

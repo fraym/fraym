@@ -98,11 +98,10 @@ class FormField
     {
         $formfield = (array)$formfield;
         $formfield['label'] = $this->getLabel($field, $formfield['label']);
-        $hasValidation = function ($validation) use (&$formfield) {
+        $formfield['hasValidation'] = function ($validation) use (&$formfield) {
             return in_array($validation, $formfield['validation']);
         };
-        $formfield['hasValidation'] = $hasValidation;
-        return (array)$formfield;
+        return $formfield;
     }
 
     /**

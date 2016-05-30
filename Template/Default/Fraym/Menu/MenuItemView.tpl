@@ -147,7 +147,6 @@
                     <label class="col-lg-2 control-label">{_("Site template")}</label>
                     <div class="col-lg-10">
                         <select class="form-control" name="menu[template]">
-                            <option value=""></option>
                             {foreach $templates as $template}
                                 <option value="{$template.id}"{if $menuItem.template.id == $template.id} selected="selected"{/if}>{$template.name}</option>
                             {/foreach}
