@@ -1111,7 +1111,7 @@ table td.right, table th.right {
 
 .loadmask {
     z-index: 10000;
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
@@ -1125,7 +1125,7 @@ table td.right, table th.right {
     position: absolute;
     top: 0;
     left: 0;
-    line-height: 1; /* this enables us to center the label text relative to the spinner */
+    line-height: 1;
 }
 
 .masked {

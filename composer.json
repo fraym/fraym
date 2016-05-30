@@ -29,6 +29,7 @@
     "require": {
         "fraym/composer-installers": "^1.0",
         "fraym/default-theme-extension": "^1.0",
+        "fraym/htmleditor-extension": "^1.0",
         "doctrine/orm": "^2.5",
         "php-di/php-di": "^5.2",
         "beberlei/DoctrineExtensions": "^1.0",

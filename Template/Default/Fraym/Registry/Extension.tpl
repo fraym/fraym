@@ -28,7 +28,7 @@
                     <th>{_('Name')}</th>
                     <th>{_('Version')}</th>
                     <th>{_('Author')}</th>
-                    <th class="text-right">{_('Options')}</th>
+                    <th width="15%" class="text-right">{_('Options')}</th>
                     </thead>
                     <tbody>
                     {foreach $unregisteredExtensions as $extension}
@@ -59,17 +59,21 @@
                 <th>{_('Version')}</th>
                 <th>{_('Author')}</th>
                 <th>{_('Update status')}</th>
-                <th class="text-right">{_('Options')}</th>
+                <th width="15%" class="text-right">{_('Options')}</th>
                 </thead>
                 <tbody>
                 {foreach $extensions as $extension}
                     <tr>
-                        <td>{$extension.name}</td>
+                        <td>{$extension.name} ({$extension.repositoryKey})</td>
                         <td>{$extension.version}</td>
                         <td>{if $extensionPackages[$extension.repositoryKey]}{$extensionPackages[$extension.repositoryKey].author}{/if}</td>
                         <td>
                             {if isset($extensionUpdates[$extension.repositoryKey]) === false}
-                                <span class="label label-success">{_('Up to date')}</span>
+                                {if $extensionPackages[$extension.repositoryKey]}
+                                    <span class="label label-success">{_('Up to date')}</span>
+                                {else}
+                                    <span class="label label-warning" title="{_('The package can not be found in the packagist repository.')}">{_('Could not resolve status')}</span>
+                                {/if}
                             {else}
                                 <button data-update="{$extension.repositoryKey}">{_('Update to :version', 'FRAYM_UPDATE_TO', 'en_US', [':version' => $extensionUpdates[$extension.repositoryKey].getVersion()])}</button>
                             {/if}

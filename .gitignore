@@ -2,6 +2,7 @@
 *.idea*
 /Config.php
 Cache/Sessions/*
+Extension/*
 Cache/Pages/*
 Cache/DoctrineProxies/*
 Cache/*

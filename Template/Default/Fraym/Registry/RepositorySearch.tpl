@@ -4,7 +4,7 @@
     <th>{_('Description')}</th>
     <th>{_('Version')}</th>
     <th>{_('Author')}</th>
-    <th class="text-right">{_('Options')}</th>
+    <th width="15%" class="text-right">{_('Options')}</th>
     </thead>
     <tbody>
     {foreach $extensions as $extension}

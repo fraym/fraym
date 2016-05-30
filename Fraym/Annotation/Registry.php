@@ -43,13 +43,6 @@ final class Registry extends Annotation
     public $translation = [];
 
     /**
-     * Files belongs to this package
-     *
-     * @var array
-     */
-    public $files = [];
-
-    /**
      * Callback function that is called after registration
      *
      * @var null

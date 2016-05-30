@@ -226,24 +226,6 @@ return [
             'deletable' => false
         ],
     ],
-    'files' => [
-        'Fraym/',
-        'Template/Default/Fraym/',
-        'Test/Fraym/',
-        'Public/images/fraym/',
-        'Public/css/fraym/',
-        'Public/fonts/arial.ttf',
-        'Public/css/install/',
-        'Public/js/fraym/',
-        'Public/index.php',
-        'Public/install.php',
-        'Bootstrap.php',
-        'phpunit.xml',
-        'CHANGELOG.txt',
-        'COPYRIGHT.txt',
-        'LICENSE.txt',
-        'README.txt',
-    ],
     'deletable' => false,
     'repositoryKey' => 'fraym/fraym'
 ];
