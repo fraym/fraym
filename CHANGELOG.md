@@ -1,4 +1,4 @@
-Fraym 1.0.0, 2016-04-xx
+Fraym 1.0.0, 2016-05-31
 ----------------------
 - Added image link
 - Added dynamic template configurations
@@ -6,11 +6,12 @@ Fraym 1.0.0, 2016-04-xx
 - Imagine version update
 - Image placeholder fix
 - Change editmode styles
-- Remove eval
 - File manager fixes
 - Entity manager fixes
 - Update vendors
 - Change set manager added
+- Add composer repository
+- Further improvements
 
 Fraym 0.9.1, 2014-04-29
 ----------------------
