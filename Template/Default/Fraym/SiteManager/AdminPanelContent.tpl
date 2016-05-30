@@ -11,7 +11,7 @@
             </li>
             <li class="user-status status-online" id="user-status">
                 <div class="profile-photo">
-                    <a href="javascript:void(0);" onclick="Core.getBaseWindow().location = '/fraym';">
+                    <a href="javascript:void(0);" onclick="Fraym.getBaseWindow().location = '/fraym';">
                         {if i('Fraym\User\User').getUserEntity().profilePicture}
                             <block type="image" alt="{i('Fraym\User\User').getUserEntity().username}" height="65" width="65"
                                    src="{i('Fraym\User\User').getUserEntity().profilePicture}" method="thumbnail"

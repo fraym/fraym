@@ -4,7 +4,7 @@
  * @copyright Dominik Weber <info@fraym.org>
  * @license   http://www.opensource.org/licenses/gpl-license.php GNU General Public License, version 2 or later (see the LICENSE file)
  */
-Core.Block = {
+Fraym.Block = {
 	dragging: false,
 	url: '',
 	CodeMirror: false,
@@ -46,15 +46,15 @@ Core.Block = {
 		var $baseElement = $('body');
 
 		$baseElement.find('#extension option[value="' + json.id + '"]').prop('selected', 'selected');
-		Core.Block.getExtensionConfigView(json.id, json);
+		Fraym.Block.getExtensionConfigView(json.id, json);
 
-		$baseElement.find(Core.$.BLOCK_TEMPLATE_SELECTION).removeAttr('disabled');
+		$baseElement.find(Fraym.$.BLOCK_TEMPLATE_SELECTION).removeAttr('disabled');
 
 		if (typeof json.xml != 'undefined') {
 			var xmlData = json.xml;
 
 			if (typeof xmlData.template != 'undefined' && xmlData.template['@type'] == 'string') {
-				$baseElement.find('#template').children(Core.$.BLOCK_TEMPLATE_SELECTION_CUSTOM).prop('selected', 'selected');
+				$baseElement.find('#template').children(Fraym.$.BLOCK_TEMPLATE_SELECTION_CUSTOM).prop('selected', 'selected');
 				$baseElement.find('textarea[name=templateContent]').val(xmlData.template.$);
 			} else if (typeof xmlData.template != 'undefined' && $.isNumeric(xmlData.template['@type'])) {
 				$baseElement.find('#template').find('[value="' + xmlData.template['@type'] + '"]').prop('selected', 'selected');
@@ -65,11 +65,11 @@ Core.Block = {
 				$baseElement.find('#template').change();
 			}
 
-			if (Core.Block.CodeMirror) {
-				Core.Block.CodeMirror.setValue($("#templateContent").val());
+			if (Fraym.Block.CodeMirror) {
+				Fraym.Block.CodeMirror.setValue($("#templateContent").val());
 			}
 
-			$baseElement.find(Core.$.BLOCK_TEMPLATE_SELECTION).change();
+			$baseElement.find(Fraym.$.BLOCK_TEMPLATE_SELECTION).change();
 
 			if (typeof xmlData.startDate != 'undefined') {
 				$baseElement.find('[name=startDate]').val(xmlData.startDate);
@@ -119,7 +119,7 @@ Core.Block = {
 		}
 
 		$baseElement.find('[type="submit"]').removeAttr('disabled');
-		Core.Block.initElements();
+		Fraym.Block.initElements();
 	},
 
 	initElements: function () {
@@ -160,12 +160,12 @@ Core.Block = {
 				$(this).attr('name', $(this).attr('name').replace('][1]', '][' + count + ']'));
 			});
 			$clone.insertAfter($('[data-repeat="' + $(this).attr('data-repeat-add') + '"]').last());
-			Core.Block.initElements();
+			Fraym.Block.initElements();
 		});
 
 		$.each($('[data-rte]'), function () {
 			if(!$(this).attr('id')) {
-				$(this).attr('id', Core.getUniqueId());
+				$(this).attr('id', Fraym.getUniqueId());
 				var id = $(this).attr('id');
 				if($(this).attr('data-rte') !== undefined) {
 					try {
@@ -189,7 +189,7 @@ Core.Block = {
 			}
 		});
 
-		Core.Block.replaceRteBlockLinks();
+		Fraym.Block.replaceRteBlockLinks();
 
 		$.each($('[data-datepicker]'), function () {
 			$(this).datepicker({ dateFormat: $(this).attr('data-datepicker') });
@@ -204,7 +204,7 @@ Core.Block = {
 			e.preventDefault();
 			var $this = $(this);
 
-			Core.Menu.openSelectMenuDialog(function(node){
+			Fraym.Menu.openSelectMenuDialog(function(node){
 				if($this.is('select')) {
 					$this.html($('<option></option>').val(node.data.key).html(node.data.title));
 				} else {
@@ -244,34 +244,34 @@ Core.Block = {
 	},
 
 	addTab: function (title, html) {
-		$(Core.$.BLOCK_TABS).tabs("destroy");
-		var count = ($(Core.$.BLOCK_TABS).find('ul > li').length + 1);
-		$(Core.$.BLOCK_TABS).children('ul').append('<li><a href="#block-tabs-' + count + '">' + title + '</a></li>');
-		$(Core.$.BLOCK_TABS).append($('<div id="block-tabs-' + count + '" class="custom-tab-content"></div>').html(html));
-		$(Core.$.BLOCK_TABS).tabs({activate: function(){$('select:not(.default)').chosen();}});
+		$(Fraym.$.BLOCK_TABS).tabs("destroy");
+		var count = ($(Fraym.$.BLOCK_TABS).find('ul > li').length + 1);
+		$(Fraym.$.BLOCK_TABS).children('ul').append('<li><a href="#block-tabs-' + count + '">' + title + '</a></li>');
+		$(Fraym.$.BLOCK_TABS).append($('<div id="block-tabs-' + count + '" class="custom-tab-content"></div>').html(html));
+		$(Fraym.$.BLOCK_TABS).tabs({activate: function(){$('select:not(.default)').chosen();}});
 		$('[href="#block-tabs-' + count + '"]').effect('highlight', {}, 1000);
 	},
 
 	removeTabs: function () {
-		$(Core.$.BLOCK_TABS).tabs("destroy");
-		$(Core.$.BLOCK_TABS).find('ul > li:not(:first), .custom-tab-content').remove();
-		$(Core.$.BLOCK_TABS).tabs();
+		$(Fraym.$.BLOCK_TABS).tabs("destroy");
+		$(Fraym.$.BLOCK_TABS).find('ul > li:not(:first), .custom-tab-content').remove();
+		$(Fraym.$.BLOCK_TABS).tabs();
 	},
 
 	init: function () {
 
-		Core.Block.initBlockActions();
-		Core.Block.History.init();
+		Fraym.Block.initBlockActions();
+		Fraym.Block.History.init();
 
-		if(Core.Admin.EDIT_MODE) {
-			$('body', Core.getBaseWindow().document).addClass('fraym-edit-mode');
+		if(Fraym.Admin.EDIT_MODE) {
+			$('body', Fraym.getBaseWindow().document).addClass('fraym-edit-mode');
 		}
 
 		if(typeof $.cookie != 'undefined') {
 			if(typeof $.cookie('copy') != 'undefined') {
-				Core.Block.copyBlock($.cookie('copy'));
+				Fraym.Block.copyBlock($.cookie('copy'));
 			} else if(typeof $.cookie('cut') != 'undefined') {
-				Core.Block.cutBlock($.cookie('cut'));
+				Fraym.Block.cutBlock($.cookie('cut'));
 			}
 		}
 
@@ -280,10 +280,10 @@ Core.Block = {
 				return true;
 			}
 			e.preventDefault();
-			Core.Admin.setEditMode();
+			Fraym.Admin.setEditMode();
 		});
 
-		$(Core.$.BLOCK_BLOCK_TO_TOP).click(function(e){
+		$(Fraym.$.BLOCK_BLOCK_TO_TOP).click(function(e){
 			e.preventDefault();
 			var $container = $(this).parents('.block-container-content:first, .block-container:first');
 			if($(this).hasClass('active')) {
@@ -295,24 +295,24 @@ Core.Block = {
 			}
 		});
 
-		if (Core.Admin.isMobile() == false) {
+		if (Fraym.Admin.isMobile() == false) {
 			// adding hover evects
-			$('body').on('mouseenter', Core.$.BLOCK_CONTAINER, function (e) {
-				if (e.shiftKey == false && Core.Block.dragging == false) {
+			$('body').on('mouseenter', Fraym.$.BLOCK_CONTAINER, function (e) {
+				if (e.shiftKey == false && Fraym.Block.dragging == false) {
 					$(this).animate({borderColor: 'rgba(0, 137, 205, 1.0)'});
-					$(this).find(Core.$.BLOCK_VIEW_CONTAINER).css({borderColor: 'rgba(0, 137, 205, 1.0)'});
-					$(this).find(Core.$.BLOCK_VIEW_INFO_CONTAINER).css({opacity: '1'});
+					$(this).find(Fraym.$.BLOCK_VIEW_CONTAINER).css({borderColor: 'rgba(0, 137, 205, 1.0)'});
+					$(this).find(Fraym.$.BLOCK_VIEW_INFO_CONTAINER).css({opacity: '1'});
 				}
 			});
-			$('body').on('mouseleave', Core.$.BLOCK_CONTAINER, function (e) {
-				if (e.shiftKey == false && Core.Block.dragging == false) {
+			$('body').on('mouseleave', Fraym.$.BLOCK_CONTAINER, function (e) {
+				if (e.shiftKey == false && Fraym.Block.dragging == false) {
 					$(this).animate({borderColor: 'rgba(0, 137, 205, 0.0)'});
-					$(this).find(Core.$.BLOCK_VIEW_CONTAINER).css({borderColor: 'rgba(0, 137, 205, 0.0)'});
-					$(this).find(Core.$.BLOCK_VIEW_INFO_CONTAINER).css({opacity: '0'});
+					$(this).find(Fraym.$.BLOCK_VIEW_CONTAINER).css({borderColor: 'rgba(0, 137, 205, 0.0)'});
+					$(this).find(Fraym.$.BLOCK_VIEW_INFO_CONTAINER).css({opacity: '0'});
 				}
 			});
 
-			$('body').on('mouseenter', Core.$.BLOCK_HOLDER + ':not(' + Core.$.BLOCK_CONTAINER + ')', function (e) {
+			$('body').on('mouseenter', Fraym.$.BLOCK_HOLDER + ':not(' + Fraym.$.BLOCK_CONTAINER + ')', function (e) {
 				if(e.shiftKey == false) {
 					if($(this).hasClass('changeset')) {
 						$(this).css({borderColor: 'rgba(255, 165, 0, 1.0)'});
@@ -320,11 +320,11 @@ Core.Block = {
 						$(this).css({borderColor: 'rgba(23, 184, 19, 1.0)'});
 					}
 
-					$(this).find(Core.$.BLOCK_INFO).css({opacity: '1'}).show();
+					$(this).find(Fraym.$.BLOCK_INFO).css({opacity: '1'}).show();
 				}
 			});
 
-			$('body').on('mouseleave', Core.$.BLOCK_HOLDER + ':not(' + Core.$.BLOCK_CONTAINER + ')', function (e) {
+			$('body').on('mouseleave', Fraym.$.BLOCK_HOLDER + ':not(' + Fraym.$.BLOCK_CONTAINER + ')', function (e) {
 				if(e.shiftKey == false) {
 					if($(this).hasClass('changeset')) {
 						$(this).css({borderColor: 'rgba(255, 165, 0, 0)'});
@@ -332,18 +332,18 @@ Core.Block = {
 						$(this).css({borderColor: 'rgba(23, 184, 19, 0)'});
 					}
 
-					$(this).find(Core.$.BLOCK_INFO).css({opacity: '0'}).hide();
+					$(this).find(Fraym.$.BLOCK_INFO).css({opacity: '0'}).hide();
 				}
 			});
 		} else {
-			$(Core.$.BLOCK_HOLDER + ':not(' + Core.$.BLOCK_CONTAINER + ')').css({borderColor: 'rgba(23, 184, 19, 1.0)'});
-			$(Core.$.BLOCK_INFO).css({opacity: '1'});
-			$(Core.$.BLOCK_VIEW_CONTAINER).css({borderColor: 'rgba(0, 137, 205, 1.0)'});
-			$(Core.$.BLOCK_VIEW_INFO_CONTAINER).css({opacity: '1'});
+			$(Fraym.$.BLOCK_HOLDER + ':not(' + Fraym.$.BLOCK_CONTAINER + ')').css({borderColor: 'rgba(23, 184, 19, 1.0)'});
+			$(Fraym.$.BLOCK_INFO).css({opacity: '1'});
+			$(Fraym.$.BLOCK_VIEW_CONTAINER).css({borderColor: 'rgba(0, 137, 205, 1.0)'});
+			$(Fraym.$.BLOCK_VIEW_INFO_CONTAINER).css({opacity: '1'});
 		}
 
-		$('body').on('dblclick', Core.$.BLOCK_INFO, function () {
-			Core.Block.showBlockDialog($(this).parents(Core.$.BLOCK_VIEW_CONTAINER).attr('id'), $(this).parent().data('id'));
+		$('body').on('dblclick', Fraym.$.BLOCK_INFO, function () {
+			Fraym.Block.showBlockDialog($(this).parents(Fraym.$.BLOCK_VIEW_CONTAINER).attr('id'), $(this).parent().data('id'));
 		});
 	},
 
@@ -388,7 +388,7 @@ Core.Block = {
 
 	initIframeContent: function () {
 		// init tabs on block dialog
-		$(Core.$.BLOCK_TABS).tabs();
+		$(Fraym.$.BLOCK_TABS).tabs();
 		$('select:not(.default)').chosen({
 			search_contains: true
 		});
@@ -408,51 +408,51 @@ Core.Block = {
 		FileManager.initFilePathInput();
 
 		$('form#block-add-edit-form').formSubmit({
-			url: Core.getAjaxRequestUri(),
+			url: Fraym.getAjaxRequestUri(),
 			'beforeSubmit': function(f) {
-				Core.Block.replaceRteLinks();
-				$(Core.Block).trigger('saveBlockConfig');
+				Fraym.Block.replaceRteLinks();
+				$(Fraym.Block).trigger('saveBlockConfig');
 			},
 			'onSuccess': function (json) {
-				$(Core.Block).trigger('blockConfigSaved');
+				$(Fraym.Block).trigger('blockConfigSaved');
 				if (json && json.data) {
-					if ($(Core.$.BLOCK_CURRENT_INPUT).val() == '') {
-						window.parent.$('#' + $(Core.$.BLOCK_CURRENT_CONTENTID_INPUT).val()).prepend(json.data);
-						window.parent.Core.Block.initBlockActions();
+					if ($(Fraym.$.BLOCK_CURRENT_INPUT).val() == '') {
+						window.parent.$('#' + $(Fraym.$.BLOCK_CURRENT_CONTENTID_INPUT).val()).prepend(json.data);
+						window.parent.Fraym.Block.initBlockActions();
 					} else {
-						Core.Block.replaceBlock($(Core.$.BLOCK_CURRENT_INPUT).val(), json.data);
+						Fraym.Block.replaceBlock($(Fraym.$.BLOCK_CURRENT_INPUT).val(), json.data);
 					}
-					$(Core.$.BLOCK_CURRENT_INPUT).val(json.blockId);
-					$(Core.$.BLOCK_CURRENT_VIEW).html(json.blockId);
+					$(Fraym.$.BLOCK_CURRENT_INPUT).val(json.blockId);
+					$(Fraym.$.BLOCK_CURRENT_VIEW).html(json.blockId);
 				} else {
 					Block.showMessage('Error check your config');
 				}
 
 				if($('form').data('closeonsuccess') == true) {
-					window.parent.$(Core.$.BLOCK_OVERLAY).dialog('close');
+					window.parent.$(Fraym.$.BLOCK_OVERLAY).dialog('close');
 				}
-				Core.Block.replaceRteBlockLinks();
+				Fraym.Block.replaceRteBlockLinks();
 			},
 			dataType: 'json'
 		});
 
-		if ($(Core.$.BLOCK_DATETIME_INPUT).length) {
-			$(Core.$.BLOCK_DATETIME_INPUT).datetimepicker({dateFormat: 'yy-mm-dd'});
+		if ($(Fraym.$.BLOCK_DATETIME_INPUT).length) {
+			$(Fraym.$.BLOCK_DATETIME_INPUT).datetimepicker({dateFormat: 'yy-mm-dd'});
 		}
 
-		$(Core.$.BLOCK_EXTENSION_INPUT).change(function () {
+		$(Fraym.$.BLOCK_EXTENSION_INPUT).change(function () {
 			// unbind all save events
-			$(Core.Block).unbind('saveBlockConfig');
-			$(Core.Block).unbind('blockConfigsaved');
+			$(Fraym.Block).unbind('saveBlockConfig');
+			$(Fraym.Block).unbind('blockConfigsaved');
 			if ($(this).val() == '') {
-				$(Core.$.BLOCK_TEMPLATE_SELECTION).attr('disabled', 'disabled');
+				$(Fraym.$.BLOCK_TEMPLATE_SELECTION).attr('disabled', 'disabled');
 				return;
 			}
-			Core.Block.loadConfig({extensionId: $(this).val()});
+			Fraym.Block.loadConfig({extensionId: $(this).val()});
 		});
 
 		if ($("#templateContent").length) {
-			Core.Block.CodeMirror = CodeMirror.fromTextArea($("#templateContent").get(0), {
+			Fraym.Block.CodeMirror = CodeMirror.fromTextArea($("#templateContent").get(0), {
 				lineNumbers: true,
 				lineWrapping: true,
 				autoCloseBrackets: true,
@@ -463,16 +463,16 @@ Core.Block = {
 				matchTags: {bothTags: true},
 				extraKeys: {"Ctrl-J": "toMatchingTag"}
 			});
-			Core.Block.CodeMirror.on("change", function(cm, change) {
+			Fraym.Block.CodeMirror.on("change", function(cm, change) {
 				$("#templateContent").val(cm.getValue());
 			});
 		}
 
-		$(Core.$.BLOCK_TEMPLATE_SELECTION).change(function () {
+		$(Fraym.$.BLOCK_TEMPLATE_SELECTION).change(function () {
 			if ($(this).val() == 'custom') {
 				$('.template-content').show();
 				$('.template-file-select').hide();
-				Core.Block.CodeMirror.refresh();
+				Fraym.Block.CodeMirror.refresh();
 			} else if($.isNumeric($(this).val())) {
 				$('.template-file-select').hide();
 				$('.template-content').hide();
@@ -482,11 +482,11 @@ Core.Block = {
 			}
 		}).change();
 
-		if ($(Core.$.BLOCK_CURRENT_INPUT).length) {
+		if ($(Fraym.$.BLOCK_CURRENT_INPUT).length) {
 
-			var currentBlockId = $(Core.$.BLOCK_CURRENT_INPUT).val();
+			var currentBlockId = $(Fraym.$.BLOCK_CURRENT_INPUT).val();
 			if (currentBlockId.length) {
-				Core.Block.loadConfig({id: currentBlockId});
+				Fraym.Block.loadConfig({id: currentBlockId});
 			}
 		}
 
@@ -502,25 +502,25 @@ Core.Block = {
 
 	initBlockActions: function () {
 
-		$.each($(Core.$.BLOCK_HOLDER), function(){
+		$.each($(Fraym.$.BLOCK_HOLDER), function(){
 			if(!$(this).hasClass('action-added')) {
 				$(this).addClass('action-added');
-				Core.Block.addBlockActions($(this).attr('data-id'));
+				Fraym.Block.addBlockActions($(this).attr('data-id'));
 			}
 		});
 
-		$.each($(Core.$.BLOCK_VIEW_CONTAINER), function(){
+		$.each($(Fraym.$.BLOCK_VIEW_CONTAINER), function(){
 			if(!$(this).hasClass('action-added')) {
 				$(this).addClass('action-added');
-				Core.Block.addViewActions($(this).attr('id'));
+				Fraym.Block.addViewActions($(this).attr('id'));
 			}
 		});
 
 		var start = false;
-		$(Core.$.BLOCK_VIEW_CONTAINER).sortable({
+		$(Fraym.$.BLOCK_VIEW_CONTAINER).sortable({
 			placeholder: 'draghelper',
-			connectWith: Core.$.BLOCK_VIEW_CONTAINER,
-			handle: Core.$.BLOCK_INFO,
+			connectWith: Fraym.$.BLOCK_VIEW_CONTAINER,
+			handle: Fraym.$.BLOCK_INFO,
 			tolerance:"pointer",
 			cursorAt: { top:0, left: 0 },
 			start: function (ev, ui) {
@@ -538,22 +538,22 @@ Core.Block = {
 					var contentId = $(ui.item).parent().attr('id');
 					var contentBlocks = [];
 
-					$.each($(ui.item).parent().children(Core.$.BLOCK_HOLDER), function(){
+					$.each($(ui.item).parent().children(Fraym.$.BLOCK_HOLDER), function(){
 						var blockElement = {contentId: contentId, blockId: $(this).data('id'), menuId: window.parent.menu_id};
 						contentBlocks.push(blockElement);
 					});
 
 					if ($.trim(contentId) != '') {
-						var parentWindow = Core.getBaseWindow();
+						var parentWindow = Fraym.getBaseWindow();
 						var location = parentWindow.location.href.substring(parentWindow.location.protocol.length+2);
 						$.ajax({
-							url:Core.getAjaxRequestUri(),
+							url:Fraym.getAjaxRequestUri(),
 							dataType:'json',
 							data:{cmd:'moveBlockToView', blocks: contentBlocks, location: location},
 							type:'post',
 							success:function (data, textStatus, jqXHR) {
 								if (data.success == false) {
-									Core.showMessage(Core.getBaseWindow().Core.Translation.Global.PermissionDenied);
+									Fraym.showMessage(Fraym.getBaseWindow().Fraym.Translation.Global.PermissionDenied);
 								}
 							}
 						});
@@ -568,30 +568,30 @@ Core.Block = {
 			return;
 		}
 
-		Core.Block.contextMenuItemsDisabled['paste'] = !(typeof $.cookie('copy') != 'undefined' || typeof $.cookie('cut') != 'undefined');
-		Core.Block.contextMenuItemsDisabled['pasteAsRef'] = !(typeof $.cookie('copy') != 'undefined');
+		Fraym.Block.contextMenuItemsDisabled['paste'] = !(typeof $.cookie('copy') != 'undefined' || typeof $.cookie('cut') != 'undefined');
+		Fraym.Block.contextMenuItemsDisabled['pasteAsRef'] = !(typeof $.cookie('copy') != 'undefined');
 
 		$('#' + id + '-block-container-actionbar').find('a.add').click(function(e){
 			e.preventDefault();
-			Core.Block.showBlockDialog(id);
+			Fraym.Block.showBlockDialog(id);
 		});
 
-		if(Core.Block.contextMenuItemsDisabled['paste'] !== false) {
+		if(Fraym.Block.contextMenuItemsDisabled['paste'] !== false) {
 			$('.block-container-actionbar').find('a.paste').hide();
 		}
 
-		if(Core.Block.contextMenuItemsDisabled['pasteAsRef'] !== false) {
+		if(Fraym.Block.contextMenuItemsDisabled['pasteAsRef'] !== false) {
 			$('.block-container-actionbar').find('a.pasteref').hide();
 		}
 
 		$('#' + id + '-block-container-actionbar').find('a.paste').click(function(e){
 			e.preventDefault();
-			Core.Block.pasteBlock(id, false);
+			Fraym.Block.pasteBlock(id, false);
 		});
 
 		$('#' + id + '-block-container-actionbar').find('a.pasteref').click(function(e){
 			e.preventDefault();
-			Core.Block.pasteBlock(id, true);
+			Fraym.Block.pasteBlock(id, true);
 		});
 
 
@@ -602,36 +602,36 @@ Core.Block = {
 			callback: function (key, options) {
 				switch (key) {
 					case 'add':
-						Core.Block.showBlockDialog(id);
+						Fraym.Block.showBlockDialog(id);
 						break;
 					case 'paste':
-						Core.Block.pasteBlock(id, false);
+						Fraym.Block.pasteBlock(id, false);
 						break;
 					case 'pasteAsRef':
-						Core.Block.pasteBlock(id, true);
+						Fraym.Block.pasteBlock(id, true);
 						break;
 				}
 			},
 			items: {
 				"add": {
-					name: Core.getBaseWindow().Core.Translation.ContextMenu.AddBlock,
+					name: Fraym.getBaseWindow().Fraym.Translation.ContextMenu.AddBlock,
 					icon: "edit",
 					disabled: function(key, opt) {
-						return !!Core.Block.contextMenuItemsDisabled[key];
+						return !!Fraym.Block.contextMenuItemsDisabled[key];
 					}
 				},
 				"paste": {
-					name: Core.getBaseWindow().Core.Translation.ContextMenu.PasteBlock,
+					name: Fraym.getBaseWindow().Fraym.Translation.ContextMenu.PasteBlock,
 					icon: "paste",
 					disabled: function(key, opt) {
-						return !!Core.Block.contextMenuItemsDisabled[key];
+						return !!Fraym.Block.contextMenuItemsDisabled[key];
 					}
 				},
 				"pasteAsRef": {
-					name: Core.getBaseWindow().Core.Translation.ContextMenu.PasteAsRefBlock,
+					name: Fraym.getBaseWindow().Fraym.Translation.ContextMenu.PasteAsRefBlock,
 					icon: "paste",
 					disabled: function(key, opt) {
-						return !!Core.Block.contextMenuItemsDisabled[key];
+						return !!Fraym.Block.contextMenuItemsDisabled[key];
 					}
 				}
 			}
@@ -655,7 +655,7 @@ Core.Block = {
 			spinner: { lines: 10, length: 5, width: 3, radius: 10}
 		});
 		$.ajax({
-			url: Core.getAjaxRequestUri(),
+			url: Fraym.getAjaxRequestUri(),
 			dataType: 'json',
 			data: $.extend({cmd: 'getBlockConfig'}, data),
 			type: 'post',
@@ -663,13 +663,13 @@ Core.Block = {
 				$('body').unmask();
 
 				if (json != null) {
-					Core.Block.loadDefaultConfig(json);
+					Fraym.Block.loadDefaultConfig(json);
 				} else if (typeof data != 'undefined' && data.id) {
-					$(Core.$.BLOCK_DIALOG + ',' + Core.$.BLOCK_OVERLAY).remove();
-					Core.showMessage(Core.getBaseWindow().Core.Translation.Global.PermissionDenied);
+					$(Fraym.$.BLOCK_DIALOG + ',' + Fraym.$.BLOCK_OVERLAY).remove();
+					Fraym.showMessage(Fraym.getBaseWindow().Fraym.Translation.Global.PermissionDenied);
 				} else if (typeof data != 'undefined' && data.extensionId) {
-					$(Core.$.BLOCK_IFRAME).contents().find('#extension option:first').prop('selected', 'selected');
-					Core.showMessage(Core.getBaseWindow().Core.Translation.Global.PermissionDenied);
+					$(Fraym.$.BLOCK_IFRAME).contents().find('#extension option:first').prop('selected', 'selected');
+					Fraym.showMessage(Fraym.getBaseWindow().Fraym.Translation.Global.PermissionDenied);
 				}
 				$('select').trigger("chosen:updated");
 			}
@@ -693,7 +693,7 @@ Core.Block = {
 		var $iframe = $('<iframe frameborder="0" src="about:blank" seamless></iframe>');
 
 		$iframe.css({height: '100%', width: '100%'}).attr('src', iframeSrc);
-		$newDialog.addClass(Core.$.BLOCK_OVERLAY.replace('.', ''));
+		$newDialog.addClass(Fraym.$.BLOCK_OVERLAY.replace('.', ''));
 		$newDialog.append($iframe);
 		var dialog = $newDialog.dialog(settings);
 		var titlebar = dialog.parents('.ui-dialog').find('.ui-dialog-titlebar');
@@ -717,41 +717,41 @@ Core.Block = {
 	},
 
 	showBlockDialog: function (contentId, currentBlockId) {
-		Core.Block.dialogContentId = contentId;
-		Core.Block.dialogBlockId = currentBlockId;
-		$(Core.$.BLOCK_DIALOG + ',' + Core.$.BLOCK_OVERLAY).remove();
-		$(Core.Block).unbind('blockConfigLoaded');
-		Core.Block.dialogWithIframe = Core.Block.showDialog({title: 'Block config', dialogClass: 'block-dialog'}, Core.Admin.BLOCK_EDIT_SRC);
+		Fraym.Block.dialogContentId = contentId;
+		Fraym.Block.dialogBlockId = currentBlockId;
+		$(Fraym.$.BLOCK_DIALOG + ',' + Fraym.$.BLOCK_OVERLAY).remove();
+		$(Fraym.Block).unbind('blockConfigLoaded');
+		Fraym.Block.dialogWithIframe = Fraym.Block.showDialog({title: 'Block config', dialogClass: 'block-dialog'}, Fraym.Admin.BLOCK_EDIT_SRC);
 	},
 
 	getExtensionConfigView: function (extensionId, extensionJsonData) {
-		var blockId = $(Core.$.BLOCK_CURRENT_INPUT).val();
+		var blockId = $(Fraym.$.BLOCK_CURRENT_INPUT).val();
 		$.ajax({
-			url: Core.getAjaxRequestUri(),
+			url: Fraym.getAjaxRequestUri(),
 			dataType: 'html',
 			data: {cmd: 'getExtensionConfigView', id: extensionId, blockId: blockId},
 			type: 'post',
 			async: false,
 			success: function (html) {
-				Core.Block.removeTabs();
+				Fraym.Block.removeTabs();
 				if (html.toString().length) {
-					Core.Block.addTab(extensionJsonData.name, html);
+					Fraym.Block.addTab(extensionJsonData.name, html);
 				}
 
 				FileManager.initFilePathInput();
 
-				Core.Block.History.load(extensionJsonData.id);
-				$(Core.Block).trigger('blockConfigLoaded', [extensionJsonData]).unbind('blockConfigLoaded');
-				$(Core.$.BLOCK_TEMPLATE_SELECTION).removeAttr('disabled');
+				Fraym.Block.History.load(extensionJsonData.id);
+				$(Fraym.Block).trigger('blockConfigLoaded', [extensionJsonData]).unbind('blockConfigLoaded');
+				$(Fraym.$.BLOCK_TEMPLATE_SELECTION).removeAttr('disabled');
 			}
 		});
 	},
 
 	deleteBlock: function (id) {
-		var parentWindow = Core.getBaseWindow();
+		var parentWindow = Fraym.getBaseWindow();
 		var location = parentWindow.location.href.substring(parentWindow.location.protocol.length+2);
 		$.ajax({
-			url: Core.getAjaxRequestUri(),
+			url: Fraym.getAjaxRequestUri(),
 			dataType: 'json',
 			data: {cmd: 'deleteBlock', blockId: id, location: location},
 			type: 'post',
@@ -764,15 +764,15 @@ Core.Block = {
 						$(this).remove();
 					});
 				} else if (typeof json.message != 'undefined') {
-					Core.showMessage(json.message);
+					Fraym.showMessage(json.message);
 				}
 			}
 		});
 	},
 
 	copyBlock: function (id) {
-		Core.Block.contextMenuItemsDisabled['paste'] = false;
-		Core.Block.contextMenuItemsDisabled['pasteAsRef'] = false;
+		Fraym.Block.contextMenuItemsDisabled['paste'] = false;
+		Fraym.Block.contextMenuItemsDisabled['pasteAsRef'] = false;
 		$.cookie('copy', id, { path: '/' });
 		$.removeCookie('cut', { path: '/' });
 		$('.block-container-actionbar').find('a.paste').show();
@@ -780,7 +780,7 @@ Core.Block = {
 	},
 
 	cutBlock: function (id) {
-		Core.Block.contextMenuItemsDisabled['paste'] = false;
+		Fraym.Block.contextMenuItemsDisabled['paste'] = false;
 		$.cookie('cut', id, { path: '/' });
 		$.removeCookie('copy', { path: '/' });
 		$('[data-id="' + id + '"]').css('opacity', 0.5);
@@ -789,13 +789,13 @@ Core.Block = {
 	},
 
 	pasteBlock: function (contentId, byRef) {
-		var parentWindow = Core.getBaseWindow();
+		var parentWindow = Fraym.getBaseWindow();
 		var id = $.cookie('copy') || $.cookie('cut');
 		var op = typeof $.cookie('copy') != 'undefined' ? 'copy' : 'cut';
 		var location = parentWindow.location.href.substring(parentWindow.location.protocol.length+2);
 
 		$.ajax({
-			url: Core.getAjaxRequestUri(),
+			url: Fraym.getAjaxRequestUri(),
 			dataType: 'json',
 			data: {cmd: 'pasteBlock', contentId: contentId, blockId: id, op: op, byRef: byRef, menuId: menu_id, location: location},
 			type: 'post',
@@ -814,9 +814,9 @@ Core.Block = {
 						});
 					}
 					$('#' + contentId).prepend(json.data);
-					Core.Block.initBlockActions();
+					Fraym.Block.initBlockActions();
 				} else if (typeof json.message != 'undefined') {
-					Core.showMessage(json.message);
+					Fraym.showMessage(json.message);
 				}
 			}
 		});
@@ -824,7 +824,7 @@ Core.Block = {
 
 	replaceBlock: function (blockId, data) {
 		window.parent.$('[data-id=' + blockId + ']').replaceWith(data);
-		window.parent.Core.Block.initBlockActions();
+		window.parent.Fraym.Block.initBlockActions();
 	},
 
 	addBlockActions: function (id) {
@@ -834,19 +834,19 @@ Core.Block = {
 
 		$('[data-id=' + id + ']').find('a.edit').click(function(e){
 			e.preventDefault();
-			Core.Block.showBlockDialog($(this).parents(Core.$.BLOCK_VIEW_CONTAINER).attr('id'), $(this).parents(Core.$.BLOCK_HOLDER).data('id'));
+			Fraym.Block.showBlockDialog($(this).parents(Fraym.$.BLOCK_VIEW_CONTAINER).attr('id'), $(this).parents(Fraym.$.BLOCK_HOLDER).data('id'));
 		});
 		$('[data-id=' + id + ']').find('a.copy').click(function(e){
 			e.preventDefault();
-			Core.Block.copyBlock($(this).parents(Core.$.BLOCK_HOLDER).data('id'));
+			Fraym.Block.copyBlock($(this).parents(Fraym.$.BLOCK_HOLDER).data('id'));
 		});
 		$('[data-id=' + id + ']').find('a.cut').click(function(e){
 			e.preventDefault();
-			Core.Block.cutBlock($(this).parents(Core.$.BLOCK_HOLDER).data('id'));
+			Fraym.Block.cutBlock($(this).parents(Fraym.$.BLOCK_HOLDER).data('id'));
 		});
 		$('[data-id=' + id + ']').find('a.delete').click(function(e){
 			e.preventDefault();
-			Core.Block.deleteBlock($(this).parents(Core.$.BLOCK_HOLDER).data('id'));
+			Fraym.Block.deleteBlock($(this).parents(Fraym.$.BLOCK_HOLDER).data('id'));
 		});
 
 		$.contextMenu({
@@ -854,24 +854,24 @@ Core.Block = {
 			callback: function (key, options) {
 				switch (key) {
 					case 'edit':
-						Core.Block.showBlockDialog($(this).parents(Core.$.BLOCK_VIEW_CONTAINER).attr('id'), $(this).data('id'));
+						Fraym.Block.showBlockDialog($(this).parents(Fraym.$.BLOCK_VIEW_CONTAINER).attr('id'), $(this).data('id'));
 						break;
 					case 'copy':
-						Core.Block.copyBlock($(this).data('id'));
+						Fraym.Block.copyBlock($(this).data('id'));
 						break;
 					case 'delete':
-						Core.Block.deleteBlock($(this).data('id'));
+						Fraym.Block.deleteBlock($(this).data('id'));
 						break;
 					case 'cut':
-						Core.Block.cutBlock($(this).data('id'));
+						Fraym.Block.cutBlock($(this).data('id'));
 						break;
 				}
 			},
 			items: {
-				"edit": { name: Core.getBaseWindow().Core.Translation.ContextMenu.EditBlock, icon: "edit" },
-				"copy": { name: Core.getBaseWindow().Core.Translation.ContextMenu.CopyBlock, icon: "copy" },
-				"cut": { name: Core.getBaseWindow().Core.Translation.ContextMenu.CutBlock, icon: "cut" },
-				"delete": { name: Core.getBaseWindow().Core.Translation.ContextMenu.DeleteBlock, icon: "delete" }
+				"edit": { name: Fraym.getBaseWindow().Fraym.Translation.ContextMenu.EditBlock, icon: "edit" },
+				"copy": { name: Fraym.getBaseWindow().Fraym.Translation.ContextMenu.CopyBlock, icon: "copy" },
+				"cut": { name: Fraym.getBaseWindow().Fraym.Translation.ContextMenu.CutBlock, icon: "cut" },
+				"delete": { name: Fraym.getBaseWindow().Fraym.Translation.ContextMenu.DeleteBlock, icon: "delete" }
 			}
 		});
 

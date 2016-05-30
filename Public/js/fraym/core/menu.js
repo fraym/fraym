@@ -4,7 +4,7 @@
  * @copyright Dominik Weber <info@fraym.org>
  * @license   http://www.opensource.org/licenses/gpl-license.php GNU General Public License, version 2 or later (see the LICENSE file)
  */
-Core.Menu = {
+Fraym.Menu = {
     menu_items: [],
     mode: [],
     selectionSrc: '',
@@ -14,7 +14,7 @@ Core.Menu = {
 
         if (parseInt(group_id) > 0) {
             $('#site_block').show();
-            $.get(Core.getAjaxRequestUri(), {group_id: group_id, cmd: 'get_sites'},
+            $.get(Fraym.getAjaxRequestUri(), {group_id: group_id, cmd: 'get_sites'},
                 function (data) {
                     $('#site_table').html(data);
                 }
@@ -30,15 +30,15 @@ Core.Menu = {
             $('#del-menu-item-popup').data("overlay").close();
         });
 
-        Core.Menu.getSiteMenu();
+        Fraym.Menu.getSiteMenu();
     },
 
     openSelectMenuDialog: function(callback) {
         var callback = typeof callback == 'undefined' ? function(){} : callback;
 
-        var $dialog = Core.getBaseWindow().Core.Block.showDialog({
-            title: Core.Translation.Menu.DialogTitle
-        }, Core.Menu.selectionSrc + '&mode=selection');
+        var $dialog = Fraym.getBaseWindow().Fraym.Block.showDialog({
+            title: Fraym.Translation.Menu.DialogTitle
+        }, Fraym.Menu.selectionSrc + '&mode=selection');
 
         $dialog.find('iframe').load(function(){
             var $iframeDOM = $(this).get(0).contentWindow;
@@ -69,7 +69,7 @@ Core.Menu = {
             $("#menu-item-list").html('');
         } catch (e) {}
 
-        Core.Menu.CustomMenu.initCustomMenuTree();
+        Fraym.Menu.CustomMenu.initCustomMenuTree();
 
         if ($("#menu-item-list").hasClass('no-self-drop')) {
             dnd = {
@@ -83,25 +83,25 @@ Core.Menu = {
 
         $('#menu-add-item').click(function(){
             if($("#menu-item-list").dynatree("getActiveNode")) {
-                Core.Menu.addMenuItemToParent($("#menu-item-list").dynatree("getActiveNode").data.key);
+                Fraym.Menu.addMenuItemToParent($("#menu-item-list").dynatree("getActiveNode").data.key);
             } else {
-                Core.Notification.show('error', Core.Translation.Menu.NoItemSelected);
+                Fraym.Notification.show('error', Fraym.Translation.Menu.NoItemSelected);
             }
         });
 
         $('#menu-del-item').click(function(){
             if($("#menu-item-list").dynatree("getActiveNode")) {
-                Core.Menu.delMenuItem($("#menu-item-list").dynatree("getActiveNode").data.key);
+                Fraym.Menu.delMenuItem($("#menu-item-list").dynatree("getActiveNode").data.key);
             } else {
-                Core.Notification.show('error', Core.Translation.Menu.NoItemSelected);
+                Fraym.Notification.show('error', Fraym.Translation.Menu.NoItemSelected);
             }
         });
 
         $('#menu-edit-item').click(function(){
             if($("#menu-item-list").dynatree("getActiveNode")) {
-                Core.Menu.editMenuItem($("#menu-item-list").dynatree("getActiveNode").data.key);
+                Fraym.Menu.editMenuItem($("#menu-item-list").dynatree("getActiveNode").data.key);
             } else {
-                Core.Notification.show('error', Core.Translation.Menu.NoItemSelected);
+                Fraym.Notification.show('error', Fraym.Translation.Menu.NoItemSelected);
             }
         });
 
@@ -149,26 +149,26 @@ Core.Menu = {
                                         var node = $.ui.dynatree.getNode(this);
                                         switch (key) {
                                             case 'add':
-                                                Core.Menu.addMenuItemToParent(node.data.key);
+                                                Fraym.Menu.addMenuItemToParent(node.data.key);
                                                 break;
                                             case 'del':
-                                                Core.Menu.delMenuItem(node);
+                                                Fraym.Menu.delMenuItem(node);
                                                 break;
                                             case 'edit':
-                                                Core.Menu.editMenuItem(node.data.key);
+                                                Fraym.Menu.editMenuItem(node.data.key);
                                                 break;
                                         }
                                     },
                                     items: {
-                                        "add": { icon: "add", name: Core.Translation.Menu.AddItem },
-                                        "del": { icon: "delete", name: Core.Translation.Menu.DelItem },
-                                        "edit": { icon: "edit", name: Core.Translation.Menu.EditItem }
+                                        "add": { icon: "add", name: Fraym.Translation.Menu.AddItem },
+                                        "del": { icon: "delete", name: Fraym.Translation.Menu.DelItem },
+                                        "edit": { icon: "edit", name: Fraym.Translation.Menu.EditItem }
                                     }
                                 });
                             }
                         },
                         onDblClick: function(node, event) {
-                            Core.Menu.editMenuItem(node.data.key);
+                            Fraym.Menu.editMenuItem(node.data.key);
                             return false;
                         },
                         children: data
@@ -180,11 +180,11 @@ Core.Menu = {
     },
 
     editMenuItem: function (menuid) {
-        parent.window.Core.Block.showDialog({title: 'Menu-Edit'}, window.location.pathname + '?function=edit-menu-item&menu_id=' + menuid);
+        parent.window.Fraym.Block.showDialog({title: 'Menu-Edit'}, window.location.pathname + '?function=edit-menu-item&menu_id=' + menuid);
     },
 
     addMenuItemToParent: function (menuid) {
-        parent.window.Core.Block.showDialog({title: 'Menu-Edit'}, window.location.pathname + '?function=add&parent_id=' + menuid);
+        parent.window.Fraym.Block.showDialog({title: 'Menu-Edit'}, window.location.pathname + '?function=add&parent_id=' + menuid);
     },
 
     delMenuItem: function (node) {
@@ -234,14 +234,14 @@ Core.Menu = {
                         return true;
                     },
                     onDragEnter: function (node, sourceNode) {
-                        var rootNode = Core.Menu.getRootFromNode(node);
+                        var rootNode = Fraym.Menu.getRootFromNode(node);
                         return node.data.copy == true || (rootNode.data.key == '_CUSTOM_ROOT_' && node.data.key != '_CUSTOM_ROOT_') ? true : "over";
                     },
                     onDragOver: function (node, sourceNode, hitMode) {
                     },
                     onDrop: function (node, sourceNode, hitMode, ui, draggable) {
-                        var rootNode = Core.Menu.getRootFromNode(node);
-                        var rootNode2 = Core.Menu.getRootFromNode(sourceNode);
+                        var rootNode = Fraym.Menu.getRootFromNode(node);
+                        var rootNode2 = Fraym.Menu.getRootFromNode(sourceNode);
 
                         if (rootNode2.data.key != rootNode.data.key) {
 
@@ -282,7 +282,7 @@ Core.Menu = {
         },
         init: function () {
 
-            $(Core.Block).bind('blockConfigLoaded', function (e, json) {
+            $(Fraym.Block).bind('blockConfigLoaded', function (e, json) {
                 if (typeof json.xml != 'undefined' && typeof json.xml.menuItems != 'undefined') {
 
                     var menuItems = json.config.toString().replace(/menuItems/g, 'div').replace(/item/g, 'span').replace(/ id/g, ' class="folder" id');
@@ -308,19 +308,19 @@ Core.Menu = {
                         }
                     });
 
-                    Core.Menu.CustomMenu.initCustomMenuTree(ul);
+                    Fraym.Menu.CustomMenu.initCustomMenuTree(ul);
                 } else {
-                    Core.Menu.CustomMenu.initCustomMenuTree();
+                    Fraym.Menu.CustomMenu.initCustomMenuTree();
                 }
             });
 
-            $(Core.Block).bind('saveBlockConfig', function (e, json) {
+            $(Fraym.Block).bind('saveBlockConfig', function (e, json) {
                 var tree = $('#custom-menu-item-list').dynatree("getTree").toDict();
                 if(typeof tree[0].children != 'undefined') {
                     $('input[name=customMenu]').val($.toJSON(tree[0].children));
                 }
             });
-            Core.Menu.init();
+            Fraym.Menu.init();
         }
     }
 };

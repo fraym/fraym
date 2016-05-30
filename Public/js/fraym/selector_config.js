@@ -5,7 +5,7 @@
  * @license   http://www.opensource.org/licenses/gpl-license.php GNU General Public License, version 2 or later (see the LICENSE file)
  */
 var Core = Core || {};
-Core.$ = {
+Fraym.$ = {
 
     BLOCK_OVERLAY: '.block-add-edit',
     BLOCK_IFRAME: '.block-add-edit iframe',

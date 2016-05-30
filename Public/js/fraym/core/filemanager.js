@@ -136,8 +136,8 @@ var FileManager = {
             }
         });
 
-		var $dialog = Core.getBaseWindow().Core.Block.showDialog({
-			title: Core.Translation.FileManager.DialogTitleSelect
+		var $dialog = Fraym.getBaseWindow().Fraym.Block.showDialog({
+			title: Fraym.Translation.FileManager.DialogTitleSelect
 		}, FileManager.fileManagerSrc + '&fileFilter=' + fileFilter + '&singleFileSelect=' + singleFileSelect + '&currentFile=' + currentFile);
 
 		$dialog.find('iframe').load(function () {
@@ -173,7 +173,7 @@ var FileManager = {
 			if (!$(FileManager.selectors.selectedItems).hasClass('folder')) {
 				var file = FileManager.File.getFileInfo($(FileManager.selectors.selectedItems));
 				var data = { storage: FileManager.getRootFromActiveNode().data.storage, path: file.path, cmd: 'download' }
-				window.open(window.location.origin + window.location.pathname + '?' + Core.encodeQueryData(data), 'Download');
+				window.open(window.location.origin + window.location.pathname + '?' + Fraym.encodeQueryData(data), 'Download');
 			}
 		},
 
@@ -183,7 +183,7 @@ var FileManager = {
 			} else {
 				var file = FileManager.File.getFileInfo($(FileManager.selectors.selectedItems));
 				var data = { storage: FileManager.getRootFromActiveNode().data.storage, path: file.path }
-				Core.getBaseWindow().Core.Block.showDialog({ title: 'File: ' + $(FileManager.selectors.selectedItems).find(".file-name").html() }, FileManager.fileViewerSrc + '&' + Core.encodeQueryData(data));
+				Fraym.getBaseWindow().Fraym.Block.showDialog({ title: 'File: ' + $(FileManager.selectors.selectedItems).find(".file-name").html() }, FileManager.fileViewerSrc + '&' + Fraym.encodeQueryData(data));
 			}
 		},
 
@@ -264,7 +264,7 @@ var FileManager = {
 		},
 
 		delete: function () {
-			if (!confirm(Core.Translation.FileManager.DeleteConfirm)) {
+			if (!confirm(Fraym.Translation.FileManager.DeleteConfirm)) {
 				return false;
 			}
 			var items = FileManager.File.getSelectedItems();
@@ -664,8 +664,8 @@ var FileManager = {
 			if (obj.isDir) {
 				$file.addClass('folder');
 			}
-			if (Core.inArray(obj.extension, FileManager.previewIconFileExtensions)) {
-				$file.css('background-image', 'url(' + window.location.pathname + '?cmd=getPreviewIcon&path=' + Core.urlEncode(obj.path) + '&storage=' + Core.urlEncode(storage) + ')');
+			if (Fraym.inArray(obj.extension, FileManager.previewIconFileExtensions)) {
+				$file.css('background-image', 'url(' + window.location.pathname + '?cmd=getPreviewIcon&path=' + Fraym.urlEncode(obj.path) + '&storage=' + Fraym.urlEncode(storage) + ')');
 			}
 
 			$fileName.html(obj.name);

@@ -81,7 +81,7 @@
         var menu_path = '{i('Fraym\Route\Route')->getMenuPath()}';
         var ajax_handler_uri = base_path + menu_path + '?function=ajax';
 
-        Core.Translation = {
+        Fraym.Translation = {
             Menu: {
                 DialogTitle: '{_('Select a menu entry', 'FRAYM_SELECT_MENU_DIALOG_TITLE')}'
             },
@@ -100,8 +100,8 @@
 
         FileManager.fileViewerSrc = '//{i('Fraym\Route\Route')->getSiteBaseURI(false)}{i('Fraym\Route\Route')->getVirtualRoute('fileViewer')->route}?locale={i('Fraym\Registry\Config')->get('ADMIN_LOCALE_ID')->value}';
         FileManager.fileManagerSrc = '//{i('Fraym\Route\Route')->getSiteBaseURI(false)}{i('Fraym\Route\Route')->getVirtualRoute('fileManager')->route}?locale={i('Fraym\Registry\Config')->get('ADMIN_LOCALE_ID')->value}';
-        Core.Menu.selectionSrc = '//{i('Fraym\Route\Route')->getSiteBaseURI(false)}{i('Fraym\Route\Route')->getVirtualRoute('menuSelection')->route}?locale={i('Fraym\Registry\Config')->get('ADMIN_LOCALE_ID')->value}';
-        Core.locales = {json_encode($locales)};
+        Fraym.Menu.selectionSrc = '//{i('Fraym\Route\Route')->getSiteBaseURI(false)}{i('Fraym\Route\Route')->getVirtualRoute('menuSelection')->route}?locale={i('Fraym\Registry\Config')->get('ADMIN_LOCALE_ID')->value}';
+        Fraym.locales = {json_encode($locales)};
     </script>
 
 </head>

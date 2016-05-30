@@ -67,7 +67,7 @@
         });
         $('.create-new').click(function(e){
             e.preventDefault();
-            Core.getBaseWindow().Core.Block.showDialog({ close: function(){
+            Fraym.getBaseWindow().Fraym.Block.showDialog({ close: function(){
                 $('#entityForm').submit();
                 $(this).remove(); }, title: '{_('Entity Manager', 'EXT_ENTITYMANAGER')}' }, window.location.href + '&model=' + $(this).data('model') );
         });
@@ -75,7 +75,7 @@
         $('#entityForm select:not([multiple])').attr('data-placeholder', '{_('- Please select -', 'FRAYM_PLEASE_SELECT_PLACEHOLDER')}').chosen({ width:'100%', allow_single_deselect:true, search_contains: true });
 
         {if $model.id && $errors !== false && $errors !== true && count((array)$errors)}
-            Core.Notification.show('error', '{_('The entry was not saved - Please check the marked fields.', 'FRAYM_CHECK_MARKED_FIELDS')}');
+            Fraym.Notification.show('error', '{_('The entry was not saved - Please check the marked fields.', 'FRAYM_CHECK_MARKED_FIELDS')}');
         {/if}
     });
 </script>

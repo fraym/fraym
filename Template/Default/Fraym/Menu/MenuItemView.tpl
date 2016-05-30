@@ -170,9 +170,9 @@
 </form>
 
 <script type="text/javascript">
-    $(Core.$.BLOCK_TABS).tabs();
+    $(Fraym.$.BLOCK_TABS).tabs();
     $('#add-edit-menu').formSubmit({ 'dataType': 'json', 'onSuccess' : function(data){
-        Core.Notification.show(Core.Notification.TYPE_SUCCESS, '{_("Settings saved!")}');
+        Fraym.Notification.show(Fraym.Notification.TYPE_SUCCESS, '{_("Settings saved!")}');
 
         if(typeof data != 'undefined') {
             $('[name="menu[id]"]').val(data.menuId);

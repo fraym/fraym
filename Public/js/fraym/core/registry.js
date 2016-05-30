@@ -4,21 +4,21 @@
  * @copyright Dominik Weber <info@fraym.org>
  * @license   http://www.opensource.org/licenses/gpl-license.php GNU General Public License, version 2 or later (see the LICENSE file)
  */
-Core.Registry = {
+Fraym.Registry = {
 	init: function () {
 
-		$('body').on('click', '#registry-extensions [data-install]', Core.Registry.installExtension);
-		$('body').on('click', '#registry-extensions [data-uninstall]', Core.Registry.uninstallExtension);
-		$('body').on('click', '#registry-extensions [data-remove]', Core.Registry.removeExtension);
-		$('body').on('click', '#registry-extensions [data-download]', Core.Registry.downloadExtension);
-		$('body').on('click', '#registry-extensions [data-update]', Core.Registry.updateExtension);
-		$('body').on('submit', '#registry-extensions #repository-form', Core.Registry.repositorySearch);
+		$('body').on('click', '#registry-extensions [data-install]', Fraym.Registry.installExtension);
+		$('body').on('click', '#registry-extensions [data-uninstall]', Fraym.Registry.uninstallExtension);
+		$('body').on('click', '#registry-extensions [data-remove]', Fraym.Registry.removeExtension);
+		$('body').on('click', '#registry-extensions [data-download]', Fraym.Registry.downloadExtension);
+		$('body').on('click', '#registry-extensions [data-update]', Fraym.Registry.updateExtension);
+		$('body').on('submit', '#registry-extensions #repository-form', Fraym.Registry.repositorySearch);
 	},
 
 	repositorySearch: function (e) {
 		e.preventDefault();
 		var term = $('[name="extension_term"]').val();
-		Core.Registry.request(
+		Fraym.Registry.request(
 			{
 				cmd: 'repositorySearch',
 				term: $.trim(term)
@@ -33,7 +33,7 @@ Core.Registry = {
 	installExtension: function (e) {
 		e.preventDefault();
 		var repositoryKey = $(this).data('install');
-		Core.Registry.request(
+		Fraym.Registry.request(
 			{
 				cmd: 'installExtension',
 				repositoryKey: repositoryKey
@@ -46,7 +46,7 @@ Core.Registry = {
 	uninstallExtension: function (e) {
 		e.preventDefault();
 		var extensionId = $(this).data('uninstall');
-		Core.Registry.request(
+		Fraym.Registry.request(
 			{
 				cmd: 'uninstallExtension',
 				extensionId: extensionId
@@ -59,7 +59,7 @@ Core.Registry = {
 	removeExtension: function (e) {
 		e.preventDefault();
 		var repositoryKey = $(this).data('remove');
-		Core.Registry.request(
+		Fraym.Registry.request(
 			{
 				cmd: 'removeExtension',
 				repositoryKey: repositoryKey
@@ -72,7 +72,7 @@ Core.Registry = {
 	downloadExtension: function (e) {
 		e.preventDefault();
 		var repositoryKey = $(this).data('download');
-		Core.Registry.request(
+		Fraym.Registry.request(
 			{
 				cmd: 'downloadExtension',
 				repositoryKey: repositoryKey
@@ -86,13 +86,13 @@ Core.Registry = {
 	updateExtension: function (e) {
 		e.preventDefault();
 		var repositoryKey = $(this).data('update');
-		Core.Registry.request(
+		Fraym.Registry.request(
 			{
 				cmd: 'downloadExtension',
 				repositoryKey: repositoryKey
 			},
 			function () {
-				Core.Registry.request(
+				Fraym.Registry.request(
 					{
 						cmd: 'updateExtension',
 						repositoryKey: repositoryKey
@@ -128,5 +128,5 @@ Core.Registry = {
 };
 
 $(function () {
-	Core.Registry.init();
+	Fraym.Registry.init();
 });

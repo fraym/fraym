@@ -5,7 +5,7 @@
  * @license   http://www.opensource.org/licenses/gpl-license.php GNU General Public License, version 2 or later (see the LICENSE file)
  */
 
-Core.Install = {
+Fraym.Install = {
 	init: function () {
 		$('form').submit(function (e) {
 			$.ajax({
@@ -28,5 +28,5 @@ Core.Install = {
 };
 
 $(function () {
-	Core.Install.init();
+	Fraym.Install.init();
 });

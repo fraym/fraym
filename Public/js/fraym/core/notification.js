@@ -33,7 +33,7 @@ $.noty.defaults = {
     buttons: false
 };
 
-Core.Notification = {
+Fraym.Notification = {
     TYPE_ALERT: 'alert',
     TYPE_SUCCESS: 'success',
     TYPE_ERROR: 'error',

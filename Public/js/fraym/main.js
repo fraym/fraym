@@ -4,7 +4,7 @@
  * @copyright Dominik Weber <info@fraym.org>
  * @license   http://www.opensource.org/licenses/gpl-license.php GNU General Public License, version 2 or later (see the LICENSE file)
  */
-var Core = {
+var Fraym = {
     
     locales: [],
 
@@ -77,9 +77,9 @@ var Core = {
 
 $(function () {
     if (self == top) {
-        Core.Block.init();
+        Fraym.Block.init();
     } else {
-	    Core.Admin.iFrameInit();
+	    Fraym.Admin.iFrameInit();
     }
-    Core.Admin.init();
+    Fraym.Admin.init();
 });

@@ -5,46 +5,46 @@
  * @license   http://www.opensource.org/licenses/gpl-license.php GNU General Public License, version 2 or later (see the LICENSE file)
  */
 
-Core.Admin = {
+Fraym.Admin = {
 	PERMISSION_DENIED: '',
 	BLOCK_EDIT_SRC: '',
 	BLOCK_MENU_SRC: '',
 	EDIT_MODE: false,
 
 	init: function() {
-		Core.Admin.initPanel();
+		Fraym.Admin.initPanel();
 		$('body').on('mousemove', '[data-toggle="tooltip"]', function(){
 			$(this).tooltip();
 		});
 		$('#clearcache').click(function (e) {
 			e.preventDefault();
 			$.ajax({
-				url:parent.window.Core.getAjaxRequestUri(),
+				url:parent.window.Fraym.getAjaxRequestUri(),
 				dataType:'json',
 				data:{cmd:'clearCache'},
 				type:'post',
 				success:function (data, textStatus, jqXHR) {
-					Core.Notification.show('success', 'Cache cleared!');
+					Fraym.Notification.show('success', 'Cache cleared!');
 				}
 			});
 		});
 	},
 
 	iFrameInit: function() {
-		var parentWindow = Core.getBaseWindow();
+		var parentWindow = Fraym.getBaseWindow();
 
-		if(parentWindow.Core.Block.dialogWithIframe) {
+		if(parentWindow.Fraym.Block.dialogWithIframe) {
 
-			$(Core.$.BLOCK_CURRENT_INPUT).val(parentWindow.Core.Block.dialogBlockId);
-			$(Core.$.BLOCK_CURRENT_VIEW).html(parentWindow.Core.Block.dialogBlockId);
-			$('#selected-content-id').html(parentWindow.Core.Block.dialogContentId);
-			$('input[name=contentId]').val(parentWindow.Core.Block.dialogContentId);
-			$('input[name=contentId]').val(parentWindow.Core.Block.dialogContentId);
+			$(Fraym.$.BLOCK_CURRENT_INPUT).val(parentWindow.Fraym.Block.dialogBlockId);
+			$(Fraym.$.BLOCK_CURRENT_VIEW).html(parentWindow.Fraym.Block.dialogBlockId);
+			$('#selected-content-id').html(parentWindow.Fraym.Block.dialogContentId);
+			$('input[name=contentId]').val(parentWindow.Fraym.Block.dialogContentId);
+			$('input[name=contentId]').val(parentWindow.Fraym.Block.dialogContentId);
 			$('input[name="location"]').val(parentWindow.location.href.substring(parentWindow.location.protocol.length+2));
 
 			$('input[name=menuId]').val(parentWindow.menu_id);
-			$(Core.$.BLOCK_MENU_TRANSLATION_ID).val(window.parent.menu_translation_id);
-			Core.Block.initIframeContent();
+			$(Fraym.$.BLOCK_MENU_TRANSLATION_ID).val(window.parent.menu_translation_id);
+			Fraym.Block.initIframeContent();
 		}
 	},
 
@@ -62,7 +62,7 @@ Core.Admin = {
 		$('body').prepend($('#blockConfigMenu'));
 		$('[data-url]').click(function (e) {
 			e.preventDefault();
-			parent.window.Core.Block.showDialog({title: $(this).find('span.title').html()}, $(this).data('url'));
+			parent.window.Fraym.Block.showDialog({title: $(this).find('span.title').html()}, $(this).data('url'));
 			if(!$("#navigation").hasClass('collapsed')) {
 				$(".sidebar-collapse a").click();
 			}
@@ -71,7 +71,7 @@ Core.Admin = {
 		$('[data-id="block-edit-mode"]').click(function (e) {
 			e.preventDefault();
 			var editMode = $(this).attr('data-editmode') == '1' ? 0 : 1;
-			Core.Admin.setEditMode(editMode);
+			Fraym.Admin.setEditMode(editMode);
 		});
 
 
@@ -79,13 +79,13 @@ Core.Admin = {
 			$("#navigation").toggleClass("collapsed");
 			$(".sidebar-collapse").toggleClass("active");
 			if($("#navigation").hasClass('collapsed')) {
-				Core.Admin.closePanel();
+				Fraym.Admin.closePanel();
 			} else {
-				Core.Admin.openPanel();
+				Fraym.Admin.openPanel();
 			}
 		});
 
-		var $adminPanelIframe = $(Core.$.BLOCK_CONFIG_MENU).find('iframe');
+		var $adminPanelIframe = $(Fraym.$.BLOCK_CONFIG_MENU).find('iframe');
 		if($adminPanelIframe.length) {
 			$adminPanelIframe.slimScroll({width: '250px', height: $(window).height()});
 			$adminPanelIframe.load(function(){
@@ -98,13 +98,13 @@ Core.Admin = {
 	},
 
 	openPanel: function() {
-		Core.Admin.isPanelOpen = true;
-		Core.getBaseWindow().$(Core.$.BLOCK_CONFIG_MENU).show().animate({width: '250'}, 100);
+		Fraym.Admin.isPanelOpen = true;
+		Fraym.getBaseWindow().$(Fraym.$.BLOCK_CONFIG_MENU).show().animate({width: '250'}, 100);
 	},
 
 	closePanel: function() {
-		Core.Admin.isPanelOpen = false;
-		Core.getBaseWindow().$(Core.$.BLOCK_CONFIG_MENU).animate({width: '41'}, 100);
+		Fraym.Admin.isPanelOpen = false;
+		Fraym.getBaseWindow().$(Fraym.$.BLOCK_CONFIG_MENU).animate({width: '41'}, 100);
 	},
 
 	setEditMode: function(active) {
@@ -114,7 +114,7 @@ Core.Admin = {
 
 		$('[data-id="block-edit-mode"]').attr('disabled', 'disabled');
 		$.ajax({
-			url:parent.window.Core.getAjaxRequestUri(),
+			url:parent.window.Fraym.getAjaxRequestUri(),
 			dataType:'json',
 			data:{cmd:'setEditMode', value:active},
 			type:'post',

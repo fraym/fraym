@@ -26,7 +26,7 @@
 
 
 <script type="text/javascript">
-	Core.Translation = {
+	Fraym.Translation = {
 		Global: {
 			PermissionDenied: '{_('Permission denied!', 'FRAYM_PERMISSION_DENIED')}'
 		},
@@ -40,6 +40,6 @@
 			DeleteBlock: '{_('Delete block', 'FRAYM_ADMIN_CONTEXT_MENU_DELETE_BLOCK')}'
 		}
 	};
-	Core.Admin.EDIT_MODE = {if $inEditMode}true{else}false{/if};
-	Core.Admin.BLOCK_EDIT_SRC = '//{i('Fraym\Route\Route')->getSiteBaseURI(false)}{i('Fraym\Route\Route')->getVirtualRoute('block')->route}?locale={i('Fraym\Registry\Config')->get('ADMIN_LOCALE_ID')->value}';
+	Fraym.Admin.EDIT_MODE = {if $inEditMode}true{else}false{/if};
+	Fraym.Admin.BLOCK_EDIT_SRC = '//{i('Fraym\Route\Route')->getSiteBaseURI(false)}{i('Fraym\Route\Route')->getVirtualRoute('block')->route}?locale={i('Fraym\Registry\Config')->get('ADMIN_LOCALE_ID')->value}';
 </script>

@@ -6,7 +6,7 @@
                     {_("Chose a website then right click on a menu item for the context menu.")}
                 </p>
                 <div class="form-group">
-                    <select class="form-control" id="site" onchange="Core.Menu.getSiteMenu();">
+                    <select class="form-control" id="site" onchange="Fraym.Menu.getSiteMenu();">
                         <option value="">{_("Choose")}</option>
                         {foreach $sites as $k => $site}
                             <option value="{$site.id}"{if $k == 0} selected{/if}>{$site.name}</option>
@@ -32,12 +32,12 @@
     </div>
 </div>
 <script type="text/javascript">
-    Core.Menu.mode = '{if $mode}{$mode}{/if}';
-    Core.Translation.Menu = {
+    Fraym.Menu.mode = '{if $mode}{$mode}{/if}';
+    Fraym.Translation.Menu = {
       AddItem: '{_('Add item')}',
       DelItem: '{_('Del item')}',
       EditItem: '{_('Edit item')}',
       NoItemSelected: '{_('No menu item selected!')}'
     };
-    Core.Menu.init();
+    Fraym.Menu.init();
 </script>
