@@ -8,6 +8,12 @@
 chdir(realpath(dirname(__FILE__). DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR));
 set_time_limit(0);
 
+if($_SERVER['REQUEST_URI'] === '/') {
+    header('Location: /install.php');
+    exit;
+}
+
+// Create folders for symlink creation
 function createFolders() {
     if(!is_dir('Template/Default/Extension')) {
         mkdir('Template/Default/Extension', 0755, true);
@@ -21,6 +27,12 @@ function createFolders() {
     if(!is_dir('Test/Fraym')) {
         mkdir('Test/Fraym', 0755, true);
     }
+    if(!is_dir('Hook/Extension')) {
+        mkdir('Hook/Extension', 0755, true);
+    }
+    if(!is_dir('Hook/Fraym')) {
+        mkdir('Hook/Fraym', 0755, true);
+    }
     if(!is_dir('Extension')) {
         mkdir('Extension', 0755, true);
     }
@@ -32,6 +44,9 @@ function createFolders() {
     }
     if(!is_dir('Public/images')) {
         mkdir('Public/images', 0755, true);
+    }
+    if(!is_dir('Fraym')) {
+        mkdir('Fraym', 0755, true);
     }
 }
 
@@ -47,7 +62,7 @@ if(!is_file('Vendor/autoload.php') && !(isset($_SERVER['HTTP_X_REQUESTED_WITH'])
  */
 if(!is_file('composer.phar')) {
     copy('https://getcomposer.org/composer.phar', 'composer.phar');
-    echo json_encode(['message' => 'Downloading dependencies, this may take several minutes...', 'done' => true]);
+    echo json_encode(['message' => 'Downloading dependencies, this may take several minutes...', 'done' => true, 'error' => false]);
     exit();
 }
 
@@ -56,9 +71,10 @@ if(!is_file('Vendor/autoload.php')) {
     require 'phar://composer.phar/src/bootstrap.php';
     $input = new Symfony\Component\Console\Input\ArrayInput(array('command' => 'install'));
     $application = new Composer\Console\Application();
+    $output = new \Symfony\Component\Console\Output\BufferedOutput();
     $application->setAutoExit(false);
-    $application->run($input);
-    echo json_encode(['message' => 'Done. Reloading installation...', 'done' => false]);
+    $result = $application->run($input, $output);
+    echo json_encode(['message' => 'Done. Reloading installation...', 'done' => false, 'error' => ($result !== 0 ? nl2br($output->fetch()) : false)]);
     exit();
 }
 

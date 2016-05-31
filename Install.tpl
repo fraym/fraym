@@ -29,7 +29,7 @@
         , length: 0 // The length of each line
         , width: 14 // The line thickness
         , radius: 11 // The radius of the inner circle
-        , scale: 0.75 // Scales overall size of the spinner
+        , scale: 1 // Scales overall size of the spinner
         , corners: 1 // Corner roundness (0..1)
         , color: '#fff' // #rgb or #rrggbb or array of colors
         , opacity: 0.25 // Opacity of the lines
@@ -40,7 +40,7 @@
         , fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
         , zIndex: 2e9 // The z-index (defaults to 2000000000)
         , className: 'spinner' // The CSS class to assign to the spinner
-        , top: '7%' // Top position relative to parent
+        , top: '35px' // Top position relative to parent
         , left: '50%' // Left position relative to parent
         , shadow: false // Whether to render a shadow
         , hwaccel: false // Whether to use hardware acceleration
@@ -55,11 +55,16 @@
             dataType:'json',
             type:'post',
             success:function (data, textStatus, jqXHR) {
-                $('#text').html(data.message);
-                if(data.done) {
-                    load();
+                if(data.error === false) {
+                    $('#text').html(data.message);
+                    if(data.done) {
+                        load();
+                    } else {
+                        window.location.reload();
+                    }
                 } else {
-                    window.location.reload();
+                    spinner.stop();
+                    $('#text').html("<h1>Error! :-(</h1>" + data.error);
                 }
             }
         });
