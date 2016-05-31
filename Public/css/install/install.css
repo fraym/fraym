@@ -65,6 +65,10 @@ form input {
     text-align: right;
 }
 
+#text {
+    margin-bottom: 30px;
+}
+
 legend {
     color: #fff;
 }

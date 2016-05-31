@@ -1,1 +1,0 @@
-{if $entity->$propertyName}<div class="alert alert-info">{_($entity->$propertyName, 'FIELD_DESC-' . $entity->$propertyName)}</div>{/if}

@@ -4,7 +4,7 @@
     Options -Indexes
 
     # Set the default handler.
-    DirectoryIndex index.php
+    DirectoryIndex index.php install.php
 
     RewriteEngine on
     RewriteBase /

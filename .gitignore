@@ -2,7 +2,6 @@
 *.idea*
 /Config.php
 Cache/Sessions/*
-Extension/*
 Cache/Pages/*
 Cache/DoctrineProxies/*
 Cache/*
@@ -13,3 +12,8 @@ Public/images/deposit/*
 composer.lock
 composer-setup.php
 composer.phar
+/Test
+/Extension
+/Template
+/Hook
+/Fraym
