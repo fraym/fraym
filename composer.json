@@ -9,8 +9,10 @@
     "prefer-stable": true,
     "authors": [
         {
-            "name": "Dominik Weber",
-            "email": "info@fraym.org"
+            "name": "Fraym.org",
+            "email": "info@fraym.org",
+            "homepage": "http://fraym.org",
+            "role": "Developer"
         }
     ],
     "autoload": {
