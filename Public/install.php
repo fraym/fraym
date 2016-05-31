@@ -8,6 +8,8 @@
 chdir(realpath(dirname(__FILE__). DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR));
 set_time_limit(0);
 
+putenv("COMPOSER_HOME=.composer");
+
 if($_SERVER['REQUEST_URI'] === '/') {
     header('Location: /install.php');
     exit;
