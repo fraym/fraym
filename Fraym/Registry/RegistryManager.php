@@ -114,7 +114,6 @@ class RegistryManager
         );
 
         if (is_object($classAnnotation) && $classAnnotation->file !== null) {
-
             $filePath = substr($classAnnotation->file, 0, 1) === '/' ?
                 $classAnnotation->file :
                 dirname($reflClass->getFileName()) . DIRECTORY_SEPARATOR . $classAnnotation->file;
@@ -254,11 +253,13 @@ class RegistryManager
      */
     public function getAuthorsFromPackage($package)
     {
-        $authors = $package->getAuthors();
         $return = [];
-        if ($authors) {
-            foreach ($authors as $author) {
-                $return[] = $author->getName() . ($author->getRole() ? ' (' . $author->getRole() . ')' : '');
+        if ($package) {
+            $authors = $package->getAuthors();
+            if ($authors) {
+                foreach ($authors as $author) {
+                    $return[] = $author->getName() . ($author->getRole() ? ' (' . $author->getRole() . ')' : '');
+                }
             }
         }
         return implode(', ', $return);
@@ -271,9 +272,11 @@ class RegistryManager
     public function getLatestPackageVersion($package)
     {
         $latest = null;
-        foreach ($package->getVersions() as $key => $versionPackage) {
-            if (!$latest || ($latest && $latest->getVersion() === 'dev-master') || ($key !== 'dev-master' && version_compare($versionPackage->getVersion(), $latest->getVersion()) > 0)) {
-                $latest = clone $versionPackage;
+        if ($package) {
+            foreach ($package->getVersions() as $key => $versionPackage) {
+                if (!$latest || ($latest && $latest->getVersion() === 'dev-master') || ($key !== 'dev-master' && version_compare($versionPackage->getVersion(), $latest->getVersion()) > 0)) {
+                    $latest = clone $versionPackage;
+                }
             }
         }
         return $latest;
@@ -307,7 +310,7 @@ class RegistryManager
     public function getPackage($packageName)
     {
         $package = null;
-        if(!empty($packageName)) {
+        if (!empty($packageName)) {
             try {
                 $client = new \Packagist\Api\Client();
                 $package = $client->get($packageName);
@@ -443,14 +446,16 @@ class RegistryManager
 
         if ($classAnnotation) {
             $registryEntry = $this->db->getRepository('\Fraym\Registry\Entity\Registry')->findOneByClassName($class);
+            if ($registryEntry === null) {
+                $registryEntry = new \Fraym\Registry\Entity\Registry();
+            } else {
+                $this->composerUpdate([$registryEntry->repositoryKey]);
+            }
+
             // Clear cache to generate new entity folders
             $this->core->cache->clearAll();
 
             $this->db->updateSchema();
-
-            if ($registryEntry === null) {
-                $registryEntry = new \Fraym\Registry\Entity\Registry();
-            }
 
             $registryEntry = $this->updateRegistryEntry($registryEntry, $class, $classAnnotation);
 
@@ -482,7 +487,7 @@ class RegistryManager
         $registryEntry->name = $classAnnotation->name;
         $registryEntry->repositoryKey = $classAnnotation->repositoryKey;
 
-        if($package = $this->getPackage($classAnnotation->repositoryKey)) {
+        if ($package = $this->getPackage($classAnnotation->repositoryKey)) {
             $package = $this->getLatestPackageVersion($package);
             $registryEntry->version = $package->getVersion();
         } else {
@@ -692,9 +697,9 @@ class RegistryManager
         $extensionsKeys = [];
         foreach ($extensions as $extension) {
             $package = $this->getPackage($extension->repositoryKey);
-            if($package) {
+            if ($package) {
                 $package = $this->getLatestPackageVersion($package);
-                if(version_compare($package->getVersion(), $extension->version) > 0) {
+                if (version_compare($package->getVersion(), $extension->version) > 0) {
                     $extensionsKeys[$extension->repositoryKey] = $package;
                 }
             }
@@ -708,24 +713,26 @@ class RegistryManager
      * @param $version
      * @return null
      */
-    public function getPackageByVersion($package, $version) {
-        foreach($package->getVersions() as $packageVersion) {
-            if($packageVersion->getVersion() === $version) {
+    public function getPackageByVersion($package, $version)
+    {
+        foreach ($package->getVersions() as $packageVersion) {
+            if ($packageVersion->getVersion() === $version) {
                 return $packageVersion;
             }
         }
-        return null;
+        return $this->getLatestPackageVersion($package);
     }
 
     /**
      * @param $extensions
      * @return array
      */
-    public function getExtensionPackages($extensions) {
+    public function getExtensionPackages($extensions)
+    {
         $packages = [];
-        foreach($extensions as $extension) {
+        foreach ($extensions as $extension) {
             $package = $this->getPackage($extension->repositoryKey);
-            if($package) {
+            if ($package) {
                 $package = $this->getPackageByVersion($package, $extension->version);
                 $package->author = $this->getAuthorsFromPackage($package);
                 $packages[$extension->repositoryKey] = $package;

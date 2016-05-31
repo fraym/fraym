@@ -75,7 +75,7 @@
                                     <span class="label label-warning" title="{_('The package can not be found in the packagist repository.')}">{_('Could not resolve status')}</span>
                                 {/if}
                             {else}
-                                <button data-update="{$extension.repositoryKey}">{_('Update to :version', 'FRAYM_UPDATE_TO', 'en_US', [':version' => $extensionUpdates[$extension.repositoryKey].getVersion()])}</button>
+                                <button class="btn btn-xs btn-warning" data-update="{$extension.repositoryKey}">{_('Update to :version', 'FRAYM_UPDATE_TO', 'en_US', [':version' => $extensionUpdates[$extension.repositoryKey].getVersion()])}</button>
                             {/if}
                         </td>
                         <td class="text-right">
