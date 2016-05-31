@@ -8,8 +8,37 @@
 chdir(realpath(dirname(__FILE__). DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR));
 set_time_limit(0);
 
+function createFolders() {
+    if(!is_dir('Template/Default/Extension')) {
+        mkdir('Template/Default/Extension', 0755, true);
+    }
+    if(!is_dir('Template/Dynamic')) {
+        mkdir('Template/Dynamic', 0755, true);
+    }
+    if(!is_dir('Test/Extension')) {
+        mkdir('Test/Extension', 0755, true);
+    }
+    if(!is_dir('Test/Fraym')) {
+        mkdir('Test/Fraym', 0755, true);
+    }
+    if(!is_dir('Extension')) {
+        mkdir('Extension', 0755, true);
+    }
+    if(!is_dir('Public/css')) {
+        mkdir('Public/css', 0755, true);
+    }
+    if(!is_dir('Public/js')) {
+        mkdir('Public/js', 0755, true);
+    }
+    if(!is_dir('Public/images')) {
+        mkdir('Public/images', 0755, true);
+    }
+}
+
+createFolders();
+
 if(!is_file('Vendor/autoload.php') && !(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')) {
-    echo file_get_contents('Template/Default/Fraym/Install/Preload.tpl');
+    echo file_get_contents('Install.tpl');
     exit();
 }
 
