@@ -1,5 +1,6 @@
 .DS_Store
 *.idea*
+.composer
 /Config.php
 Cache/Sessions/*
 Cache/Pages/*

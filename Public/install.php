@@ -85,6 +85,10 @@ require 'Vendor/autoload.php';
 define('CACHE_DI_PATH', 'Cache/DI');
 define('CACHE_DOCTRINE_PROXY_PATH', 'Cache/DoctrineProxies');
 define('CACHE_DOCTRINE_MODULE_FILE', 'Cache/doctrine_module_dir.cache');
+define('JS_FOLDER', '/js');
+define('CSS_FOLDER', '/css');
+define('CONSOLIDATE_FOLDER', '/consolidated');
+define('ENV', 'development');
 
 error_reporting(-1);
 ini_set("display_errors", 1);
