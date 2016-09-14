@@ -9,6 +9,7 @@ chdir(realpath(dirname(__FILE__). DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR))
 set_time_limit(0);
 
 putenv("COMPOSER_HOME=.composer");
+ini_set('memory_limit', -1);
 
 if($_SERVER['REQUEST_URI'] === '/') {
     header('Location: /install.php');
@@ -63,7 +64,7 @@ if(!is_file('Vendor/autoload.php') && !(isset($_SERVER['HTTP_X_REQUESTED_WITH'])
  * Install composer
  */
 if(!is_file('composer.phar')) {
-    copy('https://getcomposer.org/composer.phar', 'composer.phar');
+    copy('http://getcomposer.org/composer.phar', 'composer.phar');
     echo json_encode(['message' => 'Downloading dependencies, this may take several minutes...', 'done' => true, 'error' => false]);
     exit();
 }

@@ -66,6 +66,9 @@
                     spinner.stop();
                     $('#text').html("<h1>Error! :-(</h1>" + data.error);
                 }
+            },
+            error: function(data){
+                $('#text').html("<h1>Error! :-(</h1>" + data.responseText);
             }
         });
     };
