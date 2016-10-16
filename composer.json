@@ -18,8 +18,7 @@
     "require": {
         "fraym/composer-installers": "^1.0",
         "fraym/core": "^1.0",
-        "fraym/default-theme-extension": "^1.0",
-        "fraym/htmleditor-extension": "^1.0"
+        "fraym/default-theme-extension": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.3"

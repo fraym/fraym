@@ -65,7 +65,12 @@ if(!is_file('Vendor/autoload.php') && !(isset($_SERVER['HTTP_X_REQUESTED_WITH'])
  */
 if(!is_file('composer.phar')) {
     copy('http://getcomposer.org/composer.phar', 'composer.phar');
-    echo json_encode(['message' => 'Downloading dependencies, this may take several minutes...', 'done' => true, 'error' => false]);
+    if(!is_file('composer.phar')) {
+        $error = error_get_last();
+        echo json_encode(['message' => 'Downloading dependencies, this may take several minutes...', 'done' => false, 'error' => $error['message']]);
+    } else {
+        echo json_encode(['message' => 'Downloading dependencies, this may take several minutes...', 'done' => true, 'error' => false]);
+    }
     exit();
 }
 
